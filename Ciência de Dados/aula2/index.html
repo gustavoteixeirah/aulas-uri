@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Projeto final — Programação para Ciência de Dados</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+
+    <div class="deck" id="deck">
+
+      <!-- 1 — CAPA -->
+      <section class="slide cover" data-title="Capa" data-block="Abertura">
+        <div class="cover-tag">Programação para Ciência de Dados · 2026.1</div>
+        <h1><em>O trabalho</em></h1>
+        <p class="cover-sub">Um dataset público real, três perguntas e um relatório —<br>duas entregas, as duas notas do semestre</p>
+        <div class="cover-meta">
+          <span>Projeto final</span><i></i><span>até 3 pessoas</span><i></i><span>setembro e novembro</span>
+        </div>
+        <div class="cover-hint">Use <kbd>→</kbd> <kbd>←</kbd> ou os botões abaixo · <kbd>M</kbd> índice · <kbd>F</kbd> tela cheia</div>
+      </section>
+      <!-- 2 — O TRABALHO EM UMA FRASE -->
+      <section class="slide" data-title="O trabalho em uma frase" data-block="02">
+        <span class="kicker">O trabalho · A tarefa</span>
+        <h2>O trabalho, em uma frase</h2>
+        <div class="bigdef">
+          <span class="bd-label">Projeto final</span>
+          <p>escolher um <b>dataset público real</b>, formular <b>três perguntas de negócio</b> e respondê-las percorrendo o pipeline inteiro — <b>incluindo o que você não conseguiu responder</b>.</p>
+        </div>
+        <div class="cards c4 tight">
+          <div class="card"><b>Até 3 pessoas</b><small>individual, dupla ou trio — <b>trio é o teto</b></small></div>
+          <div class="card"><b>Relatório SBC</b><small>artigo no template oficial da SBC, em PDF</small></div>
+          <div class="card"><b>2 entregas</b><small>setembro e novembro</small></div>
+          <div class="card"><b>Nota 1 + Nota 2</b><small>não há apresentação — o texto fala por vocês</small></div>
+        </div>
+      </section>
+      <!-- 3 — AS DUAS ENTREGAS -->
+      <section class="slide" data-title="As duas entregas" data-block="02">
+        <span class="kicker">O trabalho · O calendário que importa</span>
+        <h2>Duas entregas, duas notas</h2>
+        <div class="compare">
+          <div class="cmp cmp-a"><h3><span class="ico">1️⃣</span>Etapa 1 · <b>Nota 1</b></h3>
+            <ul>
+              <li>prazo: <b>fim de setembro</b></li>
+              <li>seções <b>1 a 4</b> do relatório</li>
+              <li>pergunta · dados · entendimento · preparação</li>
+              <li><b>4 a 6 páginas</b> no template SBC</li>
+              <li>o dado tem que estar <b>carregado e limpo</b></li>
+            </ul>
+          </div>
+          <div class="cmp cmp-b"><h3><span class="ico">2️⃣</span>Etapa 2 · <b>Nota 2</b></h3>
+            <ul>
+              <li>prazo: <b>fim de novembro</b></li>
+              <li><b>o relatório completo</b> — seções 1 a 7</li>
+              <li>com as seções 1–4 <b>corrigidas</b> conforme o retorno</li>
+              <li><b>8 a 12 páginas</b> no template SBC</li>
+              <li>é o trabalho que fica no seu portfólio</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+      <!-- 4 — ENTREGÁVEIS -->
+      <section class="slide" data-title="O que entregar" data-block="02">
+        <span class="kicker">O trabalho · Entregáveis · nas duas etapas</span>
+        <h2>O que vocês me entregam</h2>
+        <div class="cards c1 tight">
+          <div class="card"><span class="ico">📄</span><b>Relatório em PDF · template SBC</b><small>é <i>o</i> trabalho — artigo científico, com resumo, seções numeradas, figuras com legenda e referências</small></div>
+          <div class="card"><span class="ico">📓</span><b>Notebook <code>projeto.ipynb</code></b><small>a evidência do que o relatório afirma — narrado em markdown, e roda do começo ao fim sem erro</small></div>
+          <div class="card"><span class="ico">📁</span><b>Os dados</b><small>o arquivo que vocês usaram, junto do notebook — ou o link de onde ele foi baixado</small></div>
+        </div>
+        <div class="callout warn">
+          <b>O teste:</b> abro o notebook de vocês, faço <i>Restart &amp; Run All</i> — e confiro se os números do PDF são <b>os mesmos</b> que saíram dali.<br>
+          Número no texto que não sai do código é <b>invenção</b>, e derruba a nota da etapa inteira.
+        </div>
+        <p class="note"><b>Template SBC</b> — o ZIP baixa direto daqui:<br><code>www.sbc.org.br/wp-content/uploads/2024/07/modelosparapublicaodeartigos.zip</code><br>Vem em <code>.docx</code> e em LaTeX. <b>Escolham o formato hoje</b>, não em novembro.</p>
+      </section>
+      <!-- 5 — DIVISOR 01 -->
+      <section class="slide divider" data-title="01 · Escolher o dataset" data-block="01">
+        <span class="div-n">01</span>
+        <h2>Escolher o dataset</h2>
+        <p>Onde procurar · como escolher · os mínimos que o seu tem que cumprir · dois exemplos rodados de verdade</p>
+      </section>
+      <!-- 6 — ONDE PROCURAR -->
+      <section class="slide" data-title="Onde procurar" data-block="01">
+        <span class="kicker">Escolher o dataset · Sugestões</span>
+        <h2>Onde procurar</h2>
+        <div class="cards c1 tight">
+          <div class="card"><span class="ico">🇧🇷</span><b>Portal brasileiro de dados abertos</b><small>tudo que os órgãos federais publicam, num lugar só — saúde, educação, transporte, gastos públicos<br><code>dados.gov.br/dados/conjuntos-dados</code></small></div>
+          <div class="card"><span class="ico">🏆</span><b>Kaggle</b><small>o maior acervo aberto do mundo, de qualquer assunto — com prévia das colunas e a licença declarada em cada dataset<br><code>kaggle.com/datasets</code></small></div>
+          <div class="card"><span class="ico">🌐</span><b>Qualquer outra fonte</b><small>vale, <b>desde que a licença permita uso aberto</b> — procure a palavra <i>licença</i> na página do dataset e copie o nome dela para o relatório. Sem licença declarada, escolha outro.</small></div>
+        </div>
+      </section>
+
+      <!-- 7 — COMO ESCOLHER -->
+      <section class="slide" data-title="Como escolher o seu" data-block="01">
+        <span class="kicker">Escolher o dataset · O que funciona</span>
+        <h2>Escolha um assunto que você aguente</h2>
+        <p class="lead">Vocês vão conviver com esse dataset por <b>quatro meses</b>. Escolha por interesse, não por conveniência.</p>
+        <div class="compare">
+          <div class="cmp cmp-a"><h3><span class="ico">💡</span>Boas pistas</h3>
+            <ul>
+              <li>o setor <b>onde você trabalha</b> ou quer trabalhar</li>
+              <li>um assunto que você já acompanha por conta própria</li>
+              <li>uma pergunta que você sempre quis responder</li>
+              <li>a sua cidade, o seu estado, o seu curso</li>
+            </ul>
+          </div>
+          <div class="cmp cmp-b"><h3><span class="ico">🚫</span>Proibidos</h3>
+            <ul>
+              <li><b>Titanic</b>, Iris, Wine, Boston Housing, MNIST</li>
+              <li>qualquer <i>toy dataset</i> de biblioteca (<code>sklearn</code>, <code>seaborn</code>)</li>
+              <li>dados sintéticos ou gerados por IA</li>
+              <li>o dataset já reservado por outro grupo</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout key">
+          Os proibidos são os <b>fáceis demais</b>: já vêm limpos, já foram analisados mil vezes, e não sobra trabalho nenhum para você mostrar.
+        </div>
+      </section>
+
+      <!-- 8 — OS MÍNIMOS -->
+      <section class="slide" data-title="Mínimos do dataset" data-block="01">
+        <span class="kicker">Escolher o dataset · <b>requisitos duros</b></span>
+        <h2>O que o seu dataset precisa ter</h2>
+        <table class="tbl mini">
+          <thead><tr><th>Requisito</th><th>Mínimo</th><th>O que conta como isso</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td class="rh">Tamanho</td><td><b>≥ 2.000 linhas</b></td><td>7.889 deputados · 12.400 voos · 5.300 escolas</td></tr>
+            <tr><td class="rh">Largura</td><td><b>≥ 10 colunas</b></td><td>colunas de conteúdo — <code>id</code> e <code>código</code> não contam</td></tr>
+            <tr class="hi"><td class="rh">Numéricas</td><td><b>≥ 3</b>, com <b>1 contínua</b></td><td><b>contínua:</b> preço, distância, salário, nota<br><b>não conta como contínua:</b> nº de filhos, nº de quartos</td></tr>
+            <tr class="hi"><td class="rh">Categóricas</td><td><b>≥ 3</b>, com <b>1 de mais de 5</b></td><td>sexo (2) · situação (3) · <b>estado (27)</b> ← essa é a de mais de 5</td></tr>
+            <tr class="hi"><td class="rh">Temporal</td><td><b>≥ 1 data</b>, <b>≥ 12 meses</b></td><td>data de nascimento · data da compra · data do voo</td></tr>
+            <tr><td class="rh">Texto</td><td><b>≥ 1 coluna</b></td><td>nome, endereço, descrição, nome do município</td></tr>
+            <tr class="hi"><td class="rh">Sujeira</td><td><b>≥ 1 coluna 5% a 50% vazia</b></td><td>"12% dos deputados sem estado de nascimento"</td></tr>
+          </tbody>
+        </table>
+        <p class="note">Mais dois que nenhuma conta verifica: uma coluna que sirva de <b>alvo</b> para o modelo da Etapa 2, e <b>fonte pública com licença declarada</b>.</p>
+      </section>
+
+      <!-- 9 — COMO CONFERIR -->
+      <section class="slide" data-title="Como conferir" data-block="01">
+        <span class="kicker">Escolher o dataset · Quatro comandos, rodados no dataset dos deputados</span>
+        <h2>Como conferir se ele cumpre</h2>
+        <div class="cards c2 tight">
+          <div class="card">
+            <b><code>df.shape</code> → tamanho e largura</b>
+            <pre class="code term"><code class="no-hl"><span class="out">(7889, 13)</span></code></pre>
+            <small>7.889 linhas ✓ (mínimo 2.000) · 13 colunas ✓</small>
+          </div>
+          <div class="card">
+            <b><code>df.dtypes</code> → número ou texto</b>
+            <pre class="code term"><code class="no-hl"><span class="out">str        10
+int64       2
+float64     1</span></code></pre>
+            <small>3 numéricas ✓ · <code>str</code> pode ser categoria ou texto — o <code>nunique</code> decide</small>
+          </div>
+          <div class="card">
+            <b><code>df.nunique()</code> → categórica ou contínua</b>
+            <pre class="code term"><code class="no-hl"><span class="out">siglaSexo          2
+ufNascimento      28
+municipio       1460
+nome            7550</span></code></pre>
+            <small>2 e 28 = categóricas ✓ · 7.550 em 7.889 linhas = texto, quase tudo diferente</small>
+          </div>
+          <div class="card">
+            <b><code>df.isna().mean()</code> → a sujeira</b>
+            <pre class="code term"><code class="no-hl"><span class="out">cpf             1.000
+ufNascimento    0.122
+dataNascimento  0.113
+siglaSexo       0.000</span></code></pre>
+            <small>0,122 = 12,2% vazio ✓ (a faixa é 0,05 a 0,50) · <code>cpf</code> está <b>100% vazia</b>: não serve para nada</small>
+          </div>
+        </div>
+        <p class="note">Se vier tudo numa coluna só: <code>sep=";"</code> · acento quebrado: <code>encoding="latin-1"</code> · número virou texto: <code>decimal=","</code></p>
+      </section>
+
+      <!-- 10 — EXEMPLO 1 -->
+      <section class="slide" data-title="Exemplo: deputados federais" data-block="01">
+        <span class="kicker">Escolher o dataset · Exemplo 1 · rodado de verdade</span>
+        <h2>Deputados federais · dados abertos da Câmara</h2>
+        <div class="split tight">
+          <div>
+            <pre class="code"><code data-lang="python">df = pd.read_csv(
+    "deputados.csv", sep=";")
+
+df.shape
+df["ufNascimento"].value_counts()</code></pre>
+          </div>
+          <div>
+            <pre class="code term"><code class="no-hl"><span class="out">(7889, 13)
+
+MG    881
+SP    850
+RJ    722
+BA    551
+RS    544</span></code></pre>
+          </div>
+        </div>
+        <img class="fig" src="ex-deputados.png" alt="Barras de deputados federais por estado de nascimento">
+        <p class="note">7.889 linhas, 13 colunas, com data de nascimento, UF, sexo e nome — e <b>893 datas faltando</b>.<br><code>dadosabertos.camara.leg.br/arquivos/deputados/csv/deputados.csv</code></p>
+      </section>
+
+      <!-- 11 — EXEMPLO 2 -->
+      <section class="slide" data-title="Exemplo: táxis de Nova York" data-block="01">
+        <span class="kicker">Escolher o dataset · Exemplo 2 · rodado de verdade</span>
+        <h2>Táxis de Nova York · sem baixar nada</h2>
+        <div class="split tight">
+          <div>
+            <pre class="code"><code data-lang="python">import seaborn as sns
+
+df = sns.load_dataset("taxis")
+
+df.shape
+df.groupby("payment")["tip"].mean()</code></pre>
+          </div>
+          <div>
+            <pre class="code term"><code class="no-hl"><span class="out">(6433, 14)
+
+payment
+cash           0.00
+credit card    2.78</span></code></pre>
+          </div>
+        </div>
+        <img class="fig" src="ex-taxis.png" alt="Corridas de táxi por hora do dia">
+        <p class="note">Gorjeta média <b>zero</b> em dinheiro? Ninguém é pão-duro: o sistema <b>não registra</b> gorjeta em espécie. Vazio e zero não são a mesma coisa.<br><b>Serve para treinar, não serve para o projeto</b> — vem com o <code>seaborn</code>, e dataset de biblioteca está na lista dos proibidos.</p>
+      </section>
+
+      <!-- 12 — DIVISOR 02 -->
+      <section class="slide divider" data-title="02 · Escrever o relatório" data-block="02">
+        <span class="div-n">02</span>
+        <h2>Escrever o relatório</h2>
+        <p>A pergunta · a estrutura obrigatória · as limitações · como cada entrega é avaliada</p>
+      </section>
+      <!-- 13 — A PERGUNTA DE NEGÓCIO -->
+      <section class="slide" data-title="A pergunta de negócio" data-block="02">
+        <span class="kicker">O trabalho · Vale 20% da Etapa 1</span>
+        <h2>Pergunta de negócio × curiosidade</h2>
+        <ul class="alts">
+          <li><span class="alt-l">✗</span><span class="alt-t">"Analisar o dataset de vendas."</span></li>
+          <li><span class="alt-l">✗</span><span class="alt-t">"Qual a média de idade dos clientes?" <i>— isso é uma consulta, não uma pergunta</i></span></li>
+          <li><span class="alt-l">✗</span><span class="alt-t">"Aplicar machine learning nos dados." <i>— o modelo é meio, não fim</i></span></li>
+          <li class="is-right"><span class="alt-l">✓</span><span class="alt-t">"Que características de cliente antecipam o cancelamento em 90 dias — e com que antecedência dá para agir?"</span><span class="alt-ok">✓</span></li>
+        </ul>
+        <div class="callout key">
+          Boa pergunta: tem <b>sujeito</b>, tem <b>recorte de tempo</b>, e a resposta <b>muda uma decisão</b>.
+        </div>
+        <p class="note">Teste: se a resposta for "ok, interessante" e ninguém fizer nada diferente — a pergunta era fraca.</p>
+      </section>
+      <!-- 14 — ESTRUTURA DO RELATÓRIO -->
+      <section class="slide" data-title="Estrutura do relatório" data-block="02">
+        <span class="kicker">O trabalho · Molde · o sumário obrigatório</span>
+        <h2>As sete seções — e onde a linha passa</h2>
+        <div class="steps">
+          <div class="step"><span>1</span><b>Introdução</b> — contexto e as 3 perguntas, antes de qualquer número <span class="tag ok">etapa 1</span></div>
+          <div class="step"><span>2</span><b>Os dados</b> — fonte, licença, dicionário, unidade de observação <span class="tag ok">etapa 1</span></div>
+          <div class="step"><span>3</span><b>Entendimento</b> — o que há no arquivo: tamanho, tipos, quanto está vazio, quantos valores distintos, e os defeitos que vocês acharam <span class="tag ok">etapa 1</span></div>
+          <div class="step"><span>4</span><b>Preparação</b> — limpeza e derivadas, <b>com a justificativa de cada escolha</b> <span class="tag ok">etapa 1</span></div>
+          <div class="step"><span>5</span><b>Exploração</b> — estatística e gráficos que respondem às 3 perguntas <span class="tag mid">etapa 2</span></div>
+          <div class="step"><span>6</span><b>Modelagem</b> — ao menos um modelo, com <i>baseline</i> e métrica <span class="tag mid">etapa 2 · aula 12</span></div>
+          <div class="step"><span>7</span><b>Conclusão e limitações</b> — as respostas, e onde elas não valem <span class="tag mid">etapa 2</span></div>
+        </div>
+        <div class="callout key">
+          <b>Entrega 1 = seções 1 a 4</b> (mais resumo e referências). <b>Entrega 2 = as sete</b>, com as quatro primeiras revisadas.
+        </div>
+      </section>
+      <!-- 15 — CRITÉRIOS -->
+      <section class="slide" data-title="Como será avaliado" data-block="02">
+        <span class="kicker">O trabalho · Critérios · cada etapa vale 100 pontos</span>
+        <h2>Como cada entrega é avaliada</h2>
+        <table class="tbl mini">
+          <thead><tr><th>Critério</th><th>O que se olha</th><th>Etapa 1</th><th>Etapa 2</th></tr></thead>
+          <tbody>
+            <tr><td class="rh">Perguntas</td><td>relevância, clareza e recorte das três</td><td>20%</td><td>10%</td></tr>
+            <tr><td class="rh">Dados e fonte</td><td>fonte, licença, dicionário, unidade de observação</td><td>20%</td><td>5%</td></tr>
+            <tr class="hi"><td class="rh">Tratamento dos dados</td><td>limpeza <b>justificada</b>, derivadas com propósito</td><td>40%</td><td>15%</td></tr>
+            <tr><td class="rh">Análise e visualização</td><td>as respostas se sustentam? os gráficos comunicam?</td><td>—</td><td>25%</td></tr>
+            <tr><td class="rh">Modelagem</td><td>escolha adequada, <i>baseline</i>, métrica bem lida</td><td>—</td><td>15%</td></tr>
+            <tr><td class="rh">Limitações</td><td>honestidade e profundidade</td><td>—</td><td>15%</td></tr>
+            <tr><td class="rh">Reprodutibilidade</td><td>abrir → <i>Run All</i> → roda sem erro e os números batem</td><td>10%</td><td>10%</td></tr>
+            <tr><td class="rh">Texto e formato SBC</td><td>redação, figuras com legenda, citações, referências</td><td>10%</td><td>5%</td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">
+          Repare: na Etapa 1, <b>tratamento de dados vale 40%</b>. Modelagem, na Etapa 2, vale 15%. Os pesos seguem o esforço real da profissão — não o que é mais divertido.
+        </div>
+      </section>
+    </div><!-- /deck -->
+
+    <!-- 16 — BARRA DE CONTROLE -->
+    <footer class="bar">
+      <div class="progress"><span id="progressFill"></span></div>
+      <button class="btn ghost" id="btnMenu" title="Índice (M)" aria-label="Índice">☰</button>
+      <div class="bar-title"><span id="barBlock">Abertura</span><b id="barTitle">Capa</b></div>
+      <div class="bar-nav">
+        <button class="btn" id="btnPrev" aria-label="Slide anterior">‹ Voltar</button>
+        <span class="counter"><b id="cur">1</b> / <span id="total">15</span></span>
+        <button class="btn primary" id="btnNext" aria-label="Próximo slide">Avançar ›</button>
+      </div>
+      <button class="btn ghost" id="btnPdf" title="Exportar para PDF (P)" aria-label="Exportar para PDF">PDF</button>
+      <button class="btn ghost" id="btnTheme" title="Tema claro/escuro (T)" aria-label="Alternar tema">◐</button>
+      <button class="btn ghost" id="btnFull" title="Tela cheia (F)" aria-label="Tela cheia">⛶</button>
+    </footer>
+
+    <!-- 17 — EXPORTAR PARA PDF -->
+    <div class="modal" id="pdfModal" aria-hidden="true">
+      <div class="modal-box">
+        <h3>Exportar os slides para PDF</h3>
+        <p>Vai abrir a janela de impressão do navegador. Confira estas três opções:</p>
+        <ul class="modal-list">
+          <li><b>Destino:</b> Salvar como PDF</li>
+          <li><b>Margens:</b> Nenhuma</li>
+          <li><b>Gráficos de segundo plano:</b> ativado <small>(fica em "Mais definições")</small></li>
+        </ul>
+        <p class="modal-note">Cada slide vira uma página no formato 4:3. O PDF sai sempre no tema claro, para não gastar tinta se você imprimir em papel.</p>
+        <div class="modal-actions">
+          <button class="btn" id="pdfCancel">Cancelar</button>
+          <button class="btn primary" id="pdfGo">Abrir impressão</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 18 — ÍNDICE -->
+    <aside class="menu" id="menu" aria-hidden="true">
+      <header>Índice da aula<button class="btn ghost" id="btnMenuClose" aria-label="Fechar">✕</button></header>
+      <nav id="menuList"></nav>
+    </aside>
+
+  </div><!-- /stage -->
+</div>
+
+<script src="js/slides.js"></script>
+</body>
+</html>

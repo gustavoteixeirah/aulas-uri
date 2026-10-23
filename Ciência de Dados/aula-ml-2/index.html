@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula ML 02 — Regressão linear</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+    <div class="deck" id="deck">
+
+      <section class="slide cover" data-title="Capa" data-block="Abertura">
+        <div class="cover-tag">Programação para Ciência de Dados · 2026.1</div>
+        <h1>Regressão <em>linear</em></h1>
+        <p class="cover-sub">A melhor reta pelos dados, o que ela aprende<br>e como saber se o modelo está bom</p>
+        <div class="cover-meta">
+          <span>Aula ML 02</span><i></i><span>08/10</span><i></i><span>regressão e métricas</span>
+        </div>
+        <div class="cover-hint">Use <kbd>→</kbd> <kbd>←</kbd> · <kbd>M</kbd> índice · <kbd>P</kbd> PDF · <kbd>F</kbd> tela cheia</div>
+      </section>
+
+      <section class="slide has-corner" data-title="O que é regressão linear" data-block="O modelo">
+        <span class="kicker">O modelo mais simples de ML</span>
+        <h2>O que é regressão linear</h2>
+        <div class="bigdef">
+          <span class="bd-label">Regressão linear</span>
+          <p>Você traça a <b>melhor linha reta</b> que passa pelos seus dados. Essa linha serve para <b>prever valores novos</b>.</p>
+        </div>
+        <div class="cards c2">
+          <div class="card"><b>Entra</b><small>um número que você conhece. Ex.: o tamanho da casa, em m².</small></div>
+          <div class="card"><b>Sai</b><small>um número que você quer prever. Ex.: o preço da casa.</small></div>
+        </div>
+        <div class="callout key">Treinar o modelo = achar a reta que fica <b>o mais perto possível</b> de todos os pontos ao mesmo tempo.</div>
+        <figure class="fig fig-canto">
+          <img src="img/g-reta-cerveja.png" alt="Consumo de cerveja contra a temperatura máxima, com a reta ajustada">
+          <figcaption>cerveja · °C → litros</figcaption>
+        </figure>
+      </section>
+
+      <section class="slide" data-title="Inclinação e intercepto" data-block="O modelo">
+        <span class="kicker">A reta inteira cabe em dois números</span>
+        <h2>Inclinação e intercepto</h2>
+        <figure class="fig">
+          <img src="img/regressao-linear-reta.png" alt="Reta de regressão Y = θ1 + θ2·X sobre pontos vermelhos, mostrando intercepto θ1, inclinação tanθ = θ2, valor observado yi, valor previsto Ypi e o erro entre eles">
+        </figure>
+      </section>
+
+      <section class="slide" data-title="Exemplo: casas" data-block="O modelo">
+        <span class="kicker">Exemplo inventado · tamanho → preço</span>
+        <h2>Exemplo: preço de casas</h2>
+        <div class="bigdef">
+          <span class="bd-label">Reta aprendida (exemplo)</span>
+          <p>preço (mil R$) = <b>50</b> + <b>3</b> × m²</p>
+        </div>
+        <div class="cards c2">
+          <div class="card"><b>Inclinação = 3</b><small>cada m² a mais adiciona <b>R$ 3 mil</b> ao preço.</small></div>
+          <div class="card"><b>Intercepto = 50</b><small>a altura de partida da reta: R$ 50 mil.</small></div>
+        </div>
+        <table class="tbl mini">
+          <thead><tr><th>casa nova</th><th>conta</th><th>preço previsto</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td>90 m²</td><td>50 + 3 × 90 = 50 + 270</td><td><b>R$ 320 mil</b></td></tr>
+          </tbody>
+        </table>
+        <p class="note">Entra um tamanho que o modelo nunca viu, ele aplica a reta e devolve o preço.</p>
+      </section>
+
+      <section class="slide" data-title="Três pontos importantes" data-block="O modelo">
+        <span class="kicker">Por que começar por aqui</span>
+        <h2>Três pontos importantes</h2>
+        <div class="cards c3">
+          <div class="card"><b>É supervisionado</b><small>treina com exemplos que têm <b>entrada e saída</b>: casas com tamanho <b>e</b> preço já conhecidos.</small></div>
+          <div class="card"><b>É interpretável</b><small>a inclinação tem significado direto: “cada m² a mais vale R$ 3 mil”. Dá para explicar para qualquer pessoa.</small></div>
+          <div class="card"><b>É a base de tudo</b><small>redes neurais são, no fundo, várias regressões lineares <b>empilhadas</b>, com funções não lineares entre elas.</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="E se eu tiver mais colunas?" data-block="Mais colunas">
+        <span class="kicker">Não é obrigatório ter uma entrada só</span>
+        <h2>E se eu tiver mais colunas?</h2>
+        <div class="bigdef">
+          <span class="bd-label">Resposta curta</span>
+          <p>Pode ter <b>quantas colunas quiser</b>: 5, 6, 8… Em vez de uma reta, o modelo vira um <b>hiperplano</b>.</p>
+        </div>
+        <div class="cards c3">
+          <div class="card"><b>1 coluna de entrada</b><small>você conhece a temperatura. O consumo é a resposta, no outro eixo. A figura é uma reta.</small></div>
+          <div class="card"><b>2 colunas de entrada</b><small>temperatura e fim de semana. A resposta vai para o terceiro eixo. A figura é um plano.</small></div>
+          <div class="card"><b>3 ou mais</b><small>não cabe num desenho. A conta continua a mesma soma.</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="A fórmula vira uma soma" data-block="Mais colunas">
+        <span class="kicker">Um coeficiente para cada coluna</span>
+        <h2>A fórmula vira uma soma</h2>
+        <div class="bigdef">
+          <span class="bd-label">Previsão</span>
+          <p class="formula" style="font-size:2em;margin:.2em 0;text-align:center;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif">
+            <math display="block" style="font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif">
+              <mrow>
+                <mi>y</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo>
+                <mo>=</mo>
+                <munderover><mo>∑</mo><mrow><mi>d</mi><mo>=</mo><mn>1</mn></mrow><mi>D</mi></munderover>
+                <msub><mi>w</mi><mi>d</mi></msub><mi>ϕ</mi><mo stretchy="false">(</mo><msub><mi>x</mi><mi>d</mi></msub><mo stretchy="false">)</mo>
+                <mo>+</mo><mi>ε</mi>
+              </mrow>
+            </math>
+          </p>
+          <p class="note" style="text-align:center"><b>w</b> = pesos (coeficientes) · <b>φ(x)</b> = as colunas de entrada · <b>ε</b> = ruído (o erro que sobra) · <b>D</b> = número de colunas</p>
+        </div>
+        <p>Cinco colunas → cinco coeficientes. Cada um diz quanto aquela coluna <b>empurra a saída</b> para cima (+) ou para baixo (−).</p>
+        <p class="note">O treino é o mesmo de antes: minimizar o erro quadrático médio, agora procurando o melhor <b>conjunto</b> de coeficientes.</p>
+      </section>
+
+      <section class="slide" data-title="R²" data-block="Avaliar o modelo">
+        <span class="kicker">A métrica principal</span>
+        <h2>R²: quanto da variação o modelo explica</h2>
+        <div class="bigdef">
+          <span class="bd-label">R² (R ao quadrado)</span>
+          <p>A <b>fração da variação</b> da saída que o modelo conseguiu explicar. Vai até 1.</p>
+          <p class="formula" style="font-size:1.7em;margin:.35em 0 .1em;text-align:center;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif">
+            <math display="block" style="font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif">
+              <mrow>
+                <msup><mi>R</mi><mn>2</mn></msup>
+                <mo>=</mo>
+                <mn>1</mn>
+                <mo>−</mo>
+                <mfrac>
+                  <mrow>
+                    <mo>∑</mo>
+                    <msup>
+                      <mrow><mo>(</mo><mi>y</mi><mo>−</mo><mover><mi>y</mi><mo>^</mo></mover><mo>)</mo></mrow>
+                      <mn>2</mn>
+                    </msup>
+                  </mrow>
+                  <mrow>
+                    <mo>∑</mo>
+                    <msup>
+                      <mrow><mo>(</mo><mi>y</mi><mo>−</mo><mover><mi>y</mi><mo>¯</mo></mover><mo>)</mo></mrow>
+                      <mn>2</mn>
+                    </msup>
+                  </mrow>
+                </mfrac>
+              </mrow>
+            </math>
+          </p>
+          <p class="note" style="text-align:center"><b>y</b> real · <b>ŷ</b> previsto · <b>ȳ</b> média dos reais</p>
+        </div>
+        <table class="tbl">
+          <thead><tr><th>R²</th><th>como ler</th></tr></thead>
+          <tbody>
+            <tr><td><b>1,0</b></td><td>acerta tudo (na prática, desconfie)</td></tr>
+            <tr class="hi"><td><b>0,9</b></td><td>já é considerado forte para regressão (depende da área)</td></tr>
+            <tr><td><b>0,8</b></td><td>captura 80% do que faz os preços mudarem</td></tr>
+            <tr><td><b>0</b></td><td>não explica nada: igual a chutar sempre a média</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="slide" data-title="Exemplo: 4 casas de teste" data-block="Avaliar o modelo">
+        <span class="kicker">Exemplo inventado · casas que o modelo não viu</span>
+        <h2>Exemplo: 4 casas de teste</h2>
+        <p>Modelo: preço = 50 + 3 × m² (em mil R$). Erro = previsto − real.</p>
+        <table class="tbl">
+          <thead><tr><th>casa</th><th>m²</th><th>previsto</th><th>real</th><th>erro</th></tr></thead>
+          <tbody>
+            <tr><td>A</td><td>60</td><td>230</td><td>220</td><td>+10</td></tr>
+            <tr><td>B</td><td>80</td><td>290</td><td>295</td><td>−5</td></tr>
+            <tr><td>C</td><td>100</td><td>350</td><td>365</td><td>−15</td></tr>
+            <tr class="hi"><td>D</td><td>120</td><td>410</td><td>460</td><td><b>−50</b></td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">A casa D tem um <b>erro grande</b> (talvez uma reforma que o modelo não conhece). Vamos usar esta tabela em todas as métricas.</div>
+      </section>
+
+      <section class="slide" data-title="R² ajustado" data-block="Avaliar o modelo">
+        <span class="kicker">O R² sozinho engana</span>
+        <h2>R² ajustado: penaliza coluna inútil</h2>
+        <div class="bigdef">
+          <span class="bd-label">Melhor que o R² para comparar modelos</span>
+          <p class="formula" style="font-size:1.7em;margin:.25em 0 .1em;text-align:center;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif">
+            <math display="block" style="font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif">
+              <mrow>
+                <msubsup><mi>R</mi><mtext>aj</mtext><mn>2</mn></msubsup>
+                <mo>=</mo>
+                <mn>1</mn>
+                <mo>−</mo>
+                <mo>(</mo><mn>1</mn><mo>−</mo><msup><mi>R</mi><mn>2</mn></msup><mo>)</mo>
+                <mfrac>
+                  <mrow><mi>n</mi><mo>−</mo><mn>1</mn></mrow>
+                  <mrow><mi>n</mi><mo>−</mo><mi>p</mi><mo>−</mo><mn>1</mn></mrow>
+                </mfrac>
+              </mrow>
+            </math>
+          </p>
+          <p class="note" style="text-align:center"><b>n</b> = número de casos · <b>p</b> = número de colunas de entrada</p>
+        </div>
+        <div class="cards c2">
+          <div class="card"><b>No treino, o R² nunca cai</b><small>ao adicionar uma coluna, ele sobe ou fica igual, <b>mesmo que a coluna seja lixo</b> (ex.: cor do portão).</small></div>
+          <div class="card"><b>O R² ajustado desconta</b><small>cada coluna a mais custa um pouco. Se ela não ajuda de verdade, o ajustado <b>cai</b>.</small></div>
+        </div>
+        <table class="tbl mini">
+          <thead><tr><th>exemplo (50 casas)</th><th>R²</th><th>R² ajustado</th></tr></thead>
+          <tbody>
+            <tr><td>5 colunas úteis</td><td>0,80</td><td>0,78</td></tr>
+            <tr class="hi"><td>+ 5 colunas lixo</td><td>0,81 ↑</td><td>0,76 ↓</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">Atenção: “nunca cai” vale <b>só no treino</b>. No teste, o R² pode cair e até ficar <b>negativo</b> (pior que chutar a média).</div>
+      </section>
+
+      <section class="slide" data-title="MAE" data-block="Métricas de erro">
+        <span class="kicker">As quatro casas do slide anterior</span>
+        <h2>MAE: em média, errou quanto</h2>
+        <p>O modelo errou <b>10</b>, <b>5</b>, <b>15</b> e <b>50</b> mil reais. O sinal não entra: 10 a mais ou 10 a menos é o mesmo erro.</p>
+        <div class="bigdef">
+          <span class="bd-label">Some e divida por 4</span>
+          <p>(10 + 5 + 15 + 50) / 4 = <b>20</b></p>
+        </div>
+        <p class="formula" style="font-size:1.6em;margin:.2em 0;text-align:center;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif">
+          <math display="block" style="font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif">
+            <mrow>
+              <mi>MAE</mi>
+              <mo>=</mo>
+              <mfrac>
+                <mn>1</mn>
+                <mi>n</mi>
+              </mfrac>
+              <mo>∑</mo>
+              <mo>|</mo><mi>y</mi><mo>−</mo><mover><mi>y</mi><mo>^</mo></mover><mo>|</mo>
+            </mrow>
+          </math>
+        </p>
+        <div class="callout key">MAE = 20. Em média, o modelo errou <b>R$ 20 mil</b>. Menor é melhor.</div>
+      </section>
+
+      <section class="slide" data-title="MLflow" data-block="MLflow">
+        <span class="kicker">Antes dos cadernos 02 e 03</span>
+        <h2>MLflow</h2>
+        <p>Biblioteca que guarda cada treino, para comparar depois. Site: <b>https://mlflow.org</b></p>
+        <div class="cards c2">
+          <div class="card"><b>Experimento</b><small>a pasta das tentativas. Nesta aula, o nome é <b>cerveja</b>.</small></div>
+          <div class="card"><b>Run</b><small>uma tentativa. Tem nome, o que entrou, os números e os arquivos.</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Inicializar" data-block="MLflow">
+        <span class="kicker">Uma vez, no começo do caderno</span>
+        <h2>Inicializar</h2>
+        <pre class="code sm"><code>import os
+os.environ["MLFLOW_ALLOW_FILE_STORE"] = "true"
+
+import mlflow
+mlflow.set_tracking_uri("mlruns")
+mlflow.set_experiment("cerveja")</code></pre>
+        <p class="note"><b>MLFLOW_ALLOW_FILE_STORE</b> libera a pasta <b>mlruns</b>. <b>set_tracking_uri</b> diz onde gravar. <b>set_experiment</b> abre o experimento, ou cria se não existir.</p>
+      </section>
+
+      <section class="slide" data-title="Gravar a run" data-block="MLflow">
+        <span class="kicker">Dentro do treino</span>
+        <h2>Gravar a run</h2>
+        <pre class="code sm"><code>with mlflow.start_run(run_name="temperatura"):
+    mlflow.log_param("entradas", "Temperatura Maxima (C)")
+    mlflow.log_metrics({"mae": mae, "r2": r2})
+    mlflow.log_artifact("reta.png")
+    mlflow.log_input(mlflow.data.from_pandas(dataset, name="cerveja"), context="training")
+    mlflow.sklearn.log_model(modelo, name="modelo")</code></pre>
+        <table class="tbl mini">
+          <thead><tr><th>método</th><th>o que grava</th></tr></thead>
+          <tbody>
+            <tr><td>start_run</td><td>abre a run, com um nome</td></tr>
+            <tr><td>log_param</td><td>um texto: quais colunas entraram</td></tr>
+            <tr><td>log_metrics</td><td>números: MAE e R²</td></tr>
+            <tr><td>log_artifact</td><td>um arquivo: a figura da reta</td></tr>
+            <tr><td>log_input</td><td>o arquivo de dados. Enche a coluna Dataset</td></tr>
+            <tr><td>sklearn.log_model</td><td>a reta treinada. Enche a coluna Models</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="slide" data-title="Abrir" data-block="MLflow">
+        <span class="kicker">A tabela das runs</span>
+        <h2>Abrir</h2>
+        <pre class="code sm"><code>MLFLOW_ALLOW_FILE_STORE=true mlflow ui --backend-store-uri mlruns</code></pre>
+        <p>Abre <b>http://127.0.0.1:5000</b>. Lá está o experimento <b>cerveja</b>, uma linha por run.</p>
+        <p class="note">No Python, <b>mlflow.search_runs</b> lê essa mesma tabela. É o que o caderno 03 usa para desenhar o gráfico.</p>
+      </section>
+
+    </div>
+    <footer class="bar">
+      <div class="progress"><span id="progressFill"></span></div>
+      <button class="btn ghost" id="btnMenu" title="Índice (M)" aria-label="Índice">☰</button>
+      <div class="bar-title"><span id="barBlock">Abertura</span><b id="barTitle">Capa</b></div>
+      <div class="bar-nav">
+        <button class="btn" id="btnPrev" aria-label="Slide anterior">‹ Voltar</button>
+        <span class="counter"><b id="cur">1</b> / <span id="total">1</span></span>
+        <button class="btn primary" id="btnNext" aria-label="Próximo slide">Avançar ›</button>
+      </div>
+      <button class="btn ghost" id="btnPdf" title="PDF (P)" aria-label="PDF">PDF</button>
+      <button class="btn ghost" id="btnTheme" title="Tema (T)" aria-label="Tema">◐</button>
+      <button class="btn ghost" id="btnFull" title="Tela cheia (F)" aria-label="Tela cheia">⛶</button>
+    </footer>
+    <div class="modal" id="pdfModal" aria-hidden="true">
+      <div class="modal-box">
+        <h3>Exportar os slides para PDF</h3>
+        <p>Destino: Salvar como PDF. Margens: nenhuma. Gráficos de segundo plano: ativado.</p>
+        <div class="modal-actions">
+          <button class="btn" id="pdfCancel">Cancelar</button>
+          <button class="btn primary" id="pdfGo">Abrir impressão</button>
+        </div>
+      </div>
+    </div>
+    <aside class="menu" id="menu" aria-hidden="true">
+      <header>Índice da aula<button class="btn ghost" id="btnMenuClose" aria-label="Fechar">✕</button></header>
+      <nav id="menuList"></nav>
+    </aside>
+  </div>
+</div>
+<script src="js/highlight.js"></script>
+<script src="js/slides.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

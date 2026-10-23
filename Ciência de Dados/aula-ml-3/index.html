@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula ML 03 — Algoritmos de classificação</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .mfont{ font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif; }
+  .formula{ text-align:center; margin:.25em 0 .1em !important; }
+  .mat td{ min-width: 92px; }
+  .mat th{ font-family: var(--font); font-size: 11px; }
+  .tbl td.num, .tbl th.num{ text-align:right; font-variant-numeric: tabular-nums; }
+  .escada .deg small{ line-height:1.35; }
+  .slide .cards.c2 .card.bom{ border-top:3px solid var(--green); }
+  .slide .cards.c2 .card.ruim{ border-top:3px solid var(--amber); }
+  .tbl td.best{ color: var(--accent); font-weight:700; }
+  .steps + .cards, .escada + .cards, p.lead + .cards{ margin-top:10px; }
+</style>
+</head>
+<body>
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+    <div class="deck" id="deck">
+
+      <!-- ===================== ABERTURA ===================== -->
+      <section class="slide cover" data-title="Capa" data-block="Abertura">
+        <div class="cover-tag">Programação para Ciência de Dados · 2026.1</div>
+        <h1>Algoritmos de <em>classificação</em></h1>
+        <p class="cover-sub">Quatro jeitos de responder “sai ou fica”,<br>no mesmo problema, comparados no mesmo teste</p>
+        <div class="cover-meta">
+          <span>Aula ML 03</span><i></i><span>15/10</span><i></i><span>Algoritmos de classificação</span><i></i><span>aula gravada</span>
+        </div>
+        <div class="cover-hint">Use <kbd>→</kbd> <kbd>←</kbd> · <kbd>M</kbd> índice · <kbd>P</kbd> PDF · <kbd>F</kbd> tela cheia</div>
+      </section>
+
+      <section class="slide" data-title="O que é classificar" data-block="Abertura">
+        <span class="kicker">Lembrando a aula 1</span>
+        <h2>Classificar = escolher uma categoria</h2>
+        <div class="bigdef">
+          <span class="bd-label">Classificação</span>
+          <p>A resposta é <b>uma opção de uma lista</b>, não um número. Com os pinguins, a lista era Adelie, Chinstrap ou Gentoo.</p>
+        </div>
+        <table class="tbl mini">
+          <thead><tr><th>pergunta</th><th>resposta</th><th>tipo</th></tr></thead>
+          <tbody>
+            <tr><td>Qual é a espécie do pinguim? (aula 1)</td><td>1 de 3 opções</td><td>classificação</td></tr>
+            <tr><td>Quantos litros de cerveja amanhã? (aula 2)</td><td>um número</td><td>regressão</td></tr>
+            <tr class="hi"><td><b>Este cliente vai cancelar? (hoje)</b></td><td>sim ou não</td><td><b>classificação</b></td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">Na aula 1 usamos <b>um</b> algoritmo, a regressão logística. Existem vários. Hoje: <b>quatro</b>, cada um com um jeito diferente de decidir.</div>
+      </section>
+
+      <section class="slide" data-title="O dataset" data-nb="dados" data-block="O caso">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">O dataset do caso · Kaggle</span>
+        <h2>Telco Customer Churn</h2>
+        <p class="lead" style="margin-top:0">Clientes de uma empresa de telefonia e internet: <b>7.032 clientes</b> depois da limpeza, uma linha por cliente.</p>
+        <div class="quote" style="font-size:16px;margin-bottom:12px">Dado um cliente com tal tempo de casa, tal conta e tal contrato, qual a probabilidade de ele cancelar?</div>
+        <table class="tbl mini">
+          <thead><tr><th>coluna</th><th>o que é</th><th>papel</th></tr></thead>
+          <tbody>
+            <tr><td><b>tenure</b></td><td>meses de casa (há quanto tempo é cliente)</td><td>entrada</td></tr>
+            <tr><td><b>MonthlyCharges</b></td><td>conta mensal, em US$</td><td>entrada</td></tr>
+            <tr><td><b>TotalCharges</b></td><td>total já pago, em US$</td><td>entrada</td></tr>
+            <tr><td><b>Contract</b></td><td>tipo de contrato: mensal, 1 ano ou 2 anos</td><td>entrada</td></tr>
+            <tr class="hi"><td><b>Churn</b></td><td>cancelou? sim ou não · <b>26,6% saem</b></td><td><b>COLUNA ALVO</b></td></tr>
+          </tbody>
+        </table>
+        <div class="callout key"><b>Aprendizado supervisionado:</b> a coluna da resposta (Churn) existe no arquivo. O modelo aprende com clientes que já sabemos se saíram ou ficaram.</div>
+        <p class="note">O arquivo original tem 21 colunas. Usamos 4 de entrada, mais o alvo. Fonte: <a href="https://www.kaggle.com/datasets/blastchar/telco-customer-churn" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline">kaggle.com/datasets/blastchar/telco-customer-churn</a> (dados de exemplo da IBM).</p>
+      </section>
+
+      <!-- ===================== REGRESSÃO LOGÍSTICA ===================== -->
+      <section class="slide" data-title="Regressão logística: a ideia" data-block="Regressão logística">
+        <span class="kicker">Algoritmo 1 de 4 · o da aula 1</span>
+        <h2>Regressão logística</h2>
+        <div class="bigdef">
+          <span class="bd-label">A ideia</span>
+          <p>Dá uma <b>nota</b> para o cliente somando pistas: cada coluna empurra para “sai” ou para “fica”. Depois transforma a nota numa <b>probabilidade</b> entre 0 e 1.</p>
+        </div>
+        <div class="cards c2">
+          <div class="card bom"><b>Quando usar</b><small>quando você quer <b>explicar o porquê</b>: cada coluna tem um peso que dá para ler. Bom primeiro modelo para testar.</small></div>
+          <div class="card ruim"><b>Cuidado</b><small>cada coluna empurra <b>sempre para o mesmo lado</b>. Não monta regras do tipo “se isto <b>e</b> aquilo”. Precisa das colunas na mesma escala.</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Regressão logística: a fórmula" data-block="Regressão logística">
+        <span class="kicker">Duas contas: a nota e a probabilidade</span>
+        <h2>A fórmula da logística</h2>
+        <div class="bigdef">
+          <span class="bd-label">1 · a nota (score)</span>
+          <p class="formula" style="font-size:1.6em;margin:.2em 0;text-align:center;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif">
+            <math display="block" style="font-size:1.55em;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif"><mrow><mi>z</mi><mo>=</mo><msub><mi>w</mi><mn>1</mn></msub><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msub><mi>w</mi><mn>2</mn></msub><msub><mi>x</mi><mn>2</mn></msub><mo>+</mo><mo>…</mo><mo>+</mo><msub><mi>w</mi><mi>n</mi></msub><msub><mi>x</mi><mi>n</mi></msub><mo>+</mo><mi>b</mi></mrow></math>
+          </p>
+        </div>
+        <div class="bigdef">
+          <span class="bd-label">2 · a probabilidade (sigmoide)</span>
+          <p class="formula" style="font-size:1.6em;margin:.2em 0;text-align:center;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif">
+            <math display="block" style="font-size:1.55em;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif"><mrow><mi>p</mi><mo>=</mo><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>z</mi></mrow></msup></mrow></mfrac></mrow></math>
+          </p>
+        </div>
+        <p class="note" style="text-align:center;margin-top:6px;padding-top:6px"><b>x</b> = valor de cada coluna do cliente · <b>w</b> = peso aprendido para cada coluna · <b>b</b> = ponto de partida · <b>z</b> = a nota · <b>p</b> = probabilidade de sair</p>
+        <div class="callout key"><b>z</b> negativo → <b>p</b> abaixo de 0,5. <b>z</b> = 0 → <b>p</b> = 0,5. <b>z</b> positivo → <b>p</b> acima de 0,5.</div>
+      </section>
+
+      <section class="slide" data-title="Regressão logística: cliente 157" data-block="Regressão logística">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Cliente 157 do teste · o modelo nunca viu este cliente</span>
+        <h2>Cliente 157, passo a passo</h2>
+        <div class="escada">
+          <div class="deg"><b>o cliente</b><small>2 meses de casa<br>US$ 95,65/mês<br>contrato mensal</small></div>
+          <span class="seta">→</span>
+          <div class="deg"><b>z = 0,95</b><small>a soma de<br>peso × coluna</small></div>
+          <span class="seta">→</span>
+          <div class="deg"><b>p = 0,72</b><small>1 / (1 + e<sup>−0,95</sup>)</small></div>
+          <span class="seta">→</span>
+          <div class="deg" style="border-color:var(--accent);background:var(--accent-2)"><b>“sai”</b><small>0,72 ≥ 0,5</small></div>
+        </div>
+        <div class="callout key">Por que a nota deu positiva? Os pesos aprendidos dizem: <b>poucos meses</b> empurram para sair (peso −1,23 nos meses), <b>conta alta</b> também (+0,73), e <b>contrato mensal</b> também (+0,55).</div>
+        <div class="callout ok">Na vida real, o cliente 157 <b>saiu</b>. Acertou.</div>
+      </section>
+
+      <!-- ===================== KNN ===================== -->
+      <section class="slide" data-title="KNN: a ideia" data-block="KNN">
+        <span class="kicker">Algoritmo 2 de 4 · k vizinhos mais próximos</span>
+        <h2>KNN</h2>
+        <div class="bigdef">
+          <span class="bd-label">A ideia</span>
+          <p>Procura no treino os clientes <b>mais parecidos</b> com o novo e copia a resposta da <b>maioria</b>. Aqui, os 5 mais parecidos (k = 5).</p>
+        </div>
+        <div class="cards c2">
+          <div class="card bom"><b>Quando usar</b><small>quando clientes parecidos tendem a fazer a mesma coisa. Ideia fácil de explicar, sem fórmula de pesos.</small></div>
+          <div class="card ruim"><b>Cuidado</b><small>compara com <b>todo o treino</b> a cada cliente novo (lento com muitos dados). E depende da escala: sem ela, o total pago (milhares) abafa os meses (dezenas).</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="KNN: a fórmula" data-block="KNN">
+        <span class="kicker">Parecido = perto</span>
+        <h2>A fórmula do KNN</h2>
+        <div class="bigdef">
+          <span class="bd-label">1 · a distância entre dois clientes</span>
+          <p class="formula" style="font-size:1.6em;margin:.2em 0;text-align:center;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif">
+            <math display="block" style="font-size:1.55em;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif"><mrow><mi>d</mi><mo stretchy="false">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false">)</mo><mo>=</mo><msqrt><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msup><mrow><mo stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>−</mo><msub><mi>y</mi><mi>i</mi></msub><mo stretchy="false">)</mo></mrow><mn>2</mn></msup></msqrt></mrow></math>
+          </p>
+        </div>
+        <div class="bigdef">
+          <span class="bd-label">2 · o voto</span>
+          <p style="text-align:center">resposta = a classe <b>mais comum</b> entre os <b>k</b> vizinhos de menor <b>d</b></p>
+        </div>
+        <p class="note" style="text-align:center;margin-top:6px;padding-top:6px"><b>x</b> = cliente novo · <b>y</b> = um cliente do treino · <b>i</b> = cada coluna · <b>n</b> = número de colunas · <b>d</b> = distância (0 = idênticos) · <b>k</b> = quantos vizinhos votam</p>
+      </section>
+
+      <section class="slide" data-title="KNN: cliente 157" data-block="KNN">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Cliente 157 do teste · os 5 vizinhos mais próximos no treino</span>
+        <h2>Cliente 157, passo a passo</h2>
+        <table class="tbl mini">
+          <thead><tr><th>vizinho</th><th class="num">distância d</th><th class="num">meses</th><th class="num">conta do mês</th><th>contrato</th><th>saiu?</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td class="num">0,008</td><td class="num">2</td><td class="num">US$ 95,50</td><td>mensal</td><td>não</td></tr>
+            <tr class="hi"><td>2</td><td class="num">0,012</td><td class="num">2</td><td class="num">US$ 96,00</td><td>mensal</td><td><b>sim</b></td></tr>
+            <tr class="hi"><td>3</td><td class="num">0,021</td><td class="num">2</td><td class="num">US$ 95,15</td><td>mensal</td><td><b>sim</b></td></tr>
+            <tr class="hi"><td>4</td><td class="num">0,024</td><td class="num">2</td><td class="num">US$ 94,95</td><td>mensal</td><td><b>sim</b></td></tr>
+            <tr class="hi"><td>5</td><td class="num">0,048</td><td class="num">2</td><td class="num">US$ 94,20</td><td>mensal</td><td><b>sim</b></td></tr>
+          </tbody>
+        </table>
+        <p class="lead" style="text-align:center;margin:12px 0 0">4 de 5 saíram → 4 ÷ 5 = <b>0,80</b> → <b>“sai”</b></p>
+        <div class="callout ok">O cliente 157 tem 2 meses e paga US$ 95,65: os vizinhos são quase iguais a ele. Na vida real, ele <b>saiu</b>. Acertou.</div>
+      </section>
+
+      <!-- ===================== NAIVE BAYES ===================== -->
+      <section class="slide" data-title="Naive Bayes: a ideia" data-block="Naive Bayes">
+        <span class="kicker">Algoritmo 3 de 4 · GaussianNB</span>
+        <h2>Naive Bayes</h2>
+        <div class="bigdef">
+          <span class="bd-label">A ideia</span>
+          <p>Pergunta, coluna por coluna: este valor é mais comum entre <b>quem sai</b> ou entre <b>quem fica</b>? Depois junta todas as pistas com a proporção de quem sai.</p>
+        </div>
+        <div class="cards c2">
+          <div class="card bom"><b>Quando usar</b><small>quando você precisa de algo <b>muito rápido</b>, com pouco dado ou muitas colunas. Clássico em filtro de spam.</small></div>
+          <div class="card ruim"><b>Cuidado</b><small>“naive” = <b>ingênuo</b>: trata cada coluna como pista separada. Meses e total pago andam juntos, então a mesma pista conta duas vezes e ele fica <b>confiante demais</b>.</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Naive Bayes: a fórmula" data-block="Naive Bayes">
+        <span class="kicker">Juntar as pistas multiplicando</span>
+        <h2>A fórmula do Naive Bayes</h2>
+        <div class="bigdef">
+          <span class="bd-label">Chance de sair, dado o cliente</span>
+          <p class="formula" style="font-size:1.6em;margin:.2em 0;text-align:center;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif">
+            <math display="block" style="font-size:1.55em;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif"><mrow><mi>P</mi><mo stretchy="false">(</mo><mtext>sai</mtext><mo>∣</mo><mi>x</mi><mo stretchy="false">)</mo><mo>∝</mo><mi>P</mi><mo stretchy="false">(</mo><mtext>sai</mtext><mo stretchy="false">)</mo><mo>·</mo><munderover><mo>∏</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><mi>P</mi><mo stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>∣</mo><mtext>sai</mtext><mo stretchy="false">)</mo></mrow></math>
+          </p>
+        </div>
+        <table class="tbl mini">
+          <thead><tr><th>símbolo</th><th>em palavras</th></tr></thead>
+          <tbody>
+            <tr><td><b>P(sai | x)</b></td><td>chance de sair, olhando o cliente <b>x</b></td></tr>
+            <tr><td><b>P(sai)</b></td><td>proporção de quem sai no treino, antes de olhar o cliente: <b>0,266</b></td></tr>
+            <tr><td><b>P(x<sub>i</sub> | sai)</b></td><td>quão comum é o valor da coluna <b>i</b> entre quem sai</td></tr>
+            <tr><td><math style="font-size:1.3em;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif"><mo>∏</mo></math></td><td>multiplica as <b>n</b> colunas, uma pista de cada</td></tr>
+            <tr><td><math style="font-size:1.3em;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif"><mo>∝</mo></math></td><td>“proporcional a”: faz a mesma conta para “fica” e divide para as duas somarem 1</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="slide" data-title="Naive Bayes: cliente 157" data-block="Naive Bayes">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Cliente 157 do teste · comparado com o perfil médio do treino</span>
+        <h2>Cliente 157, passo a passo</h2>
+        <table class="tbl mini">
+          <thead><tr><th>média no treino</th><th class="num">meses de casa</th><th class="num">conta do mês</th><th class="num">total já pago</th></tr></thead>
+          <tbody>
+            <tr><td>quem <b>fica</b></td><td class="num">37,6</td><td class="num">US$ 61,60</td><td class="num">US$ 2.556,85</td></tr>
+            <tr><td>quem <b>sai</b></td><td class="num">17,8</td><td class="num">US$ 74,12</td><td class="num">US$ 1.508,23</td></tr>
+            <tr class="hi"><td><b>cliente 157</b></td><td class="num"><b>2</b></td><td class="num"><b>US$ 95,65</b></td><td class="num"><b>US$ 167,30</b></td></tr>
+          </tbody>
+        </table>
+        <div class="steps">
+          <div class="step"><span>1</span><div>Começa com <b>P(sai) = 0,266</b>: no treino, 26,6% saem.</div></div>
+          <div class="step"><span>2</span><div>Em cada coluna, o cliente fica <b>mais perto do perfil de quem sai</b>. Cada pista puxa a conta para o lado de “sai”.</div></div>
+          <div class="step"><span>3</span><div>Resultado: <b>P(sai | cliente) = 0,98</b> → <b>“sai”</b>.</div></div>
+        </div>
+        <div class="callout ok">Na vida real, ele <b>saiu</b>. Acertou, mas com 0,98 de certeza: o “confiante demais” do slide anterior.</div>
+      </section>
+
+      <!-- ===================== ÁRVORE ===================== -->
+      <section class="slide" data-title="Árvore de decisão: a ideia" data-block="Árvore de decisão">
+        <span class="kicker">Algoritmo 4 de 4 · no máximo 4 perguntas</span>
+        <h2>Árvore de decisão</h2>
+        <div class="bigdef">
+          <span class="bd-label">A ideia</span>
+          <p>Faz <b>perguntas de sim ou não</b>, uma depois da outra, como um fluxograma. Cada resposta leva a um grupo menor de clientes, até chegar numa <b>folha</b>.</p>
+        </div>
+        <div class="cards c2">
+          <div class="card bom"><b>Quando usar</b><small>quando você quer <b>regras que dá para ler e desenhar</b>: “contrato mensal e conta alta → risco”.</small></div>
+          <div class="card ruim"><b>Cuidado</b><small>com muitas perguntas, ela <b>decora</b> o treino e erra clientes novos. Por isso limitamos a <b>4 perguntas</b>.</small></div>
+        </div>
+        <div class="callout key">Na <b>aula 4 (22/10)</b>: árvores e florestas.</div>
+      </section>
+
+      <section class="slide" data-title="Árvore: a fórmula" data-block="Árvore de decisão">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Como a árvore escolhe a pergunta</span>
+        <h2>Impureza de Gini</h2>
+        <div class="bigdef">
+          <span class="bd-label">Quão misturado está um grupo</span>
+          <p class="formula" style="font-size:1.7em;margin:.2em 0;text-align:center;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif">
+            <math display="block" style="font-size:1.55em;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif"><mrow><mi>G</mi><mo>=</mo><mn>1</mn><mo>−</mo><munder><mo>∑</mo><mi>k</mi></munder><msubsup><mi>p</mi><mi>k</mi><mn>2</mn></msubsup></mrow></math>
+          </p>
+          <p class="note" style="text-align:center;margin-top:6px;padding-top:6px"><b>p<sub>k</sub></b> = fração do grupo em cada classe (sai, fica) · <b>G = 0</b>: grupo puro · quanto mais misturado, maior (no máximo 0,5 com duas classes)</p>
+        </div>
+        <table class="tbl mini">
+          <thead><tr><th>clientes do treino</th><th class="num">quantos</th><th class="num">Gini</th></tr></thead>
+          <tbody>
+            <tr><td>todos, antes de perguntar</td><td class="num">5.274</td><td class="num">0,39</td></tr>
+            <tr><td>contrato mensal? <b>sim</b></td><td class="num">2.920</td><td class="num">0,49</td></tr>
+            <tr><td>contrato mensal? <b>não</b></td><td class="num">2.354</td><td class="num">0,12</td></tr>
+            <tr class="hi"><td><b>média depois da pergunta</b></td><td class="num"></td><td class="num"><b>0,325</b></td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">A árvore testa várias perguntas e fica com a que <b>mais baixa o Gini</b>. “Contrato mensal?” baixou de 0,39 para 0,325, e foi a primeira escolhida.</div>
+      </section>
+
+      <section class="slide" data-title="Árvore: cliente 157" data-block="Árvore de decisão">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Cliente 157 do teste · as 4 perguntas que ele respondeu</span>
+        <h2>Cliente 157, passo a passo</h2>
+        <div class="steps">
+          <div class="step"><span>1</span><div>Contrato mensal? <b>sim</b></div></div>
+          <div class="step"><span>2</span><div>Conta do mês acima de US$ 68,72? <b>sim</b> (US$ 95,65)</div></div>
+          <div class="step"><span>3</span><div>Até 15,5 meses de casa? <b>sim</b> (2 meses)</div></div>
+          <div class="step"><span>4</span><div>Total pago acima de US$ 118,10? <b>sim</b> (US$ 167,30)</div></div>
+        </div>
+        <p class="lead" style="text-align:center;margin:12px 0 0">Folha: <b>630</b> clientes do treino, <b>61%</b> saíram → <b>0,61</b> → <b>“sai”</b></p>
+        <div class="callout ok">Na vida real, ele <b>saiu</b>. Acertou, com menos certeza que os outros: a folha é um grupo bem misturado (Gini 0,475).</div>
+      </section>
+
+      <!-- ===================== FECHO ===================== -->
+      <section class="slide" data-title="Agora no caderno" data-block="Fecho">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Quatro jeitos de decidir · qual se sai melhor?</span>
+        <h2>Agora no caderno: comparar os quatro</h2>
+        <div class="cards c2">
+          <div class="card"><b>Regressão logística</b><small>soma peso × coluna → probabilidade</small></div>
+          <div class="card"><b>KNN</b><small>segue a maioria dos 5 clientes mais parecidos</small></div>
+          <div class="card"><b>Naive Bayes</b><small>junta pistas: cada coluna, comparada com quem sai e com quem fica</small></div>
+          <div class="card"><b>Árvore de decisão</b><small>perguntas de sim ou não até uma folha</small></div>
+        </div>
+        <div class="steps">
+          <div class="step"><span>1</span><div>Os quatro treinam nos <b>mesmos 5.274</b> clientes e são medidos nos <b>mesmos 1.758</b> do teste.</div></div>
+          <div class="step"><span>2</span><div>Todos contra o chute <b>“sempre fica”</b>: um modelo precisa ganhar dele.</div></div>
+          <div class="step"><span>3</span><div>Acurácia, precisão, recall e F1 lado a lado, num gráfico, e cada um gravado no MLflow.</div></div>
+        </div>
+        <p class="note">Caderno <b>aula-ml-3.ipynb</b>, rodando as células de cima para baixo.</p>
+      </section>
+
+    </div>
+    <footer class="bar">
+      <div class="progress"><span id="progressFill"></span></div>
+      <button class="btn ghost" id="btnMenu" title="Índice (M)" aria-label="Índice">☰</button>
+      <div class="bar-title"><span id="barBlock">Abertura</span><b id="barTitle">Capa</b></div>
+      <div class="bar-nav">
+        <button class="btn" id="btnPrev" aria-label="Slide anterior">‹ Voltar</button>
+        <span class="counter"><b id="cur">1</b> / <span id="total">1</span></span>
+        <button class="btn primary" id="btnNext" aria-label="Próximo slide">Avançar ›</button>
+      </div>
+      <button class="btn ghost" id="btnPdf" title="PDF (P)" aria-label="PDF">PDF</button>
+      <button class="btn ghost" id="btnTheme" title="Tema (T)" aria-label="Tema">◐</button>
+      <button class="btn ghost" id="btnFull" title="Tela cheia (F)" aria-label="Tela cheia">⛶</button>
+    </footer>
+    <div class="modal" id="pdfModal" aria-hidden="true">
+      <div class="modal-box">
+        <h3>Exportar os slides para PDF</h3>
+        <p>Destino: Salvar como PDF. Margens: nenhuma. Gráficos de segundo plano: ativado.</p>
+        <div class="modal-actions">
+          <button class="btn" id="pdfCancel">Cancelar</button>
+          <button class="btn primary" id="pdfGo">Abrir impressão</button>
+        </div>
+      </div>
+    </div>
+    <aside class="menu" id="menu" aria-hidden="true">
+      <header>Índice da aula<button class="btn ghost" id="btnMenuClose" aria-label="Fechar">✕</button></header>
+      <nav id="menuList"></nav>
+    </aside>
+  </div>
+</div>
+<script src="js/highlight.js"></script>
+<script src="js/slides.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+artifact_uri: /Users/teixeirah/work/uri/Ciência de Dados/aula-ml-3/mlruns/851701636120461391/b44a4bfdbf274bec8bf4836f38921ac9/artifacts
+end_time: 1790742616647
+entry_point_name: ''
+experiment_id: '851701636120461391'
+lifecycle_stage: active
+run_id: b44a4bfdbf274bec8bf4836f38921ac9
+run_name: logistica-corte-0.3
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1790742616637
+status: 3
+tags: []
+user_id: teixeirah

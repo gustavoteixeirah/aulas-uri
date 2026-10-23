@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula ML 01 — Introdução à Machine Learning</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+    <div class="deck" id="deck">
+
+      <section class="slide cover" data-title="Capa" data-block="Abertura">
+        <div class="cover-tag">Programação para Ciência de Dados · 2026.1</div>
+        <h1>Introdução à <em>Machine Learning</em></h1>
+        <p class="cover-sub">O que é machine learning, o que é um modelo,<br>e um classificador de pinguins medido em mais de uma partição</p>
+        <div class="cover-meta">
+          <span>Aula ML 01</span><i></i><span>Palmer Station</span><i></i><span>regressão logística</span>
+        </div>
+        <div class="cover-hint">Use <kbd>→</kbd> <kbd>←</kbd> · <kbd>M</kbd> índice · <kbd>P</kbd> PDF · <kbd>F</kbd> tela cheia</div>
+      </section>
+
+      <section class="slide" data-title="O que é ML" data-block="Abertura">
+        <span class="kicker">Antes do arquivo</span>
+        <h2>O que é machine learning</h2>
+        <div class="bigdef">
+          <span class="bd-label">Machine learning</span>
+          <p>Em vez de escrever a regra à mão, o computador <b>ajusta uma regra</b> olhando exemplos. Essa regra serve para prever ou decidir em casos novos.</p>
+        </div>
+        <div class="cards c2">
+          <div class="card"><b>O caminho clássico</b><small>você programa o passo a passo. A regra começa na sua cabeça.</small></div>
+          <div class="card"><b>O caminho do ML</b><small>você traz dados com padrão. A regra sai do ajuste nesses dados.</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="O que é um modelo" data-block="Abertura">
+        <span class="kicker">A peça central</span>
+        <h2>Modelo = função entrada → saída</h2>
+        <div class="bigdef">
+          <span class="bd-label">Modelo</span>
+          <p>Recebe entradas e devolve uma saída. Depois do ajuste, ele mapeia um caso novo sem você reescrever a regra.</p>
+        </div>
+        <div class="cards c2">
+          <div class="card"><b>Entram</b><small>medidas do pinguim — comprimento do bico, profundidade, asa, massa.</small></div>
+          <div class="card"><b>Sai</b><small>a espécie: Adelie, Chinstrap ou Gentoo.</small></div>
+        </div>
+        <p class="note">Ainda não abrimos o arquivo. O pinguim aqui só ilustra o mapeamento: entradas viram saída.</p>
+      </section>
+
+      <section class="slide" data-title="Modelo na prática" data-block="Abertura">
+        <span class="kicker">Em linguagem de rua</span>
+        <h2>Exemplo: filtro de spam</h2>
+        <div class="bigdef">
+          <span class="bd-label">Na prática</span>
+          <p>Ele <b>aprendeu o padrão</b>. Não é uma lista de se-então escrita na mão — é um ajuste feito em cima de exemplos.</p>
+        </div>
+        <div class="cards c2">
+          <div class="card"><b>Não é assim</b><small>Regra manual: “se tiver a palavra <i>grátis</i>, é spam”. Alguém inventou a regra.</small></div>
+          <div class="card"><b>É assim</b><small>O filtro olhou milhões de e-mails já marcados. Ajustou sozinho os pesos que separam spam de legítimo.</small></div>
+        </div>
+        <div class="callout key">Chega um e-mail novo: ele aplica o padrão aprendido e responde spam ou legítimo. Mesma ideia do gato → rótulo e do pinguim → espécie.</div>
+      </section>
+
+      <section class="slide" data-title="Tipos de ML" data-block="Abertura">
+        <span class="kicker">Três famílias · e onde cada modelo mora</span>
+        <h2>Supervisionado, não supervisionado e reforço</h2>
+        <div class="cards c3">
+          <div class="card"><b>Supervisionado</b><small><b>Existe coluna de resposta.</b> O modelo aprende a prever essa coluna.<br><br><b>Modelos:</b> regressão linear · regressão logística · árvores de decisão · florestas aleatórias · modelos de séries temporais (com alvo no tempo)</small></div>
+          <div class="card"><b>Não supervisionado</b><small><b>Não existe essa coluna.</b> O trabalho é achar estrutura — agrupamento.<br><br><b>Modelos:</b> k-means · DBSCAN · PCA</small></div>
+          <div class="card"><b>Por reforço</b><small><b>Aprende por recompensa e punição</b> em interações. Ex.: agente que tenta caminhar — fica de pé, ganha; cai, perde.<br><br><b>Modelos:</b> Q-learning · DQN · PPO</small></div>
+        </div>
+      </section>
+
+
+
+      <section class="slide" data-title="Generalização" data-block="Abertura">
+        <span class="kicker">A regra da aula</span>
+        <h2>Generalização: acertar o que o modelo não viu</h2>
+        <div class="bigdef">
+          <span class="bd-label">Aprender</span>
+          <p>O modelo ajusta uma regra nos exemplos. Essa regra tem de valer para um exemplo que <b>não entrou no ajuste</b>.</p>
+        </div>
+        <div class="cards c2">
+          <div class="card"><b>O que ele viu</b><small>serve para ajustar a regra. Acertar aqui é o mínimo, e não conta como evidência.</small></div>
+          <div class="card"><b>O que ele não viu</b><small>é a prova. A métrica que importa é a deste lado.</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Vocabulário do ciclo" data-block="Abertura">
+        <span class="kicker">O ciclo em seis caixas</span>
+        <h2>Do dado à predição</h2>
+        <div class="pipeline">
+          <div class="pl"><b>Pergunta</b><small>qual é a espécie</small></div>
+          <div class="pl"><b>Dados</b><small>features + alvo</small></div>
+          <div class="pl"><b>Análise</b><small>exploração, limpeza, cleanup</small></div>
+          <div class="pl hi"><b>Separação</b><small>split em train e test</small></div>
+          <div class="pl hi"><b>Treino</b><small>logística, árvore, kNN…</small></div>
+          <div class="pl hi"><b>Teste</b><small>inferência · predict</small></div>
+        </div>
+        <div class="callout key">A partir daqui o foco da aula é <b>Separação → Treino → Teste</b>: partir os dados, ajustar o modelo e medir no que ficou de fora.</div>
+      </section>
+
+      <section class="slide" data-title="Cronograma" data-block="Abertura">
+        <span class="kicker">Toda quinta-feira · 6 aulas + oficinas + devolutiva</span>
+        <h2>Cronograma</h2>
+        <table class="tbl">
+          <thead><tr><th>#</th><th>Data</th><th>Título</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td class="idx">1</td><td>01/10</td><td><b>Introdução a machine learning</b></td></tr>
+            <tr><td class="idx">2</td><td>08/10</td><td><b>Regressão linear e MLflow</b></td></tr>
+            <tr><td class="idx">3</td><td>15/10</td><td><b>Classificação</b>* (sem aula presencial)</td></tr>
+            <tr><td class="idx">4</td><td>22/10</td><td><b>Árvores e florestas</b>* (sem aula presencial)</td></tr>
+            <tr><td class="idx">5</td><td>29/10</td><td><b>Séries temporais</b></td></tr>
+            <tr><td class="idx">6</td><td>05/11</td><td><b>Agrupamento e deploy</b></td></tr>
+            <tr><td class="idx">7</td><td>12/11</td><td><b>Oficina para o trabalho</b></td></tr>
+            <tr><td class="idx">8</td><td>19/11</td><td><b>Oficina para o trabalho e entrega</b></td></tr>
+            <tr><td class="idx">9</td><td>26/11</td><td><b>Devolutiva dos trabalhos</b></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="slide" data-title="Dataset" data-nb="arquivo" data-block="Os dados">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Palmer Archipelago · penguins_size.csv</span>
+        <h2>Dataset: penguins_size.csv</h2>
+        <table class="tbl mini">
+          <thead><tr><th></th><th>bico (mm)</th><th>prof. (mm)</th><th>asa (mm)</th><th>massa (g)</th><th>species</th></tr></thead>
+          <tbody>
+            <tr><td class="idx">0</td><td>39,1</td><td>18,7</td><td>181</td><td>3.750</td><td>Adelie</td></tr>
+            <tr><td class="idx">1</td><td>39,5</td><td>17,4</td><td>186</td><td>3.800</td><td>Adelie</td></tr>
+            <tr><td class="idx">2</td><td>40,3</td><td>18,0</td><td>195</td><td>3.250</td><td>Adelie</td></tr>
+            <tr class="hi"><td class="idx">3</td><td>—</td><td>—</td><td>—</td><td>—</td><td>Adelie</td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">344 linhas, três espécies. Ilha e sexo ficam de fora: o primeiro modelo usa só as quatro medidas, para caber num gráfico.</div>
+      </section>
+
+      <section class="slide" data-title="Exploração" data-nb="dentro" data-block="Os dados">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Antes de qualquer modelo · código no caderno</span>
+        <h2>Exploração: dispersão bico × asa</h2>
+        <div class="compare">
+          <div>
+            <table class="tbl">
+              <thead><tr><th>species</th><th>n</th></tr></thead>
+              <tbody>
+                <tr><td>Adelie</td><td>151</td></tr>
+                <tr><td>Gentoo</td><td>123</td></tr>
+                <tr><td>Chinstrap</td><td>68</td></tr>
+              </tbody>
+            </table>
+            <p class="note">Contagens nas linhas com as quatro medidas preenchidas.</p>
+          </div>
+          <figure class="fig">
+            <img src="img/g1-bico-asa.png" alt="Dispersão do comprimento do bico contra o comprimento da asa, colorida pela espécie">
+          </figure>
+        </div>
+      </section>
+
+
+      <section class="slide" data-title="Objetivo" data-block="Os dados">
+        <span class="kicker">Antes de limpar · a pergunta do caso</span>
+        <h2>O que queremos com este dataset?</h2>
+        <div class="bigdef">
+          <span class="bd-label">Objetivo</span>
+          <p>Chega um <b>pinguim novo</b>. Temos as medidas dele. Queremos <b>classificar a espécie</b>: Adelie, Chinstrap ou Gentoo.</p>
+        </div>
+        <div class="cards c2">
+          <div class="card"><b>Entra</b><small>comprimento do bico, profundidade do bico, comprimento da asa, massa</small></div>
+          <div class="card"><b>Sai</b><small>a espécie prevista</small></div>
+        </div>
+        <div class="callout key">É um problema de <b>classificação</b>: opções fechadas, não um número contínuo.</div>
+      </section>
+
+
+
+
+
+
+      <section class="slide" data-title="Treino / validação / teste" data-nb="separacao" data-block="O ciclo">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Dataset limpo · agora partimos · código no caderno</span>
+        <h2>Treino, validação e teste</h2>
+        <div class="bigdef">
+          <span class="bd-label">A ideia</span>
+          <p>Temos <b>342</b> pinguins limpos. Antes de treinar, <b>dividimos</b> esses exemplos em fatias com papéis diferentes.</p>
+        </div>
+        <div class="cards c3">
+          <div class="card"><b>Treino</b><small><b>Aprende.</b> O modelo vê as medidas e a espécie correta e ajusta a regra.</small></div>
+          <div class="card"><b>Validação</b><small><b>Escolhe.</b> Compara opções sem gastar a prova final.</small></div>
+          <div class="card"><b>Teste</b><small><b>Prova.</b> Só entra no fim. É a nota que conta.</small></div>
+        </div>
+        <ul class="bul">
+          <li>Total limpo: <b>342</b> pinguins.</li>
+          <li>Treino: <b>256</b>.</li>
+          <li>Teste: <b>86</b>.</li>
+          <li>Validação: nesta aula entra depois, na validação cruzada (não é uma terceira fatia fixa agora).</li>
+          <li>A divisão respeita a proporção das três espécies dos dois lados.</li>
+        </ul>
+      </section>
+
+
+
+
+
+      <section class="slide" data-title="Modelos de ML" data-block="O ciclo">
+        <span class="kicker">Depois do split · o que vamos aplicar</span>
+        <h2>Modelos de machine learning</h2>
+        <div class="bigdef">
+          <span class="bd-label">Agora</span>
+          <p>Com treino e teste definidos, entra o <b>modelo</b>: a família de regra que vamos ajustar. Cada família responde a um tipo de pergunta.</p>
+        </div>
+        <div class="cards c2">
+          <div class="card"><b>Regressão linear</b><small>Prevê um <b>número contínuo</b> (preço, custo, demanda). Lê o peso de cada fator.</small></div>
+          <div class="card"><b>Classificação (logística)</b><small>Prevê um <b>rótulo</b> entre opções fechadas (espécie, churn sim/não). Hoje é esta.</small></div>
+          <div class="card"><b>Árvores e florestas</b><small>Partem o espaço em regras “se… então…”. Boas quando as relações não são uma reta só.</small></div>
+          <div class="card"><b>Séries temporais</b><small>Prevê o <b>próximo passo no tempo</b> (demanda da próxima hora). Ordem e sazonalidade importam.</small></div>
+          <div class="card"><b>Agrupamento (k-means)</b><small><b>Sem coluna de resposta.</b> Forma grupos por similaridade (perfis de cliente).</small></div>
+        </div>
+        <div class="callout key">Hoje: <b>classificação</b> com regressão logística nos pinguins. Os outros entram nas próximas aulas.</div>
+      </section>
+
+
+
+      <section class="slide" data-title="O score do modelo" data-block="O ciclo">
+        <span class="kicker">O que o modelo devolve · com exemplo</span>
+        <h2>O resultado do modelo é um score</h2>
+        <div class="bigdef">
+          <span class="bd-label">Score</span>
+          <p>O modelo olha as medidas e devolve <b>números</b> (scores). Ainda não é o nome da espécie — é o “quão forte” aponta para cada uma.</p>
+        </div>
+        <p class="note"><b>Exemplo:</b> bico 35,9 mm · profundidade 19,2 mm · asa 189 mm · massa 3.800 g</p>
+        <table class="tbl">
+          <thead><tr><th>Espécie</th><th>Chance (a partir do score)</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td>Adelie</td><td><b>0,999</b></td></tr>
+            <tr><td>Chinstrap</td><td>0,000</td></tr>
+            <tr><td>Gentoo</td><td>0,000</td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">Como sabemos que é Adelie? Porque a chance dela é a <b>maior</b> (quase 1). O nome da espécie é só o rótulo da maior chance.</div>
+      </section>
+
+
+
+
+      <section class="slide" data-title="Três espécies" data-block="O ciclo">
+        <span class="kicker">Como a resposta final aparece</span>
+        <h2>Por que a resposta é Adelie?</h2>
+        <div class="bigdef">
+          <span class="bd-label">Regra simples</span>
+          <p>O modelo não “chuta um nome”. Ele calcula uma chance para <b>cada</b> espécie e fica com a <b>maior</b>.</p>
+        </div>
+        <ul class="bul">
+          <li>Adelie: 0,999</li>
+          <li>Chinstrap: 0,000</li>
+          <li>Gentoo: 0,000</li>
+        </ul>
+        <div class="callout key">Maior chance = Adelie → a resposta do modelo é <b>Adelie</b>. Se Chinstrap tivesse a maior, a resposta seria Chinstrap.</div>
+      </section>
+
+
+
+
+
+
+      <section class="slide" data-title="Treino do modelo" data-nb="treino" data-block="O ciclo">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Os 256 pinguins do treino · código no caderno</span>
+        <h2>Treinar = aprender com exemplos</h2>
+        <div class="bigdef">
+          <span class="bd-label">O que é treinar</span>
+          <p>Mostramos ao modelo muitos pinguins <b>já classificados</b>. Ele ajusta os pesos até acertar o máximo possível nesses exemplos.</p>
+        </div>
+        <ul class="bul">
+          <li>Entram: medidas + espécie correta (só do treino).</li>
+          <li>O modelo ajusta os pesos (e a escala das medidas).</li>
+          <li>No fim: um modelo pronto para olhar um pinguim novo e responder.</li>
+        </ul>
+        <div class="callout key">Ainda não é a prova. A prova usa os 86 que ficaram de fora.</div>
+      </section>
+
+
+
+      <section class="slide" data-title="Predição no teste" data-nb="predicao" data-block="O ciclo">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Pinguim que não entrou no treino · código no caderno</span>
+        <h2>Uma predição no teste</h2>
+        <div class="bigdef">
+          <span class="bd-label">Agora</span>
+          <p>Pegamos <b>um</b> pinguim dos 86 da prova. O modelo só vê as medidas e responde a espécie.</p>
+        </div>
+        <table class="tbl">
+          <thead><tr><th>bico</th><th>profundidade</th><th>asa</th><th>massa</th><th>real</th><th>previsto</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td>45,8 mm</td><td>18,9 mm</td><td>197 mm</td><td>4.150 g</td><td>Adelie</td><td>Chinstrap</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">Neste exemplo ele <b>errou</b> (era Adelie, disse Chinstrap). Um caso só não diz se o modelo é bom — por isso medimos nos 86.</div>
+      </section>
+
+
+      <section class="slide" data-title="Acurácia no teste" data-nb="metrica" data-block="A prova">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">A nota da prova · código no caderno</span>
+        <h2>Acurácia: quantos acertamos no teste</h2>
+        <div class="bigdef">
+          <span class="bd-label">Para que serve</span>
+          <p>Responde: <b>de 100 pinguins novos, quantos o modelo acerta?</b> Contamos nos 86 da prova (não no treino).</p>
+        </div>
+        <ul class="bul">
+          <li>Acertos no teste: <b>85 de 86</b>.</li>
+          <li>Acurácia: <b>0,988</b> (cerca de 99%).</li>
+          <li>Essa é a nota desta aula para este modelo.</li>
+        </ul>
+      </section>
+
+
+      <section class="slide" data-title="Ciclo preenchido" data-block="Fecho">
+        <span class="kicker">O desenho do começo, agora preenchido</span>
+        <h2>O ciclo completo, preenchido</h2>
+        <div class="pipeline">
+          <div class="pl hi"><b>Pergunta</b><small>classificar a espécie</small></div>
+          <div class="pl hi"><b>Dados</b><small>344 linhas</small></div>
+          <div class="pl hi"><b>Análise</b><small>2 fora · 342 limpos</small></div>
+          <div class="pl hi"><b>Separação</b><small>256 treino · 86 teste</small></div>
+          <div class="pl hi"><b>Treino</b><small>aprende os pesos</small></div>
+          <div class="pl hi"><b>Teste</b><small>85/86 · acurácia 0,988</small></div>
+        </div>
+      </section>
+
+
+
+
+    </div>
+
+    <footer class="bar">
+      <div class="progress"><span id="progressFill"></span></div>
+      <button class="btn ghost" id="btnMenu" title="Índice (M)" aria-label="Índice">☰</button>
+      <div class="bar-title"><span id="barBlock">Abertura</span><b id="barTitle">Capa</b></div>
+      <div class="bar-nav">
+        <button class="btn" id="btnPrev" aria-label="Slide anterior">‹ Voltar</button>
+        <span class="counter"><b id="cur">1</b> / <span id="total">1</span></span>
+        <button class="btn primary" id="btnNext" aria-label="Próximo slide">Avançar ›</button>
+      </div>
+      <button class="btn ghost" id="btnPdf" title="Exportar para PDF (P)" aria-label="Exportar para PDF">PDF</button>
+      <button class="btn ghost" id="btnTheme" title="Tema claro/escuro (T)" aria-label="Alternar tema">◐</button>
+      <button class="btn ghost" id="btnFull" title="Tela cheia (F)" aria-label="Tela cheia">⛶</button>
+    </footer>
+
+    <div class="modal" id="pdfModal" aria-hidden="true">
+      <div class="modal-box">
+        <h3>Exportar os slides para PDF</h3>
+        <p>Vai abrir a janela de impressão do navegador. Confira estas três opções:</p>
+        <ul class="modal-list">
+          <li><b>Destino:</b> Salvar como PDF</li>
+          <li><b>Margens:</b> Nenhuma</li>
+          <li><b>Gráficos de segundo plano:</b> ativado <small>(fica em "Mais definições")</small></li>
+        </ul>
+        <p class="modal-note">Cada slide vira uma página no formato 4:3. O PDF sai sempre no tema claro.</p>
+        <div class="modal-actions">
+          <button class="btn" id="pdfCancel">Cancelar</button>
+          <button class="btn primary" id="pdfGo">Abrir impressão</button>
+        </div>
+      </div>
+    </div>
+
+    <aside class="menu" id="menu" aria-hidden="true">
+      <header>Índice da aula<button class="btn ghost" id="btnMenuClose" aria-label="Fechar">✕</button></header>
+      <nav id="menuList"></nav>
+    </aside>
+  </div>
+</div>
+
+<script src="js/highlight.js"></script>
+<script src="js/slides.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

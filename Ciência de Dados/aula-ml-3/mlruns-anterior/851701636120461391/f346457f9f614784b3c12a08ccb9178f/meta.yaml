@@ -1,0 +1,14 @@
+artifact_uri: /Users/teixeirah/work/uri/Ciência de Dados/aula-ml-3/mlruns/851701636120461391/f346457f9f614784b3c12a08ccb9178f/artifacts
+end_time: 1790742616795
+entry_point_name: ''
+experiment_id: '851701636120461391'
+lifecycle_stage: active
+run_id: f346457f9f614784b3c12a08ccb9178f
+run_name: logistica-balanceada
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1790742616783
+status: 3
+tags: []
+user_id: teixeirah

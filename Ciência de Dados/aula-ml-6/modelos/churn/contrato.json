@@ -1,0 +1,33 @@
+{
+  "run": "logistica-balanceada",
+  "corte": 0.5,
+  "colunas": [
+    "gender",
+    "SeniorCitizen",
+    "Partner",
+    "Dependents",
+    "tenure",
+    "PhoneService",
+    "MultipleLines",
+    "InternetService",
+    "OnlineSecurity",
+    "OnlineBackup",
+    "DeviceProtection",
+    "TechSupport",
+    "StreamingTV",
+    "StreamingMovies",
+    "Contract",
+    "PaperlessBilling",
+    "PaymentMethod",
+    "MonthlyCharges",
+    "TotalCharges"
+  ],
+  "metricas": {
+    "acuracia": 0.7495741056218058,
+    "precisao_sai": 0.518005540166205,
+    "recall_sai": 0.8008565310492506,
+    "f1_sai": 0.6291000841042893,
+    "alertas": 722
+  },
+  "custo": "deixar passar quem sai pesa mais do que um contato inútil"
+}

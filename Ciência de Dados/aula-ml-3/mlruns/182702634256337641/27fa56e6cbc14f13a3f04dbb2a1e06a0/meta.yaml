@@ -1,0 +1,14 @@
+artifact_uri: /Users/teixeirah/work/uri/Ciência de Dados/aula-ml-3/mlruns/182702634256337641/27fa56e6cbc14f13a3f04dbb2a1e06a0/artifacts
+end_time: 1792034175376
+entry_point_name: ''
+experiment_id: '182702634256337641'
+lifecycle_stage: active
+run_id: 27fa56e6cbc14f13a3f04dbb2a1e06a0
+run_name: naive-bayes
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1792034175372
+status: 3
+tags: []
+user_id: teixeirah

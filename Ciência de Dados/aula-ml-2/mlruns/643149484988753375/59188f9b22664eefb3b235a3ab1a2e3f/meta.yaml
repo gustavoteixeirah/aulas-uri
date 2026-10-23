@@ -1,0 +1,14 @@
+artifact_uri: /Users/teixeirah/work/uri/Ciência de Dados/aula-ml-2/mlruns/643149484988753375/59188f9b22664eefb3b235a3ab1a2e3f/artifacts
+end_time: 1791500513407
+entry_point_name: ''
+experiment_id: '643149484988753375'
+lifecycle_stage: active
+run_id: 59188f9b22664eefb3b235a3ab1a2e3f
+run_name: temperatura
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1791500510923
+status: 3
+tags: []
+user_id: teixeirah

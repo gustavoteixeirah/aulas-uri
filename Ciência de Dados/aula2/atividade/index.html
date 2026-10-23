@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atividade — ache um dataset</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+
+    <div class="deck" id="deck">
+
+      <!-- 1 — A ATIVIDADE -->
+      <section class="slide" data-title="Ache um dataset" data-block="Agora">
+        <span class="kicker">Mão na massa · agora, em sala</span>
+        <h2>Ache um dataset e repita o que fizemos</h2>
+        <div class="split tight">
+          <div>
+            <div class="steps">
+              <div class="step"><span>1</span><div>Abra <code>kaggle.com/datasets</code> e procure um assunto que <b>você</b> queira entender</div></div>
+              <div class="step"><span>2</span><div>Baixe o CSV e abra um notebook <b>na mesma pasta</b> do arquivo</div></div>
+              <div class="step"><span>3</span><div>Rode <code>read_csv</code>, <code>head</code>, <code>info</code> e <code>isna().mean()</code></div></div>
+              <div class="step"><span>4</span><div>Ache uma coluna de <b>sim/não</b> e descubra <b>quem tem mais chance</b></div></div>
+            </div>
+            <p class="cap">Abriu tudo numa coluna só? <code>sep=";"</code><br>Acento quebrado? <code>encoding="latin-1"</code></p>
+          </div>
+          <div>
+            <div class="cards c1 tight">
+              <div class="card"><b>O que precisa estar na sua tela no fim</b><small>
+                <b>1 ·</b> o <code>shape</code> — quantas linhas e colunas<br>
+                <b>2 ·</b> uma coluna com faltantes, e quantos %<br>
+                <b>3 ·</b> um <code>groupby</code> com <b>taxa e <i>n</i></b><br>
+                <b>4 ·</b> <b>um gráfico</b> — qualquer um<br>
+                <b>5 ·</b> uma frase dizendo o que você descobriu
+              </small></div>
+            </div>
+          </div>
+        </div>
+        <div class="callout key">
+          É o mesmo percurso do Titanic, no dataset que <b>você</b> escolheu.
+        </div>
+        <p class="note">Não precisa ser o dataset do projeto — mas se for, melhor: você descobre agora se gosta do assunto.</p>
+      </section>
+
+    </div><!-- /deck -->
+
+    <!-- BARRA DE CONTROLE -->
+    <footer class="bar">
+      <div class="progress"><span id="progressFill"></span></div>
+      <button class="btn ghost" id="btnMenu" title="Índice (M)" aria-label="Índice">☰</button>
+      <div class="bar-title"><span id="barBlock">Agora</span><b id="barTitle">Ache um dataset</b></div>
+      <div class="bar-nav">
+        <button class="btn" id="btnPrev" aria-label="Slide anterior">‹ Voltar</button>
+        <span class="counter"><b id="cur">1</b> / <span id="total">1</span></span>
+        <button class="btn primary" id="btnNext" aria-label="Próximo slide">Avançar ›</button>
+      </div>
+      <button class="btn ghost" id="btnPdf" title="Exportar para PDF (P)" aria-label="Exportar para PDF">PDF</button>
+      <button class="btn ghost" id="btnTheme" title="Tema claro/escuro (T)" aria-label="Alternar tema">◐</button>
+      <button class="btn ghost" id="btnFull" title="Tela cheia (F)" aria-label="Tela cheia">⛶</button>
+    </footer>
+
+    <!-- EXPORTAR PARA PDF -->
+    <div class="modal" id="pdfModal" aria-hidden="true">
+      <div class="modal-box">
+        <h3>Exportar para PDF</h3>
+        <p>Vai abrir a janela de impressão do navegador. Confira estas três opções:</p>
+        <ul class="modal-list">
+          <li><b>Destino:</b> Salvar como PDF</li>
+          <li><b>Margens:</b> Nenhuma</li>
+          <li><b>Gráficos de segundo plano:</b> ativado <small>(fica em "Mais definições")</small></li>
+        </ul>
+        <div class="modal-actions">
+          <button class="btn" id="pdfCancel">Cancelar</button>
+          <button class="btn primary" id="pdfGo">Abrir impressão</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÍNDICE -->
+    <aside class="menu" id="menu" aria-hidden="true">
+      <header>Índice<button class="btn ghost" id="btnMenuClose" aria-label="Fechar">✕</button></header>
+      <nav id="menuList"></nav>
+    </aside>
+
+  </div><!-- /stage -->
+</div>
+
+<script src="../js/slides.js"></script>
+</body>
+</html>

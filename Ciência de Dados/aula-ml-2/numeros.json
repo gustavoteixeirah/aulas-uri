@@ -1,0 +1,75 @@
+{
+  "n": 1338,
+  "describe_charges": {
+    "min": 1121.8739,
+    "mean": 13270.422265141257,
+    "50%": 9382.033,
+    "max": 63770.42801
+  },
+  "media_treino": 13215.863224207378,
+  "coef_idade_uma_variavel": 233.88136645130587,
+  "coeficientes_por_unidade": {
+    "age": 250.15212808733273,
+    "bmi": 333.2967509560433,
+    "children": 442.2137599016928,
+    "sex_male": 13.263072485097709,
+    "smoker_yes": 23656.620544841695,
+    "region_northwest": -193.1329336860535,
+    "region_southeast": -1079.8016559835087,
+    "region_southwest": -868.4437151881887
+  },
+  "media": {
+    "mae": 9360.327192975888,
+    "rmse": 12549.183150695333,
+    "r2": -0.00030161721339894143
+  },
+  "reta_idade": {
+    "mae": 9119.575392858962,
+    "rmse": 11745.119848315497,
+    "r2": 0.12377637021224352
+  },
+  "vazamento": {
+    "mae": 4012.715276853088,
+    "rmse": 5668.840025911984,
+    "r2": 0.7958786376014414
+  },
+  "pipeline_teste": {
+    "mae": 4012.715276853087,
+    "rmse": 5668.8400259119835,
+    "r2": 0.7958786376014414
+  },
+  "pipeline_treino": {
+    "mae": 4229.768539065609,
+    "rmse": 6164.499984064468,
+    "r2": 0.7340594348890694
+  },
+  "primeiras": [
+    {
+      "age": 19,
+      "sex": "female",
+      "bmi": 27.9,
+      "children": 0,
+      "smoker": "yes",
+      "region": "southwest",
+      "charges": 16884.924
+    },
+    {
+      "age": 18,
+      "sex": "male",
+      "bmi": 33.77,
+      "children": 1,
+      "smoker": "no",
+      "region": "southeast",
+      "charges": 1725.5523
+    },
+    {
+      "age": 28,
+      "sex": "male",
+      "bmi": 33.0,
+      "children": 3,
+      "smoker": "no",
+      "region": "southeast",
+      "charges": 4449.462
+    }
+  ]
+}

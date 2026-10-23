@@ -1,0 +1,23 @@
+artifact_path: "/Users/teixeirah/work/uri/Cie\u0302ncia de Dados/aula-ml-2/mlruns/672576450524177125/models/m-a30bc1138efc41fa8821c1c1ab8abdc1/artifacts"
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.skops
+    predict_fn: predict
+    python_version: 3.11.15
+  sklearn:
+    code: null
+    pickled_model: model.skops
+    serialization_format: skops
+    sklearn_version: 1.9.1
+    skops_trusted_types: null
+mlflow_version: 3.16.1
+model_id: m-a30bc1138efc41fa8821c1c1ab8abdc1
+model_size_bytes: 96477
+model_uuid: m-a30bc1138efc41fa8821c1c1ab8abdc1
+prompts: null
+run_id: b585fc329d3842ffb445c654ba4a9afc
+utc_time_created: '2026-10-06 17:49:32.293083'

@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula ML 04 — Árvores, florestas e a comparação</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .mfont{ font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif; }
+  .formula{ text-align:center; margin:.25em 0 .1em !important; }
+  .mat td{ min-width: 92px; }
+  .mat th{ font-family: var(--font); font-size: 11px; }
+  .tbl td.num, .tbl th.num{ text-align:right; font-variant-numeric: tabular-nums; }
+  .escada .deg small{ line-height:1.35; }
+  .slide .cards.c2 .card.bom{ border-top:3px solid var(--green); }
+  .slide .cards.c2 .card.ruim{ border-top:3px solid var(--amber); }
+  .slide .cards.c3 .card.destaque{ border-top:3px solid var(--accent); background: var(--panel-2); }
+  .tbl td.best{ color: var(--accent); font-weight:700; }
+  .steps + .cards, .escada + .cards, p.lead + .cards{ margin-top:10px; }
+  .fig-sm img{ max-height: 240px; }
+</style>
+</head>
+<body>
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+    <div class="deck" id="deck">
+
+      <!-- ===================== ABERTURA ===================== -->
+      <section class="slide cover" data-title="Capa" data-block="Abertura">
+        <div class="cover-tag">Programação para Ciência de Dados · 2026.1</div>
+        <h1>Árvores, florestas e a <em>comparação</em></h1>
+        <p class="cover-sub">O mesmo tipo de alvo da aula 2: um preço.<br>Mas agora a nuvem curva e as categorias se cruzam.</p>
+        <div class="cover-meta">
+          <span>Aula ML 04</span><i></i><span>22/10</span><i></i><span>53.920 diamantes</span><i></i><span>6 modelos no mesmo split</span>
+        </div>
+        <div class="cover-hint">Use <kbd>→</kbd> <kbd>←</kbd> · <kbd>M</kbd> índice · <kbd>P</kbd> PDF · <kbd>F</kbd> tela cheia</div>
+      </section>
+
+      <section class="slide" data-title="Da reta às árvores" data-block="Abertura">
+        <span class="kicker">Lembrando a aula 2</span>
+        <h2>O mesmo alvo numérico, outro comportamento</h2>
+        <div class="bigdef">
+          <span class="bd-label">Regressão com curvas e cruzamentos</span>
+          <p>Na aula 2, o custo do plano de saúde subia com a idade e o IMC quase numa linha. Hoje o alvo ainda é um valor em dinheiro (US$), mas a relação <b>não é uma reta</b>.</p>
+        </div>
+        <table class="tbl mini">
+          <thead><tr><th>aula</th><th>alvo</th><th>relação entre as variáveis</th><th>modelo principal</th></tr></thead>
+          <tbody>
+            <tr><td>Aula 2 (custos)</td><td>valor contínuo (US$)</td><td>aproximadamente linear</td><td>Regressão linear</td></tr>
+            <tr><td>Aula 3 (churn)</td><td>categoria (sai / fica)</td><td>duas classes com custos desiguais</td><td>Regressão logística & árvore</td></tr>
+            <tr class="hi"><td><b>Aula 4 (hoje)</b></td><td><b>preço (US$)</b></td><td><b>curva e categorias que se cruzam</b></td><td><b>Árvores e Floresta (Random Forest)</b></td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">A regra que fica: <b>o alvo ser um número não decide o modelo.</b> Quem decide o modelo é a <b>forma da relação</b> entre as variáveis.</div>
+      </section>
+
+      <!-- ===================== O DADO ===================== -->
+      <section class="slide" data-title="O dataset" data-nb="dados" data-block="O dataset">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">diamonds.csv · Kaggle</span>
+        <h2>53.920 pedras, uma linha por diamante</h2>
+        <p class="lead" style="margin-top:0">Cada diamante tem peso físico (quilates), qualidade visual (corte, cor, clareza) e dimensões milimétricas.</p>
+        <table class="tbl mini">
+          <thead><tr><th>coluna</th><th>o que é</th><th>valores ou escala</th><th>papel</th></tr></thead>
+          <tbody>
+            <tr><td><b>carat</b></td><td>peso em quilates (1 ct = 0,2 g)</td><td>0,20 a 5,01 ct</td><td>numérica</td></tr>
+            <tr><td><b>cut</b></td><td>qualidade do corte óptico</td><td>Fair, Good, Very Good, Premium, Ideal</td><td>categórica</td></tr>
+            <tr><td><b>color</b></td><td>grau de cor (incolor ao amarelado)</td><td>D (melhor/incolor) até J (pior)</td><td>categórica</td></tr>
+            <tr><td><b>clarity</b></td><td>pureza interna e inclusões</td><td>IF (pura), VVS, VS, SI até I1 (pior)</td><td>categórica</td></tr>
+            <tr><td><b>x, y, z</b></td><td>comprimento, largura e profundidade (mm)</td><td>dimensões tridimensionais</td><td>numéricas</td></tr>
+            <tr class="hi"><td><b>price</b></td><td>preço de venda no mercado internacional</td><td><b>US$ 326 a US$ 18.823</b></td><td><b>ALVO (y)</b></td></tr>
+          </tbody>
+        </table>
+        <div class="callout key"><b>Limpeza antes do split:</b> das 53.940 linhas brutas, <b>20 pedras</b> tinham <code>x</code>, <code>y</code> ou <code>z</code> igual a zero (erro de paquímetro/medição). Descartamos essas 20. Ficam 53.920. Split 75/25 fixo (40.440 treino / 13.480 teste).</div>
+      </section>
+
+      <section class="slide" data-title="Onde a reta quebra" data-nb="curva" data-block="O dataset">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Preço contra quilate · amostra colorida pelo corte</span>
+        <h2>A nuvem curva e as variáveis se cruzam</h2>
+        <figure class="fig">
+          <img src="img/g1-quilate.png" alt="Preço contra quilate, pontos coloridos pelo corte">
+        </figure>
+        <p class="note">O preço não sobe a passos constantes: de 0,5 para 1,0 quilate o preço dobra, mas de 1,0 para 2,0 quilates o preço dispara. Além disso, 1 quilate no corte Ideal vale muito mais que 1 quilate no corte Fair. Uma reta simples não tem como capturar isso com um único coeficiente.</p>
+      </section>
+
+      <!-- ===================== MODELO 1: RETA ===================== -->
+      <section class="slide" data-title="Regressão Linear: a ideia" data-block="1 · Reta">
+        <span class="kicker">Algoritmo 1 de 5 · A referência (baseline da aula 2)</span>
+        <h2>Regressão linear</h2>
+        <div class="bigdef">
+          <span class="bd-label">A ideia</span>
+          <p>Ajusta uma <b>combinação ponderada</b> das variáveis: cada coluna recebe uma inclinação (peso <i>w</i>) somada a um ponto de partida (intercepto <i>b</i>).</p>
+        </div>
+        <div class="cards c2">
+          <div class="card bom"><b>Quando usar</b><small>quando você precisa <b>explicar e citar coeficientes</b>: “a cada quilate adicional, o preço médio varia US$ X”.</small></div>
+          <div class="card ruim"><b>Cuidado</b><small>assume que tudo é plano e aditivo. Não enxerga que o efeito do quilate depende do corte, nem a aceleração do preço nas pedras grandes.</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Regressão Linear: a fórmula" data-block="1 · Reta">
+        <span class="kicker">A equação do hiperplano</span>
+        <h2>A fórmula da reta</h2>
+        <div class="bigdef">
+          <span class="bd-label">Previsão contínua</span>
+          <p class="formula" style="font-size:1.6em;margin:.2em 0;text-align:center;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif">
+            <math display="block" style="font-size:1.55em;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif"><mrow><mover><mi>y</mi><mo stretchy="false">^</mo></mover><mo>=</mo><msub><mi>w</mi><mn>1</mn></msub><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msub><mi>w</mi><mn>2</mn></msub><msub><mi>x</mi><mn>2</mn></msub><mo>+</mo><mo>…</mo><mo>+</mo><msub><mi>w</mi><mi>n</mi></msub><msub><mi>x</mi><mi>n</mi></msub><mo>+</mo><mi>b</mi></mrow></math>
+          </p>
+        </div>
+        <table class="tbl mini">
+          <thead><tr><th>símbolo</th><th>em palavras</th></tr></thead>
+          <tbody>
+            <tr><td><b>x<sub>i</sub></b></td><td>valor de cada coluna do diamante (após padronização numérica e one-hot)</td></tr>
+            <tr><td><b>w<sub>i</sub></b></td><td>peso (coeficiente) aprendido no treino para aquela característica</td></tr>
+            <tr><td><b>b</b></td><td>intercepto global (ponto de partida da reta: −US$ 223)</td></tr>
+            <tr><td><b>ŷ</b></td><td>preço previsto em dólares</td></tr>
+          </tbody>
+        </table>
+        <div class="callout key"><b>Métrica de teste:</b> RMSE de <b>US$ 1.142</b> (MAE 738). É a nossa barra de corte: qualquer modelo não-linear precisa ganhar dela!</div>
+      </section>
+
+      <section class="slide" data-title="Regressão Linear: Diamante 157" data-block="1 · Reta">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Diamante 157 do teste · O que a reta prevê</span>
+        <h2>Diamante 157, passo a passo</h2>
+        <div class="escada">
+          <div class="deg"><b>A pedra real</b><small>2,01 quilates · Ideal<br>Cor G · Clareza SI2<br>Real: <b>US$ 18.259</b></small></div>
+          <span class="seta">→</span>
+          <div class="deg"><b>Pesos e somas</b><small>Quilate: +US$ 13.932<br>Clareza SI2: +US$ 2.729<br>Dimensão x: −US$ 2.908</small></div>
+          <span class="seta">→</span>
+          <div class="deg"><b>Previsão reta</b><small><b>US$ 14.081</b></small></div>
+          <span class="seta">→</span>
+          <div class="deg" style="border-color:var(--amber);background:var(--amber-2)"><b>Erro da reta</b><small><b>−US$ 4.178</b></small></div>
+        </div>
+        <div class="callout key"><b>Por que a reta errou tanto?</b> Pedras raras de 2 quilates com corte Ideal sofrem uma valorização exponencial no mercado real. A reta tenta aplicar uma inclinação uniforme média e subestima o diamante em mais de US$ 4.000.</div>
+      </section>
+
+      <!-- ===================== MODELO 2: ÁRVORE ===================== -->
+      <section class="slide" data-title="Árvore de Decisão: a ideia" data-block="2 · Árvore">
+        <span class="kicker">Algoritmo 2 de 5 · Perguntas em cascata</span>
+        <h2>Árvore de decisão</h2>
+        <div class="bigdef">
+          <span class="bd-label">A ideia</span>
+          <p>Faz <b>perguntas de sim ou não</b>, uma após a outra, particionando os dados em subgrupos cada vez mais homogêneos. A resposta final é a <b>média de preço dos diamantes da folha</b>.</p>
+        </div>
+        <div class="cards c2">
+          <div class="card bom"><b>Quando usar</b><small>quando você quer <b>regras transparentes</b> que possam ser desenhadas e explicadas sem fórmulas: “se quilate > 1,0 e corte é Ideal, preço médio é X”.</small></div>
+          <div class="card ruim"><b>Cuidado</b><small>sem limite de profundidade, ela cria perguntas para cada detalhe e <b>decora o treino</b> com folhas de 1 elemento, errando grosseiramente em pedras novas.</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Árvore: a fórmula e o critério" data-block="2 · Árvore">
+        <span class="kicker">Como a árvore escolhe onde cortar</span>
+        <h2>Critério de divisão: redução do MSE</h2>
+        <div class="bigdef">
+          <span class="bd-label">1 · O erro de uma folha (variância residual)</span>
+          <p class="formula" style="font-size:1.6em;margin:.2em 0;text-align:center;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif">
+            <math display="block" style="font-size:1.55em;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif"><mrow><mi>M</mi><mi>S</mi><mi>E</mi><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><msup><mrow><mo stretchy="false">(</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><mover><mi>y</mi><mo accent="true">¯</mo></mover><mo stretchy="false">)</mo></mrow><mn>2</mn></msup></mrow></math>
+          </p>
+        </div>
+        <div class="bigdef">
+          <span class="bd-label">2 · Ganho da pergunta (redução de variância)</span>
+          <p style="text-align:center">A árvore testa todas as colunas e pontos de corte, escolhendo a pergunta que <b>mais reduz o MSE ponderado</b> entre os ramos esquerdo e direito.</p>
+        </div>
+        <div class="callout key">A primeira pergunta escolhida pelo algoritmo na raiz foi: <b>quilate &le; 1,0?</b> Ela separa de imediato as pedras populares das pedras de alto valor.</div>
+      </section>
+
+      <section class="slide" data-title="Árvore rasa: Diamante 157" data-block="2 · Árvore">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Árvore de profundidade 3 · O caminho do Diamante 157</span>
+        <h2>Diamante 157 na árvore rasa</h2>
+        <figure class="fig fig-sm">
+          <img src="img/g2-arvore.png" alt="Árvore de decisão com 3 níveis">
+        </figure>
+        <div class="steps">
+          <div class="step"><span>1</span><div><b>Nó 0:</b> Quilate &le; 1,0? <b>Não</b> (a pedra tem 2,01 ct) &rarr; vai para o nó 8 da direita.</div></div>
+          <div class="step"><span>2</span><div><b>Nó 8:</b> Dimensão y &le; 6,73 mm? <b>Não</b> (tem 8,10 mm) &rarr; vai para o nó 12.</div></div>
+          <div class="step"><span>3</span><div><b>Nó 12:</b> Dimensão y &le; 7,44 mm? <b>Não</b> &rarr; chega na <b>folha 14</b>.</div></div>
+        </div>
+        <p class="lead" style="text-align:center;margin:8px 0 0">Folha 14: <b>1.560 pedras</b> do treino &rarr; Preço médio previsto = <b>US$ 14.898</b> (erro: −US$ 3.361)</p>
+      </section>
+
+      <section class="slide" data-title="Árvore funda e o overfitting" data-block="2 · Árvore">
+        <span class="kicker">O perigo de deixar a árvore livre</span>
+        <h2>Árvore funda: memorizar não é aprender</h2>
+        <div class="cards c2">
+          <div class="card ruim">
+            <b>No Treino (40.440 pedras)</b>
+            <div style="font-size:2em;font-weight:700;color:var(--amber);margin:6px 0">RMSE US$ 9</div>
+            <small>A árvore sem limite criou folhas minúsculas e praticamente decorou o preço de cada diamante do treino.</small>
+          </div>
+          <div class="card bom">
+            <b>No Teste (13.480 pedras)</b>
+            <div style="font-size:2em;font-weight:700;color:var(--text);margin:6px 0">RMSE US$ 821</div>
+            <small>No diamante 157 ela previu US$ 18.181, mas no teste geral o erro sobe 90 vezes em relação ao treino.</small>
+          </div>
+        </div>
+        <div class="callout key"><b>Lição:</b> a árvore sozinha sofre de <b>alta variância</b> (instabilidade). É aí que surge a ideia central da aula: combinar várias árvores numa <b>Floresta</b>.</div>
+      </section>
+
+      <!-- ===================== MODELO 3: FLORESTA ===================== -->
+      <section class="slide" data-title="Random Forest: a ideia" data-block="3 · Floresta">
+        <span class="kicker">Algoritmo 3 de 5 · O comitê campeão</span>
+        <h2>Random Forest (Floresta Aleatória)</h2>
+        <div class="bigdef">
+          <span class="bd-label">A ideia</span>
+          <p>Treina um <b>conjunto de 80 árvores independentes</b>. Cada árvore vê um sorteio aleatório de diamantes (bootstrap) e sorteia um subconjunto de colunas em cada nó. A previsão final é a <b>média de todas as árvores</b>.</p>
+        </div>
+        <div class="cards c2">
+          <div class="card bom"><b>Por que funciona</b><small>cada árvore erra para um lado diferente por ver recortes diferentes. Quando tiramos a média, <b>o erro aleatório se anula</b> e sobra o padrão real.</small></div>
+          <div class="card bom"><b>Resultado</b><small>segura o treino em RMSE 367 (sem decorar como a árvore funda) e atinge o <b>menor erro de teste de todos: RMSE US$ 624</b>!</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Random Forest: a fórmula" data-block="3 · Floresta">
+        <span class="kicker">A força da média</span>
+        <h2>A fórmula da floresta</h2>
+        <div class="bigdef">
+          <span class="bd-label">Média simples dos estimadores</span>
+          <p class="formula" style="font-size:1.7em;margin:.2em 0;text-align:center;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif">
+            <math display="block" style="font-size:1.55em;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif"><mrow><mover><mi>y</mi><mo stretchy="false">^</mo></mover><mo>=</mo><mfrac><mn>1</mn><mi>B</mi></mfrac><munderover><mo>∑</mo><mrow><mi>b</mi><mo>=</mo><mn>1</mn></mrow><mi>B</mi></munderover><msub><mi>T</mi><mi>b</mi></msub><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow></math>
+          </p>
+        </div>
+        <table class="tbl mini">
+          <thead><tr><th>termo</th><th>significado</th></tr></thead>
+          <tbody>
+            <tr><td><b>B</b></td><td>número total de árvores na floresta (aqui: <b>80 árvores</b>)</td></tr>
+            <tr><td><b>T<sub>b</sub>(x)</b></td><td>preço previsto pela árvore individual <b>b</b> para o diamante <b>x</b></td></tr>
+            <tr><td><b>max_depth</b></td><td>profundidade máxima de cada árvore (aqui limitada a <b>16</b> para evitar memória excessiva)</td></tr>
+            <tr><td><b>ŷ</b></td><td>preço médio final anunciado pelo modelo</td></tr>
+          </tbody>
+        </table>
+        <div class="callout ok">Dois hiperparâmetros essenciais na prática: <code>n_estimators=80</code> e <code>max_depth=16</code>.</div>
+      </section>
+
+      <section class="slide" data-title="Random Forest: Diamante 157" data-block="3 · Floresta">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Diamante 157 do teste · O voto das 80 árvores</span>
+        <h2>Diamante 157 na floresta</h2>
+        <div class="steps">
+          <div class="step"><span>1</span><div>Cada uma das 80 árvores avalia o diamante 157 com base em suas perguntas.</div></div>
+          <div class="step"><span>2</span><div>Árvores mais conservadoras previram cerca de <b>US$ 10.972</b>; as mais otimistas chegaram a <b>US$ 18.168</b>.</div></div>
+          <div class="step"><span>3</span><div>As primeiras árvores votaram: US$ 16.151, US$ 16.430, US$ 16.705, US$ 15.780…</div></div>
+        </div>
+        <div class="escada">
+          <div class="deg"><b>Mínima</b><small>US$ 10.972</small></div>
+          <span class="seta">&le;</span>
+          <div class="deg" style="border-color:var(--accent);background:var(--accent-2)"><b>Média (Floresta)</b><small><b>US$ 16.131</b></small></div>
+          <span class="seta">&le;</span>
+          <div class="deg"><b>Máxima</b><small>US$ 18.168</small></div>
+          <span class="seta">&rarr;</span>
+          <div class="deg" style="border-color:var(--green);background:var(--green-2)"><b>Real</b><small><b>US$ 18.259</b></small></div>
+        </div>
+        <div class="callout ok">A média da floresta puxou a estimativa para <b>US$ 16.131</b>, reduzindo pela metade o erro que a reta e a árvore rasa cometeram!</div>
+      </section>
+
+      <!-- ===================== MODELO 4: GRADIENT BOOSTING ===================== -->
+      <section class="slide" data-title="Gradient Boosting: a ideia e fórmula" data-block="4 · Boosting">
+        <span class="kicker">Algoritmo 4 de 5 · Árvores em sequência</span>
+        <h2>Gradient Boosting</h2>
+        <div class="bigdef">
+          <span class="bd-label">A ideia: aprender com o erro da anterior</span>
+          <p>Em vez de árvores independentes em paralelo, o Boosting cria <b>árvores em série</b>. Cada árvore nova tenta prever exatamente o <b>resíduo (erro)</b> que as anteriores deixaram passar.</p>
+        </div>
+        <div class="bigdef">
+          <span class="bd-label">A fórmula sequencial</span>
+          <p class="formula" style="font-size:1.6em;margin:.2em 0;text-align:center;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif">
+            <math display="block" style="font-size:1.55em;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif"><mrow><msub><mi>F</mi><mi>m</mi></msub><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>=</mo><msub><mi>F</mi><mrow><mi>m</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>+</mo><mi>ν</mi><mo>·</mo><msub><mi>h</mi><mi>m</mi></msub><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow></math>
+          </p>
+        </div>
+        <p class="note"><b>h<sub>m</sub>(x)</b> = árvore treinada no resíduo · <b>&nu;</b> = taxa de aprendizado (learning rate, ex: 0,1) para dar passos curtos.</p>
+      </section>
+
+      <section class="slide" data-title="Boosting: Diamante 157" data-block="4 · Boosting">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Diamante 157 do teste · A soma sequencial</span>
+        <h2>Diamante 157 no Boosting</h2>
+        <div class="steps">
+          <div class="step"><span>1</span><div>Começa com um chute inicial base: o preço médio global de treino (US$ 3.933).</div></div>
+          <div class="step"><span>2</span><div>A árvore 1 percebe que pedras grandes foram subestimadas e soma uma correção proporcional.</div></div>
+          <div class="step"><span>3</span><div>As 80 árvores seguintes vão ajustando detalhes de corte, cor e dimensões passo a passo.</div></div>
+        </div>
+        <p class="lead" style="text-align:center;margin:12px 0 0">Previsão final após 80 árvores = <b>US$ 15.461</b> (erro: −US$ 2.798)</p>
+        <div class="callout key"><b>No teste geral:</b> RMSE de <b>US$ 891</b>. Fica entre a reta (1.142) e a floresta (624). É muito competitivo e converge com poucas árvores.</div>
+      </section>
+
+      <!-- ===================== MODELO 5: KNN ===================== -->
+      <section class="slide" data-title="KNN: a ideia e fórmula" data-block="5 · KNN">
+        <span class="kicker">Algoritmo 5 de 5 · Quem é parecido custa parecido</span>
+        <h2>KNN Regressor (k = 15)</h2>
+        <div class="bigdef">
+          <span class="bd-label">A ideia</span>
+          <p>Procura no treino os <b>15 diamantes geometricamente mais próximos</b> no espaço padronizado e calcula a <b>média de seus preços</b>.</p>
+        </div>
+        <div class="bigdef">
+          <span class="bd-label">Distância Euclidiana</span>
+          <p class="formula" style="font-size:1.6em;margin:.2em 0;text-align:center;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif">
+            <math display="block" style="font-size:1.55em;font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif"><mrow><mi>d</mi><mo stretchy="false">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false">)</mo><mo>=</mo><msqrt><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msup><mrow><mo stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>−</mo><msub><mi>y</mi><mi>i</mi></msub><mo stretchy="false">)</mo></mrow><mn>2</mn></msup></msqrt><mo>,</mo><mspace width="1em"></mspace><mover><mi>y</mi><mo stretchy="false">^</mo></mover><mo>=</mo><mfrac><mn>1</mn><mi>k</mi></mfrac><munder><mo>∑</mo><mrow><mi>j</mi><mo>∈</mo><msub><mi>V</mi><mi>k</mi></msub></mrow></munder><msub><mi>y</mi><mi>j</mi></msub></mrow></math>
+          </p>
+        </div>
+        <div class="cards c2">
+          <div class="card bom"><b>Quando cabe</b><small>quando os dados são locais e a base é pequena.</small></div>
+          <div class="card ruim"><b>Custo alto</b><small>aqui para prever 13.480 pedras de teste, precisou calcular distâncias contra 40.440 pedras a cada predição!</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="KNN: Diamante 157" data-block="5 · KNN">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Diamante 157 do teste · Os vizinhos mais próximos no treino</span>
+        <h2>Diamante 157 no KNN</h2>
+        <table class="tbl mini">
+          <thead><tr><th>vizinho</th><th class="num">distância d</th><th class="num">quilates</th><th>corte</th><th>cor</th><th>clareza</th><th class="num">preço real</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td class="num">0,357</td><td class="num">2,03</td><td>Ideal</td><td>G</td><td>SI2</td><td class="num">US$ 12.573</td></tr>
+            <tr><td>2</td><td class="num">0,362</td><td class="num">2,00</td><td>Ideal</td><td>G</td><td>SI2</td><td class="num">US$ 11.988</td></tr>
+            <tr class="hi"><td>3</td><td class="num">0,434</td><td class="num">2,03</td><td>Ideal</td><td>G</td><td>SI2</td><td class="num"><b>US$ 17.182</b></td></tr>
+            <tr class="hi"><td>4</td><td class="num">0,463</td><td class="num">2,05</td><td>Ideal</td><td>G</td><td>SI2</td><td class="num"><b>US$ 18.181</b></td></tr>
+            <tr class="hi"><td>5</td><td class="num">0,466</td><td class="num">2,05</td><td>Ideal</td><td>G</td><td>SI2</td><td class="num"><b>US$ 18.017</b></td></tr>
+          </tbody>
+        </table>
+        <p class="lead" style="text-align:center;margin:12px 0 0">Média dos 15 vizinhos = <b>US$ 15.277</b> · RMSE geral no teste = <b>US$ 896</b></p>
+      </section>
+
+      <!-- ===================== A COMPARAÇÃO ===================== -->
+      <section class="slide" data-title="A comparação geral" data-block="A escolha">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Experimento aula-ml-4-diamonds · 13.480 pedras de teste</span>
+        <h2>A tabela do MLflow</h2>
+        <table class="tbl mini">
+          <thead><tr><th>modelo</th><th class="num">RMSE Teste</th><th class="num">MAE Teste</th><th class="num">RMSE Treino</th><th>diagnóstico</th></tr></thead>
+          <tbody>
+            <tr><td>Árvore rasa (prof. 3)</td><td class="num">1.430</td><td class="num">812</td><td class="num">1.411</td><td>underfitting (perde da reta)</td></tr>
+            <tr><td>Regressão linear (reta)</td><td class="num">1.142</td><td class="num">738</td><td class="num">1.122</td><td>baseline / referência</td></tr>
+            <tr><td>KNN (k=15)</td><td class="num">896</td><td class="num">450</td><td class="num">822</td><td>caro computacionalmente</td></tr>
+            <tr><td>Gradient Boosting</td><td class="num">891</td><td class="num">461</td><td class="num">872</td><td>rápido e equilibrado</td></tr>
+            <tr><td>Árvore funda (sem teto)</td><td class="num">821</td><td class="num">384</td><td class="num"><b>9</b></td><td>overfitting severo</td></tr>
+            <tr class="hi"><td class="best">Floresta (Random Forest)</td><td class="num best">624</td><td class="num best">302</td><td class="num">367</td><td class="best"><b>CAMPEÃ ABSOLUTA</b></td></tr>
+          </tbody>
+        </table>
+        <figure class="fig fig-sm" style="margin-top:6px">
+          <img src="img/g-comparacao.png" alt="Gráfico de comparação das métricas de teste e treino">
+        </figure>
+      </section>
+
+      <section class="slide" data-title="Permutação vs Importância Interna" data-block="A escolha">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Qual variável manda no preço?</span>
+        <h2>Importância por permutação</h2>
+        <div class="cards c2">
+          <div>
+            <figure class="fig">
+              <img src="img/g3-permutacao.png" alt="Gráfico de importância por permutação">
+            </figure>
+          </div>
+          <div>
+            <div class="bigdef">
+              <span class="bd-label">O teste da verdade</span>
+              <p>Embaralha uma coluna no teste e mede quanto o RMSE piora. Se o modelo depende da coluna, o erro explode.</p>
+            </div>
+            <div class="callout key"><b>Quilate</b> piora o RMSE em <b>+US$ 3.033</b>! É a coluna soberana, seguida por <code>y</code> e <code>clarity</code>.</div>
+            <p class="note">A importância interna da árvore (Gini/MSE) favorece variáveis contínuas numéricas. A permutação mede o impacto real nas previsões.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== FECHO ===================== -->
+      <section class="slide" data-title="A regra e o caderno" data-block="Fecho">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Fechando a aula</span>
+        <h2>A regra que fica & agora no caderno</h2>
+        <div class="cards c2">
+          <div class="card bom">
+            <b>Relação curva & categorias cruzadas</b>
+            <small>Use <b>Random Forest</b> ou <b>Gradient Boosting</b>. O erro de previsão cai quase pela metade em relação à reta.</small>
+          </div>
+          <div class="card bom">
+            <b>Explicar coeficientes em relatório</b>
+            <small>Use a <b>Regressão linear</b>, sabendo exatamente o erro a mais que você aceitou tolerar pela simplicidade.</small>
+          </div>
+        </div>
+        <div class="steps" style="margin-top:12px">
+          <div class="step"><span>1</span><div>Abra o caderno <b>aula-ml-4.ipynb</b> e execute as células de treino e avaliação.</div></div>
+          <div class="step"><span>2</span><div>Abra o MLflow: <code>mlflow ui --backend-store-uri mlruns</code> e veja as 6 runs na interface.</div></div>
+          <div class="step"><span>3</span><div>Consulte a <b>apostila-aula-4.pdf</b> para acompanhar a matemática e o diamante 157.</div></div>
+        </div>
+      </section>
+
+    </div>
+    <footer class="bar">
+      <div class="progress"><span id="progressFill"></span></div>
+      <button class="btn ghost" id="btnMenu" title="Índice (M)" aria-label="Índice">☰</button>
+      <div class="bar-title"><span id="barBlock">Abertura</span><b id="barTitle">Capa</b></div>
+      <div class="bar-nav">
+        <button class="btn" id="btnPrev" aria-label="Slide anterior">‹ Voltar</button>
+        <span class="counter"><b id="cur">1</b> / <span id="total">1</span></span>
+        <button class="btn primary" id="btnNext" aria-label="Próximo slide">Avançar ›</button>
+      </div>
+      <button class="btn ghost" id="btnPdf" title="PDF (P)" aria-label="PDF">PDF</button>
+      <button class="btn ghost" id="btnTheme" title="Tema (T)" aria-label="Tema">◐</button>
+      <button class="btn ghost" id="btnFull" title="Tela cheia (F)" aria-label="Tela cheia">⛶</button>
+    </footer>
+    <div class="modal" id="pdfModal" aria-hidden="true">
+      <div class="modal-box">
+        <h3>Exportar os slides para PDF</h3>
+        <p>Destino: Salvar como PDF. Margens: nenhuma. Gráficos de segundo plano: ativado.</p>
+        <div class="modal-actions">
+          <button class="btn" id="pdfCancel">Cancelar</button>
+          <button class="btn primary" id="pdfGo">Abrir impressão</button>
+        </div>
+      </div>
+    </div>
+    <aside class="menu" id="menu" aria-hidden="true">
+      <header>Índice da aula<button class="btn ghost" id="btnMenuClose" aria-label="Fechar">✕</button></header>
+      <nav id="menuList"></nav>
+    </aside>
+  </div>
+</div>
+<script src="js/highlight.js"></script>
+<script src="js/slides.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

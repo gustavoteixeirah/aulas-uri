@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula ML 02 — Regressão linear</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+    <div class="deck" id="deck">
+
+      <section class="slide" data-title="Regressão linear" data-block="Regressão linear">
+        <h2>Regressão linear</h2>
+        <p>A regressão linear prevê um número.</p>
+        <p>A previsão é uma soma: um valor fixo, mais um acréscimo para cada entrada.</p>
+        <p>Treinar é calcular esses valores com os exemplos que já aconteceram.</p>
+      </section>
+
+      <section class="slide" data-title="A conta" data-block="Regressão linear">
+        <h2>A conta</h2>
+        <div class="bigdef">
+          <span class="bd-label">previsão</span>
+          <p>b0 + b1 × x1 + b2 × x2 + …</p>
+        </div>
+        <table class="tbl">
+          <thead><tr><th></th><th>o que é</th></tr></thead>
+          <tbody>
+            <tr><td>b0</td><td>valor fixo</td></tr>
+            <tr><td>b1</td><td>acréscimo na previsão quando x1 aumenta 1</td></tr>
+            <tr><td>b2</td><td>acréscimo na previsão quando x2 aumenta 1</td></tr>
+          </tbody>
+        </table>
+        <p class="note">Quando um coeficiente é lido, as outras entradas ficam no mesmo valor.</p>
+      </section>
+
+      <section class="slide" data-title="Casos de uso" data-block="Regressão linear">
+        <h2>Casos de uso</h2>
+        <div class="cards c2">
+          <div class="card"><b>Preço</b><small>apartamento, carro, produto.</small></div>
+          <div class="card"><b>Consumo</b><small>energia, água, combustível.</small></div>
+          <div class="card"><b>Demanda</b><small>vendas do dia, pedidos da semana.</small></div>
+          <div class="card"><b>Tempo e custo</b><small>duração de uma entrega, custo de um serviço.</small></div>
+        </div>
+        <p class="note">O alvo é um número. A entrada pode ser um número ou um sim/não.</p>
+      </section>
+
+      <section class="slide" data-title="Quando serve" data-block="Regressão linear">
+        <h2>Quando serve</h2>
+        <p>A relação entre a entrada e o alvo é próxima de uma reta.</p>
+        <p>O efeito de cada entrada cabe numa frase, na unidade do alvo.</p>
+        <p>As entradas são poucas.</p>
+      </section>
+
+      <section class="slide" data-title="Quando não serve" data-block="Regressão linear">
+        <h2>Quando não serve</h2>
+        <p>O alvo é uma categoria: sim ou não, tipo, espécie.</p>
+        <p>A relação é uma curva.</p>
+        <p>Duas entradas juntas mudam o efeito uma da outra.</p>
+      </section>
+
+      <section class="slide" data-title="Características" data-block="Regressão linear">
+        <h2>Características</h2>
+        <div class="cards c2">
+          <div class="card"><b>Coeficiente legível</b><small>sai na unidade do alvo. Um a mais na entrada, tanto a mais na previsão.</small></div>
+          <div class="card"><b>Treino rápido</b><small>a conta fecha direto, sem busca por tentativa.</small></div>
+          <div class="card"><b>Prevê e explica</b><small>a mesma fórmula dá o número e o efeito de cada entrada.</small></div>
+          <div class="card"><b>Reta só</b><small>sozinha, não representa curva nem combinação entre entradas.</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="MAE" data-block="Métricas">
+        <h2>MAE</h2>
+        <p>Erro de um caso = previsto − real. O MAE é a média desses erros, sem o sinal.</p>
+        <table class="tbl mini">
+          <thead><tr><th></th><th>previsto</th><th>real</th><th>entra na média</th></tr></thead>
+          <tbody>
+            <tr><td>caso A</td><td>30</td><td>25</td><td>5</td></tr>
+            <tr><td>caso B</td><td>22</td><td>30</td><td>8</td></tr>
+          </tbody>
+        </table>
+        <p class="note">MAE = (5 + 8) / 2 = 6,5. Usa quando cada unidade de erro pesa igual. A unidade é a do alvo.</p>
+      </section>
+
+      <section class="slide" data-title="RMSE" data-block="Métricas">
+        <h2>RMSE</h2>
+        <p>Usa os mesmos erros. Eleva cada um ao quadrado, tira a média e depois a raiz.</p>
+        <p>Um erro grande pesa mais do que vários erros pequenos.</p>
+        <p>Usa quando um erro grande custa mais do que vários erros pequenos. A unidade também é a do alvo.</p>
+      </section>
+
+      <section class="slide" data-title="Boa ou ruim" data-block="Métricas">
+        <h2>Boa ou ruim</h2>
+        <p>MAE e RMSE não têm um corte fixo. Menor é melhor.</p>
+        <p>A comparação é prever todo caso com a média do alvo. Se o modelo não errar menos que isso, a métrica está ruim.</p>
+        <p>O número se lê no tamanho do alvo. MAE 6,5 com valores perto de 30 é um erro grande. O mesmo 6,5 com valores perto de 10.000 é um erro pequeno.</p>
+      </section>
+
+    </div>
+    <footer class="bar">
+      <div class="progress"><span id="progressFill"></span></div>
+      <button class="btn ghost" id="btnMenu" title="Índice (M)" aria-label="Índice">☰</button>
+      <div class="bar-title"><span id="barBlock">Abertura</span><b id="barTitle">Capa</b></div>
+      <div class="bar-nav">
+        <button class="btn" id="btnPrev" aria-label="Slide anterior">‹ Voltar</button>
+        <span class="counter"><b id="cur">1</b> / <span id="total">1</span></span>
+        <button class="btn primary" id="btnNext" aria-label="Próximo slide">Avançar ›</button>
+      </div>
+      <button class="btn ghost" id="btnPdf" title="PDF (P)" aria-label="PDF">PDF</button>
+      <button class="btn ghost" id="btnTheme" title="Tema (T)" aria-label="Tema">◐</button>
+      <button class="btn ghost" id="btnFull" title="Tela cheia (F)" aria-label="Tela cheia">⛶</button>
+    </footer>
+    <div class="modal" id="pdfModal" aria-hidden="true">
+      <div class="modal-box">
+        <h3>Exportar os slides para PDF</h3>
+        <p>Destino: Salvar como PDF. Margens: nenhuma. Gráficos de segundo plano: ativado.</p>
+        <div class="modal-actions">
+          <button class="btn" id="pdfCancel">Cancelar</button>
+          <button class="btn primary" id="pdfGo">Abrir impressão</button>
+        </div>
+      </div>
+    </div>
+    <aside class="menu" id="menu" aria-hidden="true">
+      <header>Índice da aula<button class="btn ghost" id="btnMenuClose" aria-label="Fechar">✕</button></header>
+      <nav id="menuList"></nav>
+    </aside>
+  </div>
+</div>
+<script src="js/highlight.js"></script>
+<script src="js/slides.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

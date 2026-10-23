@@ -1,0 +1,65 @@
+{
+  "n": 200,
+  "inercias": [
+    400.0,
+    269.3,
+    157.7,
+    108.9,
+    65.6,
+    55.1,
+    44.9,
+    37.1,
+    32.3,
+    29.2
+  ],
+  "quedas": [
+    130.7,
+    111.6,
+    48.8,
+    43.4,
+    10.5,
+    10.2,
+    7.8,
+    4.8,
+    3.2
+  ],
+  "k": 5,
+  "grupos": [
+    {
+      "grupo": 0,
+      "renda": 55.3,
+      "score": 49.5,
+      "frase": "o meio da tabela",
+      "n": 81
+    },
+    {
+      "grupo": 1,
+      "renda": 86.5,
+      "score": 82.1,
+      "frase": "renda alta e score alto",
+      "n": 39
+    },
+    {
+      "grupo": 2,
+      "renda": 88.2,
+      "score": 17.1,
+      "frase": "renda alta e score baixo",
+      "n": 35
+    },
+    {
+      "grupo": 3,
+      "renda": 26.3,
+      "score": 20.9,
+      "frase": "renda baixa e score baixo",
+      "n": 23
+    },
+    {
+      "grupo": 4,
+      "renda": 25.7,
+      "score": 79.4,
+      "frase": "renda baixa e score alto",
+      "n": 22
+    }
+  ],
+  "drift_deslocamento": 25
+}

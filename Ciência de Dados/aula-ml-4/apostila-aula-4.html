@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Aula ML 04 · Árvores, florestas e a comparação · Apostila</title>
+<style>
+@page { size: A4; margin: 18mm 18mm 18mm 18mm;
+  @top-right { content: "Aula ML 04 · Árvores, florestas e a comparação"; font: 8pt -apple-system, "Helvetica Neue", Arial, sans-serif; color: #888; }
+  @bottom-center { content: counter(page) " / " counter(pages); font: 8.5pt -apple-system, "Helvetica Neue", Arial, sans-serif; color: #888; }
+}
+@page :first { @top-right { content: none; } }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; font-size: 10pt; line-height: 1.4; color: #1d1f24; margin: 0; }
+h1 { font-size: 21pt; margin: 0 0 4px; letter-spacing: -.3px; }
+h1 span { color: #5b5bd6; }
+.sub { color: #555; margin: 0 0 8px; font-size: 10.5pt; }
+.meta { font-size: 8.5pt; color: #777; letter-spacing: .6px; text-transform: uppercase; margin-bottom: 6px; }
+h2 { font-size: 15pt; margin: 16px 0 6px; padding-bottom: 5px; border-bottom: 2px solid #5b5bd6; break-after: avoid; }
+h2 .n { color: #5b5bd6; margin-right: 6px; }
+h3 { font-size: 11pt; margin: 9px 0 3px; color: #333; break-after: avoid; }
+section.pg { break-before: page; }
+p { margin: 0 0 6px; }
+ul, ol { margin: 0 0 8px; padding-left: 20px; }
+li { margin-bottom: 3px; }
+table { border-collapse: collapse; width: 100%; margin: 4px 0 8px; font-size: 9.2pt; break-inside: avoid; }
+th { text-align: left; font-size: 7.6pt; text-transform: uppercase; letter-spacing: .5px; color: #666; border-bottom: 1.5px solid #ccc; padding: 4px 6px; }
+td { border-bottom: 1px solid #e6e6ea; padding: 3px 6px; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr.hi td { background: #eeeefc; font-weight: 600; }
+td.best { font-weight: 700; color: #3a3ab0; }
+.box { border-left: 4px solid #5b5bd6; background: #f4f4fb; padding: 6px 11px; margin: 6px 0 7px; border-radius: 0 6px 6px 0; break-inside: avoid; }
+.box.ok { border-color: #2f9e67; background: #eef8f2; }
+.box.warn { border-color: #d99a1c; background: #fdf6e7; }
+.box b.t { display: block; font-size: 8pt; text-transform: uppercase; letter-spacing: .6px; color: #666; margin-bottom: 2px; }
+.quote { font-style: italic; border-left: 3px solid #bbb; padding: 4px 12px; color: #333; margin: 6px 0 10px; }
+.formula { background: #fafafd; border: 1px solid #e3e3ee; border-radius: 6px; padding: 5px 12px 3px; margin: 5px 0; break-inside: avoid; }
+.formula .lbl { font-size: 8pt; text-transform: uppercase; letter-spacing: .6px; color: #777; }
+math[display="block"] { font-size: 1.35em; margin: 2px 0; }
+math { font-family: 'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 6px 0; break-inside: avoid; }
+.two .box { margin: 0; }
+.steps { counter-reset: s; list-style: none; padding: 0; margin: 4px 0 8px; }
+.steps li { counter-increment: s; position: relative; padding: 2px 0 2px 28px; }
+.steps li::before { content: counter(s); position: absolute; left: 0; top: 2px; width: 19px; height: 19px; border-radius: 50%; background: #5b5bd6; color: #fff; font-size: 9pt; text-align: center; line-height: 19px; font-weight: 700; }
+code, .cmd { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 9pt; background: #f1f1f4; padding: 1px 4px; border-radius: 3px; }
+pre.cmd { display: block; padding: 8px 10px; white-space: pre-wrap; margin: 6px 0 10px; }
+img.fig { width: 92%; display:block; margin: 6px auto; border: 1px solid #eee; border-radius: 4px; }
+.cap { font-size: 8.8pt; color: #666; margin-bottom: 8px; text-align: center; }
+.small { font-size: 9pt; color: #555; }
+a { color: #3a3ab0; text-decoration: underline; word-break: break-all; }
+</style>
+</head>
+<body>
+
+<div class="meta">Programação para Ciência de Dados · 2026.1 · Aula ML 04 · 22/10</div>
+<h1>Árvores, florestas e a <span>comparação</span></h1>
+<p class="sub">Apostila de acompanhamento: prever o preço de diamantes quando a relação deixa de ser uma reta e as categorias se cruzam.</p>
+<p class="small">Como ler: siga na ordem. Para cada algoritmo você verá a ideia intuitiva, a fórmula matemática, o código conceitual e o rastreamento passo a passo do <b>Diamante 157 do teste</b>. Todos os números vêm do caderno <code>aula-ml-4.ipynb</code>.</p>
+
+<h2><span class="n">1</span>O problema: quando a reta quebra</h2>
+<p>Na <b>aula 2</b>, previmos o custo de um plano de saúde usando <b>regressão linear</b>: a resposta era um número contínuo e cada variável somava um valor proporcional ao resultado. Hoje o objetivo continua sendo prever uma grandeza contínua em dólares (o preço de um diamante), mas o comportamento da realidade é completamente diferente:</p>
+<ul>
+  <li><b>Curvatura não-linear:</b> o preço não cresce a passos iguais conforme o peso (quilate) sobe. De 0,5 ct para 1,0 ct o preço dobra; de 1,0 ct para 2,0 ct o preço quadruplica ou dispara.</li>
+  <li><b>Cruzamento de variáveis (interação):</b> um quilate adicional em uma pedra com corte <i>Ideal</i> vale muito mais no mercado do que em uma pedra com corte <i>Fair</i>. Uma reta tradicional não enxerga essa interação sem termos manuais de multiplicação cruzada.</li>
+</ul>
+
+<div class="box">
+  <b class="t">A regra pedagógica</b>
+  O alvo ser um número contínuo não decide o algoritmo. Quem decide o algoritmo é a <b>forma da relação</b> entre as variáveis e o alvo.
+</div>
+
+<h3>O Dataset: Diamonds (Kaggle)</h3>
+<p>Utilizamos a base internacional com <b>53.920 diamantes</b> (após descartar 20 linhas que apresentavam <code>x</code>, <code>y</code> ou <code>z</code> iguais a zero por falha de registro dos instrumentos). Os dados são divididos em <b>75% para treino (40.440 pedras)</b> e <b>25% para teste (13.480 pedras)</b> com <code>random_state=0</code>.</p>
+
+<table>
+  <thead><tr><th>Coluna</th><th>O que representa</th><th>Tipo</th><th>Valores / Escala</th></tr></thead>
+  <tbody>
+    <tr><td><b>carat</b></td><td>Peso físico da gema em quilates (1 ct = 0,2 gramas)</td><td>Numérica</td><td>0,20 a 5,01 ct</td></tr>
+    <tr><td><b>cut</b></td><td>Qualidade do corte e lapidação óptica</td><td>Categórica</td><td>Fair, Good, Very Good, Premium, Ideal</td></tr>
+    <tr><td><b>color</b></td><td>Cor da gema (da ausência à tonalidade amarelada)</td><td>Categórica</td><td>D (melhor, incolor) a J (mais amarelado)</td></tr>
+    <tr><td><b>clarity</b></td><td>Pureza óptica e ausência de inclusões microscópicas</td><td>Categórica</td><td>IF (pura), VVS1, VVS2, VS1, VS2, SI1, SI2, I1</td></tr>
+    <tr><td><b>x, y, z</b></td><td>Comprimento, largura e profundidade em milímetros</td><td>Numéricas</td><td>Dimensões tridimensionais (mm)</td></tr>
+    <tr><td><b>depth, table</b></td><td>Percentual de profundidade total e largura da mesa</td><td>Numéricas</td><td>Proporções geométricas percentuais</td></tr>
+    <tr class="hi"><td><b>price</b></td><td>Preço final de venda no atacado internacional</td><td><b>Alvo (y)</b></td><td><b>US$ 326 a US$ 18.823</b></td></tr>
+  </tbody>
+</table>
+
+<h2><span class="n">2</span>Regressão Linear (A Reta de Referência)</h2>
+<p>É o nosso <i>baseline</i> obrigatório. Ajusta um hiperplano que busca minimizar a soma dos quadrados dos erros (Mínimos Quadrados Ordinários):</p>
+
+<div class="formula">
+  <span class="lbl">Equação da Regressão Linear</span>
+  <math display="block"><mrow><mover><mi>y</mi><mo stretchy="false">^</mo></mover><mo>=</mo><msub><mi>w</mi><mn>1</mn></msub><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msub><mi>w</mi><mn>2</mn></msub><msub><mi>x</mi><mn>2</mn></msub><mo>+</mo><mo>…</mo><mo>+</mo><msub><mi>w</mi><mi>n</mi></msub><msub><mi>x</mi><mi>n</mi></msub><mo>+</mo><mi>b</mi></mrow></math>
+</div>
+
+<div class="two">
+  <div class="box ok">
+    <b class="t">Vantagens</b>
+    Fácil de explicar em relatórios e auditorias. Cada peso <code>w</code> tem interpretação direta em unidades de preço.
+  </div>
+  <div class="box warn">
+    <b class="t">Limitações</b>
+    Não modela curvaturas nem interações. Assume que cada feature atua de forma independente e linear.
+  </div>
+</div>
+
+<div class="box">
+  <b class="t">Diamante 157 na Reta</b>
+  Pedra de <b>2,01 quilates, corte Ideal, cor G, clareza SI2</b>. Preço real no mercado: <b>US$ 18.259</b>.<br>
+  A reta calcula a soma ponderada dos atributos padronizados e prevê <b>US$ 14.081</b>. Ela comete um <b>erro brutal de −US$ 4.178</b> porque sua inclinação constante é incapaz de acompanhar o salto exponencial das pedras acima de 2 quilates. No teste geral, a reta fecha com <b>RMSE de US$ 1.142</b>.
+</div>
+
+<h2><span class="n">3</span>Árvore de Decisão: Perguntas e Folhas</h2>
+<p>Em vez de somar termos contínuos, a árvore particiona o espaço de dados através de sucessivas perguntas de <i>sim</i> ou <i>não</i>. Para cada divisão, ela busca o atributo e o ponto de corte que provocam a maior <b>redução de variância residual (MSE)</b>:</p>
+
+<div class="formula">
+  <span class="lbl">Critério de Divisão na Regressão (MSE)</span>
+  <math display="block"><mrow><mi>M</mi><mi>S</mi><mi>E</mi><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><msup><mrow><mo stretchy="false">(</mo><msub><mi>y</mi><mi>i</mi></msub><mo>−</mo><mover><mi>y</mi><mo accent="true">¯</mo></mover><mo stretchy="false">)</mo></mrow><mn>2</mn></msup><mo>,</mo><mspace width="1.2em"></mspace><mi>Ganho</mi><mo>=</mo><mi>M</mi><mi>S</mi><msub><mi>E</mi><mi>pai</mi></msub><mo>−</mo><mrow><mo>(</mo><mfrac><msub><mi>N</mi><mi>E</mi></msub><mi>N</mi></mfrac><mi>M</mi><mi>S</mi><msub><mi>E</mi><mi>E</mi></msub><mo>+</mo><mfrac><msub><mi>N</mi><mi>D</mi></msub><mi>N</mi></mfrac><mi>M</mi><mi>S</mi><msub><mi>E</mi><mi>D</mi></msub><mo>)</mo></mrow></mrow></math>
+</div>
+
+<p>A primeira pergunta formulada na raiz foi: <b>quilate &le; 1,0?</b> Ao chegar na folha, a predição é simplesmente a <b>média aritmética dos diamantes de treino</b> que caíram naquele nó.</p>
+
+<div class="box">
+  <b class="t">Diamante 157 na Árvore Rasa (profundidade 3)</b>
+  <ol class="steps">
+    <li><b>Nó 0 (Raiz):</b> Quilate &le; 1,0? <i>Não</i> (tem 2,01 ct) &rarr; vai para o ramo direito.</li>
+    <li><b>Nó 8:</b> Largura <code>y</code> &le; 6,73 mm? <i>Não</i> (tem 8,10 mm) &rarr; vai para a direita.</li>
+    <li><b>Nó 12:</b> Largura <code>y</code> &le; 7,44 mm? <i>Não</i> &rarr; cai na <b>folha 14</b>.</li>
+  </ol>
+  A folha 14 reúne 1.560 pedras grandes do treino. O preço médio é <b>US$ 14.898</b> (erro de −US$ 3.361). A árvore rasa ainda é grosseira (RMSE teste de 1.430, pior que a reta).
+</div>
+
+<h3>O Perigo do Overfitting: A Árvore Funda</h3>
+<p>Se removermos o teto de profundidade (<code>max_depth=None</code>), a árvore cresce até ter folhas com apenas 1 ou 2 diamantes. O resultado é dramático:</p>
+<ul>
+  <li><b>No Treino:</b> RMSE cai para <b>US$ 9</b> (ela decorou os dados de treino!).</li>
+  <li><b>No Teste:</b> RMSE fica em <b>US$ 821</b>. Uma perda de generalização de quase 90 vezes.</li>
+</ul>
+
+<h2><span class="n">4</span>Random Forest: O Comitê de Árvores</h2>
+<p>Uma árvore sozinha tem alta variância e sofre de instabilidade. A <b>Floresta Aleatória (Random Forest)</b> resolve isso através do princípio do <i>Bagging</i> (Bootstrap Aggregating) combinado com subamostragem aleatória de variáveis:</p>
+<ol>
+  <li>Gera <b>80 réplicas do treino</b> por amostragem aleatória com reposição (bootstrap).</li>
+  <li>Treina uma árvore em cada réplica. Em cada divisão de cada nó, apenas um subconjunto aleatório de features é considerado.</li>
+  <li>A previsão final para qualquer diamante novo é a <b>média aritmética simples</b> das 80 árvores:</li>
+</ol>
+
+<div class="formula">
+  <span class="lbl">Previsão por Comitê (Ensemble)</span>
+  <math display="block"><mrow><mover><mi>y</mi><mo stretchy="false">^</mo></mover><mo>=</mo><mfrac><mn>1</mn><mi>B</mi></mfrac><munderover><mo>∑</mo><mrow><mi>b</mi><mo>=</mo><mn>1</mn></mrow><mi>B</mi></munderover><msub><mi>T</mi><mi>b</mi></msub><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow></math>
+</div>
+
+<div class="box ok">
+  <b class="t">Diamante 157 na Floresta (80 árvores)</b>
+  Cada árvore votou de forma independente. As árvores mais cautelosas previram cerca de US$ 10.972; as mais generosas chegaram a US$ 18.168. A média das 80 estimativas convergiu para <b>US$ 16.131</b> (reduzindo pela metade o erro das árvores individuais).<br>
+  No teste geral, a Floresta foi a <b>campeã absoluta com RMSE de US$ 624</b> e MAE de US$ 302.
+</div>
+
+<h2><span class="n">5</span>Gradient Boosting: Aprendendo com o Erro</h2>
+<p>Diferente da floresta, onde as árvores operam em paralelo e de forma independente, o <b>Gradient Boosting</b> constrói árvores <b>em sequência</b>. Cada nova árvore é treinada para prever o <b>resíduo (o erro)</b> cometido pela soma das árvores anteriores:</p>
+
+<div class="formula">
+  <span class="lbl">Atualização Sequencial com Taxa de Aprendizado</span>
+  <math display="block"><mrow><msub><mi>F</mi><mn>0</mn></msub><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>=</mo><mover><mi>y</mi><mo accent="true">¯</mo></mover><mo>,</mo><mspace width="1.2em"></mspace><msub><mi>F</mi><mi>m</mi></msub><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>=</mo><msub><mi>F</mi><mrow><mi>m</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>+</mo><mi>ν</mi><mo>·</mo><msub><mi>h</mi><mi>m</mi></msub><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></mrow></math>
+</div>
+
+<p>Onde <code>h<sub>m</sub>(x)</code> é uma árvore rasa ajustada sobre os erros <code>r<sub>i</sub> = y<sub>i</sub> − F<sub>m−1</sub>(x<sub>i</sub>)</code> e <code>&nu;</code> é a taxa de encolhimento (<i>learning rate</i>). No Diamante 157, o modelo começou na média de US$ 3.933 e, após 80 correções, atingiu <b>US$ 15.461</b>. No teste geral, atingiu <b>RMSE de US$ 891</b>.</p>
+
+<h2><span class="n">6</span>KNN Regressor: A Média dos Vizinhos</h2>
+<p>O KNN (<i>k-Nearest Neighbors</i>) opera por similaridade geométrica pura. Ele não constrói fórmulas nem divide nós: calcula a distância euclidiana entre o diamante novo e cada um dos 40.440 diamantes do treino, selecionando os <b>k = 15 mais próximos</b>:</p>
+
+<div class="formula">
+  <span class="lbl">Distância Euclidiana e Média Local</span>
+  <math display="block"><mrow><mi>d</mi><mo stretchy="false">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false">)</mo><mo>=</mo><msqrt><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msup><mrow><mo stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>−</mo><msub><mi>y</mi><mi>i</mi></msub><mo stretchy="false">)</mo></mrow><mn>2</mn></msup></msqrt><mo>,</mo><mspace width="1.2em"></mspace><mover><mi>y</mi><mo stretchy="false">^</mo></mover><mo>=</mo><mfrac><mn>1</mn><mi>k</mi></mfrac><munder><mo>∑</mo><mrow><mi>j</mi><mo>∈</mo><msub><mi>V</mi><mi>k</mi></msub></mrow></munder><msub><mi>y</mi><mi>j</mi></msub></mrow></math>
+</div>
+
+<div class="box">
+  <b class="t">Diamante 157 no KNN</b>
+  O KNN encontrou pedras quase idênticas no treino (todas com corte Ideal, cor G, clareza SI2 e peso entre 2,00 ct e 2,05 ct). A média dos 15 vizinhos foi de <b>US$ 15.277</b>. No teste, o KNN atingiu <b>RMSE de US$ 896</b>. Porém, seu custo computacional de predição é altíssimo em relação aos modelos de árvores.
+</div>
+
+<h2><span class="n">7</span>A Comparação Geral no MLflow</h2>
+<p>Todos os modelos foram avaliados exatamente nas <b>mesmas 13.480 pedras de teste</b>. Os resultados obtidos foram registrados no MLflow (experimento <code>aula-ml-4-diamonds</code>):</p>
+
+<table>
+  <thead><tr><th>Modelo</th><th>Parâmetros Principais</th><th class="num">RMSE Teste</th><th class="num">MAE Teste</th><th class="num">RMSE Treino</th><th>Diagnóstico</th></tr></thead>
+  <tbody>
+    <tr><td>Árvore rasa</td><td><code>max_depth=3</code></td><td class="num">1.430</td><td class="num">812</td><td class="num">1.411</td><td>Underfitting (perde da reta)</td></tr>
+    <tr><td>Regressão linear</td><td>Padrão (sem teto)</td><td class="num">1.142</td><td class="num">738</td><td class="num">1.122</td><td>Baseline de referência linear</td></tr>
+    <tr><td>KNN</td><td><code>n_neighbors=15</code></td><td class="num">896</td><td class="num">450</td><td class="num">822</td><td>Pesado para produção</td></tr>
+    <tr><td>Gradient Boosting</td><td><code>n_estimators=80, depth=3</code></td><td class="num">891</td><td class="num">461</td><td class="num">872</td><td>Competitivo e compacto</td></tr>
+    <tr><td>Árvore funda</td><td><code>max_depth=None</code></td><td class="num">821</td><td class="num">384</td><td class="num"><b>9</b></td><td>Overfitting extremo</td></tr>
+    <tr class="hi"><td class="best">Random Forest</td><td><code>n_estimators=80, depth=16</code></td><td class="num best">624</td><td class="num best">302</td><td class="num">367</td><td class="best"><b>Campeã (menor erro geral)</b></td></tr>
+  </tbody>
+</table>
+
+<img src="img/g-comparacao.png" class="fig" alt="Comparação de RMSE de teste e treino">
+<div class="cap">Figura 1: Comparativo de erro no teste (esquerda) e o abismo de overfitting da árvore funda no treino (direita).</div>
+
+<h3>Importância por Permutação: O Teste da Verdade</h3>
+<p>A métrica nativa da árvore (<code>feature_importances_</code>) infla o peso de colunas numéricas contínuas com muitas quebras possíveis. A <b>importância por permutação</b> é muito mais honesta: ela embaralha aleatoriamente os valores de uma coluna no conjunto de teste e afere quanto o RMSE piora.</p>
+<ul>
+  <li><b>Quilate (carat):</b> embaralhar essa coluna piora o RMSE em estarrecedores <b>+US$ 3.033</b>! É a coluna decisiva.</li>
+  <li><b>Dimensão y e clareza:</b> causam piora de <b>+US$ 1.956</b> e <b>+US$ 1.041</b> respectivamente.</li>
+  <li><b>Corte e profundidade:</b> causam impacto residual menor que US$ 35 quando peso e pureza já são conhecidos.</li>
+</ul>
+
+<h2><span class="n">8</span>Como Rodar o Caderno e o MLflow</h2>
+<p>Para reproduzir todas as figuras, runs e tabelas no seu computador:</p>
+
+<pre class="cmd">
+# 1. Ativar o ambiente e executar o script de geração das saídas
+python saidas.py
+
+# 2. Iniciar o servidor visual do MLflow para auditar os experimentos
+MLFLOW_ALLOW_FILE_STORE=true mlflow ui --backend-store-uri mlruns
+</pre>
+
+<p>Abra o navegador em <code>http://127.0.0.1:5000</code>. Você verá as 6 runs registradas no experimento <code>aula-ml-4-diamonds</code> com suas respectivas métricas e parâmetros.</p>
+
+<div class="box ok">
+  <b class="t">Resumo Final da Aula</b>
+  <ul>
+    <li>Quando o objetivo for <b>minimizar o erro de previsão</b> em problemas tabulares com curvas e interações cruzadas: use <b>Random Forest</b> (ou Gradient Boosting).</li>
+    <li>Quando o objetivo for <b>justificar e publicar os pesos individuais de cada fator</b> com total transparência: use a <b>Regressão linear</b>, estando consciente do erro que deixa na mesa.</li>
+  </ul>
+</div>
+
+</body>
+</html>

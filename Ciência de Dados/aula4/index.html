@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 04 — Pandas</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+
+    <div class="deck" id="deck">
+
+      <!-- ======================= ABERTURA ======================= -->
+      <section class="slide cover" data-title="Capa" data-block="Abertura">
+        <div class="cover-tag">Programação para Ciência de Dados · 2026.1</div>
+        <h1><em>Pandas</em></h1>
+        <p class="cover-sub">A tabela inteira, com nome nas colunas<br>— 6.433 corridas de táxi de Nova York</p>
+        <div class="cover-meta">
+          <span>Aula 04</span><i></i><span>Python</span>
+        </div>
+        <div class="cover-hint">Use <kbd>→</kbd> <kbd>←</kbd> ou os botões abaixo · <kbd>M</kbd> índice · <kbd>P</kbd> PDF · <kbd>F</kbd> tela cheia</div>
+      </section>
+
+      <section class="slide" data-title="O que é" data-block="O que é">
+        <span class="kicker">Em uma frase</span>
+        <h2>O que é</h2>
+        <div class="bigdef">
+          <span class="bd-label">Pandas</span>
+          <p>É a <b>planilha inteira</b> dentro do Python: número, texto e data na mesma tabela.</p>
+        </div>
+        <div class="cards c2">
+          <div class="card"><b>Uma tabela só</b><small>as colunas andam juntas — filtrar uma arrasta a linha inteira</small></div>
+          <div class="card"><b>Nome, não posição</b><small>você escreve <code>df["fare"]</code>, e não a coluna número cinco</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Para que serve" data-block="O que é">
+        <span class="kicker">Três coisas</span>
+        <h2>Para que serve</h2>
+        <pre class="code sm"><code data-lang="python">import pandas as pd
+
+df = pd.read_csv("dados/taxis.csv")    # df = a tabela</code></pre>
+        <div class="cards c3 code-cards">
+          <div class="card">
+            <span class="ico">📂</span><b>Ler</b>
+            <small>CSV, Excel, banco de dados</small>
+            <pre class="code"><code data-lang="python">pd.read_csv(...)</code></pre>
+          </div>
+          <div class="card">
+            <span class="ico">🔍</span><b>Olhar</b>
+            <small>o resumo da tabela inteira</small>
+            <pre class="code"><code data-lang="python">df.describe()</code></pre>
+          </div>
+          <div class="card">
+            <span class="ico">🧮</span><b>Agrupar</b>
+            <small>uma resposta por categoria</small>
+            <pre class="code"><code data-lang="python">df.groupby("payment")</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Carregar" data-block="Entrada">
+        <span class="kicker">De onde vem a tabela</span>
+        <h2>Carregar</h2>
+        <pre class="code"><code data-lang="python">pd.read_csv("taxis.csv")        # arquivo de texto — o desta aula
+pd.read_excel("vendas.xlsx")    # planilha do Excel
+pd.read_sql(consulta, conexao)  # banco de dados da empresa
+pd.read_json(resposta)          # o que uma API devolveu
+pd.read_clipboard()             # o que você acabou de copiar
+pd.DataFrame(dados)             # dicionário ou lista, na mão</code></pre>
+        <p class="note">E ainda <code>parquet</code>, <code>html</code>, <code>xml</code>, <code>sas</code>, <code>spss</code>… a lista é longa.</p>
+        <div class="callout key">
+          Toda fonte entra pela mesma porta — um <code>pd.read_…</code> e sai um DataFrame. Muda a primeira linha; o resto da análise é o mesmo.
+        </div>
+      </section>
+
+      <section class="slide" data-title="CSV" data-block="Entrada">
+        <span class="kicker">read_csv</span>
+        <h2>CSV</h2>
+        <div class="io">
+          <div class="io-box">
+            <h4>O arquivo, aberto no bloco de notas</h4>
+            <pre class="code sm"><code>distance,fare,payment
+1.6,7.0,credit card
+0.79,5.0,cash</code></pre>
+          </div>
+          <div class="io-box">
+            <h4>O DataFrame</h4>
+            <table class="tbl mini">
+              <thead><tr><th></th><th>distance</th><th>fare</th><th>payment</th></tr></thead>
+              <tbody>
+                <tr><td class="idx">0</td><td>1.60</td><td>7.00</td><td>credit card</td></tr>
+                <tr><td class="idx">1</td><td>0.79</td><td>5.00</td><td>cash</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="callout key">
+          A <b>primeira linha</b> do arquivo virou o nome das colunas. O <code>0</code> e o <code>1</code> à esquerda são o <b>índice</b>, que o Pandas põe sozinho.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Excel" data-block="Entrada">
+        <span class="kicker">read_excel</span>
+        <h2>Excel</h2>
+        <div class="io">
+          <div class="io-box">
+            <h4>A planilha</h4>
+            <table class="tbl mini">
+              <thead><tr><th></th><th>A</th><th>B</th></tr></thead>
+              <tbody>
+                <tr class="hi"><td class="idx">1</td><td>loja</td><td>valor</td></tr>
+                <tr><td class="idx">2</td><td>Centro</td><td>12500</td></tr>
+                <tr><td class="idx">3</td><td>Shopping</td><td>31800</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="io-box">
+            <h4>O DataFrame</h4>
+            <table class="tbl mini">
+              <thead><tr><th></th><th>loja</th><th>valor</th></tr></thead>
+              <tbody>
+                <tr><td class="idx">0</td><td>Centro</td><td>12500</td></tr>
+                <tr><td class="idx">1</td><td>Shopping</td><td>31800</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="callout key">
+          A linha <b>1</b> virou cabeçalho. E a contagem recomeça no <b>0</b>: Excel conta de 1, Pandas de 0.
+        </div>
+        <p class="dica">Outra aba: <code>sheet_name="2026"</code>. Título em cima: <code>skiprows=3</code>.</p>
+      </section>
+
+      <section class="slide" data-title="Banco de dados" data-block="Entrada">
+        <span class="kicker">read_sql</span>
+        <h2>Banco de dados</h2>
+        <div class="io">
+          <div class="io-box">
+            <h4>A conexão e a consulta</h4>
+            <pre class="code sm"><code data-lang="python">conexao = create_engine(
+    "postgresql://usuario:senha@host/loja")
+
+consulta = "select loja, valor from vendas"
+df = pd.read_sql(consulta, conexao)</code></pre>
+          </div>
+          <div class="io-box">
+            <h4>O DataFrame</h4>
+            <table class="tbl mini">
+              <thead><tr><th></th><th>loja</th><th>valor</th></tr></thead>
+              <tbody>
+                <tr><td class="idx">0</td><td>Centro</td><td>12500</td></tr>
+                <tr><td class="idx">1</td><td>Shopping</td><td>31800</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="callout key">
+          As linhas que o banco devolve chegam <b>já como tabela</b>. O filtro pesado fica no <code>select</code>: traga só as colunas e o período que você vai usar.
+        </div>
+      </section>
+
+      <section class="slide" data-title="JSON" data-block="Entrada">
+        <span class="kicker">read_json</span>
+        <h2>JSON</h2>
+        <div class="io">
+          <div class="io-box">
+            <h4>O que a API devolveu</h4>
+            <pre class="code sm"><code>[
+  {"loja":"Centro","valor":12500},
+  {"loja":"Shopping","valor":31800}
+]</code></pre>
+          </div>
+          <div class="io-box">
+            <h4>O DataFrame</h4>
+            <table class="tbl mini">
+              <thead><tr><th></th><th>loja</th><th>valor</th></tr></thead>
+              <tbody>
+                <tr><td class="idx">0</td><td>Centro</td><td>12500</td></tr>
+                <tr><td class="idx">1</td><td>Shopping</td><td>31800</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="callout key">
+          Cada objeto <code>{...}</code> é uma <b>linha</b>; cada chave, uma <b>coluna</b>. Quando vem aninhado, <code>json_normalize</code> abre os níveis em colunas.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Na mão" data-block="Entrada">
+        <span class="kicker">DataFrame</span>
+        <h2>Na mão</h2>
+        <div class="io">
+          <div class="io-box">
+            <h4>O dicionário que você digitou</h4>
+            <pre class="code sm"><code data-lang="python">dados = {
+    "loja":  ["Centro", "Shopping"],
+    "valor": [12500, 31800],
+}</code></pre>
+          </div>
+          <div class="io-box">
+            <h4>O DataFrame</h4>
+            <table class="tbl mini">
+              <thead><tr><th></th><th>loja</th><th>valor</th></tr></thead>
+              <tbody>
+                <tr><td class="idx">0</td><td>Centro</td><td>12500</td></tr>
+                <tr><td class="idx">1</td><td>Shopping</td><td>31800</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="callout key">
+          <b>Chave é o nome da coluna, lista são os valores.</b> É como se monta um exemplo de dez linhas para testar uma ideia sem depender de arquivo.
+        </div>
+      </section>
+
+      <!-- ======================= NA PRÁTICA ======================= -->
+      <section class="slide divider" data-title="Na prática" data-block="Na prática">
+        <span class="div-n">&rarr;</span>
+        <h2>Na prática</h2>
+        <p>Um método por slide: o comando, o que ele devolve, o que isso quer dizer</p>
+      </section>
+
+      <section class="slide" data-title="A tabela" data-block="Na prática">
+        <span class="kicker">shape · head</span>
+        <h2>A tabela</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df.shape</span>
+<span class="out">(6433, 14)</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df[[&quot;distance&quot;, &quot;fare&quot;, &quot;tip&quot;, &quot;payment&quot;]].head(3)</span>
+<span class="out">   distance  fare   tip      payment
+0      1.60   7.0  2.15  credit card
+1      0.79   5.0  0.00         cash
+2      1.37   7.5  2.36  credit card</span></code></pre>
+        <div class="callout key">
+          O <code>shape</code> dá o tamanho; o <code>head</code> mostra o começo. Quatro das catorze colunas aparecem aqui.
+        </div>
+      </section>
+
+      <section class="slide" data-title="info" data-block="Na prática">
+        <span class="kicker">info</span>
+        <h2>info</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df[[&quot;distance&quot;, &quot;fare&quot;, &quot;payment&quot;]].info()</span>
+<span class="out">&lt;class &#x27;pandas.DataFrame&#x27;&gt;
+RangeIndex: 6433 entries, 0 to 6432
+Data columns (total 3 columns):
+ #   Column    Non-Null Count  Dtype  
+---  ------    --------------  -----  
+ 0   distance  6433 non-null   float64
+ 1   fare      6433 non-null   float64
+ 2   payment   6389 non-null   str    
+dtypes: float64(2), str(1)
+memory usage: 207.9 KB</span></code></pre>
+        <div class="callout key">
+          Uma linha responde "o que eu tenho na mão?": quantas linhas, o tipo de cada coluna e <b>quantos valores existem</b> — repare no 6389.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ describe" data-block="Na prática">
+        <span class="kicker">describe</span>
+        <h2>describe</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df[[&quot;fare&quot;, &quot;tip&quot;]].describe()</span>
+<span class="out">              fare         tip</span>
+<span class="out">count  6433.000000  6433.00000  </span><span class="cmt"># quantas linhas têm valor</span>
+<span class="out">mean     13.091073     1.97922  </span><span class="cmt"># a média</span>
+<span class="out">std      11.551804     2.44856  </span><span class="cmt"># o quanto os valores se espalham</span>
+<span class="out">min       1.000000     0.00000  </span><span class="cmt"># o menor de todos</span>
+<span class="out">25%       6.500000     0.00000  </span><span class="cmt"># 1 em cada 4 fica abaixo daqui</span>
+<span class="out">50%       9.500000     1.70000  </span><span class="cmt"># a mediana — metade abaixo, metade acima</span>
+<span class="out">75%      15.000000     2.80000  </span><span class="cmt"># 3 em cada 4 ficam abaixo daqui</span>
+<span class="out">max     150.000000    33.20000  </span><span class="cmt"># o maior de todos</span></code></pre>
+        <div class="callout key">
+          Oito números por coluna de uma vez. A tarifa tem média <b>13,09</b> e mediana <b>9,50</b>: metade das corridas custa menos de dez dólares.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Uma coluna" data-block="Na prática">
+        <span class="kicker">Series · to_numpy</span>
+        <h2>Uma coluna</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df[&quot;fare&quot;].head(3)</span>
+<span class="out">0    7.0
+1    5.0
+2    7.5
+Name: fare, dtype: float64</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">print(df[&quot;fare&quot;].mean())</span>
+<span class="out">13.091072594434944</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df[&quot;fare&quot;].to_numpy()</span>
+<span class="out">array([ 7. ,  5. ,  7.5, ..., 16. ,  6. , 15. ], shape=(6433,))</span></code></pre>
+        <div class="callout key">
+          Uma coluna é uma <b>Series</b>: valores, índice e nome. O <code>to_numpy()</code> descarta o índice e devolve só os números.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Filtrar" data-block="Na prática">
+        <span class="kicker">máscara</span>
+        <h2>Filtrar</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">longas = df[df[&quot;distance&quot;] &gt; 10]</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">longas.shape</span>
+<span class="out">(394, 14)</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">print(longas[&quot;fare&quot;].mean())</span>
+<span class="out">46.52796954314721</span></code></pre>
+        <div class="callout key">
+          A condição entre colchetes devolve a tabela <b>inteira</b>, só com essas 394 linhas — as catorze colunas continuam ali.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Duas condições" data-block="Na prática">
+        <span class="kicker">máscara · query</span>
+        <h2>Duas condições</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">mascara = (df[&quot;distance&quot;] &gt; 10) &amp; (df[&quot;tip&quot;] &gt; 0)</span><span class="cmt">  # o &amp; pede as duas</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">mascara.head(3)</span>
+<span class="out">0    False
+1    False
+2    False
+dtype: bool</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df[mascara].shape</span><span class="cmt">  # só as linhas True</span>
+<span class="out">(225, 14)</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df.query(&quot;distance &gt; 10 and tip &gt; 0&quot;).shape</span><span class="cmt">  # aqui, &quot;and&quot;</span>
+<span class="out">(225, 14)</span></code></pre>
+        <div class="callout key">
+          O <code>&amp;</code> compara <b>linha por linha</b> e devolve uma coluna de True e False. O <code>and</code> do Python não serve na máscara — dentro do <code>query</code>, serve.
+        </div>
+        <p class="dica">Os parênteses são obrigatórios: o <code>&amp;</code> liga mais forte que o <code>&gt;</code>.</p>
+      </section>
+
+      <section class="slide" data-title="value_counts" data-block="Na prática">
+        <span class="kicker">value_counts</span>
+        <h2>value_counts</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df[&quot;payment&quot;].value_counts(dropna=False)</span>
+<span class="out">payment
+credit card    4577
+cash           1812
+NaN              44
+Name: count, dtype: int64</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df[&quot;distance&quot;].nunique()</span>
+<span class="out">1079</span></code></pre>
+        <div class="callout key">
+          Serve para <b>categoria</b>: texto, ou número de poucos valores como <code>passengers</code>. Em número contínuo não ajuda — a distância tem 1.079 valores diferentes.
+        </div>
+        <p class="dica">Sem o <code>dropna=False</code>, a linha do <code>NaN</code> não aparece. Para número contínuo, <code>describe()</code>.</p>
+      </section>
+
+      <section class="slide" data-title="★ groupby" data-block="Na prática">
+        <span class="kicker">groupby</span>
+        <h2>groupby</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df.groupby(&quot;payment&quot;)[&quot;tip&quot;].mean()</span>
+<span class="out">payment
+cash           0.000000
+credit card    2.781805
+Name: tip, dtype: float64</span></code></pre>
+        <div class="callout key">
+          <b>Separe por, e calcule.</b> Quem paga em dinheiro não deixa gorjeta registrada; no cartão, são 2,78 em média.
+        </div>
+      </section>
+
+      <!-- ======================= GRÁFICOS ======================= -->
+      <section class="slide divider" data-title="Gráficos" data-block="Gráficos">
+        <span class="div-n">📈</span>
+        <h2>Com gráficos</h2>
+        <p>Uma pergunta por slide — e o desenho da tabela que responde</p>
+      </section>
+
+      <section class="slide" data-title="★ Mapa de calor" data-block="Gráficos">
+        <span class="kicker">Mapa de calor · pivot_table</span>
+        <h2>Quando as pessoas pegam táxi?</h2>
+        <pre class="code sm"><code data-lang="python">mapa = df.pivot_table(index=df["pickup"].dt.day_name(),
+                      columns=df["pickup"].dt.hour, aggfunc="size")
+
+plt.imshow(mapa)     # 7 linhas × 24 colunas de contagem</code></pre>
+        <figure class="fig fig-sm">
+          <img src="img/g1-calor-hora-dia.png" alt="Mapa de calor de corridas por hora e dia da semana: pico na sexta às 17h, madrugada vazia de segunda a quinta, movimento na madrugada de sábado e domingo">
+        </figure>
+        <div class="callout key">
+          O pico é <b>sexta, 17h</b>: 84 corridas. E a madrugada só tem movimento no <b>fim de semana</b> — dia útil às 4h, quase nada.
+        </div>
+        <p class="dica"><b>Uma coluna só:</b> <code>pickup</code>. Dela saem o dia e a hora; o <code>size</code> conta as linhas de cada cruzamento.</p>
+      </section>
+
+      <section class="slide" data-title="Barras empilhadas" data-block="Gráficos">
+        <span class="kicker">Barras empilhadas · unstack e div</span>
+        <h2>Onde ainda se paga em dinheiro?</h2>
+        <pre class="code sm"><code data-lang="python">qtd = df.groupby(["pickup_borough", "payment"]).size().unstack()
+
+pct = qtd.div(qtd.sum(axis=1), axis=0) * 100   # cada linha vale 100
+pct.plot(kind="barh", stacked=True)</code></pre>
+        <figure class="fig fig-sm">
+          <img src="img/g2-dinheiro-bairro.png" alt="Barras empilhadas da forma de pagamento por bairro: Queens com 41% em dinheiro, Brooklyn 31%, Manhattan 27% e Bronx 25%">
+        </figure>
+        <div class="callout key">
+          No <b>Queens</b>, 41% pagam em dinheiro; em <b>Manhattan</b>, 27%. O <code>div(axis=0)</code> divide cada linha pelo seu total — bairros de tamanhos diferentes na mesma régua.
+        </div>
+        <p class="dica"><b>Duas colunas, as duas de texto:</b> <code>pickup_borough</code> e <code>payment</code>.</p>
+      </section>
+
+      <section class="slide" data-title="Linhas" data-block="Gráficos">
+        <span class="kicker">Gráfico de linhas · resample e rolling</span>
+        <h2>O movimento muda ao longo do mês?</h2>
+        <pre class="code sm"><code data-lang="python">marco = df.set_index("pickup").loc["2019-03"]   # o mês pela string
+
+por_dia = marco.resample("D").size()            # uma linha por dia
+por_dia.rolling(7).mean().plot()                # a média de 7 dias</code></pre>
+        <figure class="fig fig-sm">
+          <img src="img/g3-marco-dia-a-dia.png" alt="Corridas por dia em março de 2019, com a média móvel de sete dias suavizando o serrote semanal">
+        </figure>
+        <div class="callout key">
+          O serrote é a semana; a linha grossa é a <b>tendência</b>. Pico em <b>14/03</b> com 260 corridas, fundo em <b>24/03</b> com 149.
+        </div>
+        <p class="dica"><b>De novo só o <code>pickup</code></b> — desta vez como índice, para o <code>resample</code> agrupar por dia.</p>
+      </section>
+
+      <section class="slide" data-title="★ Ano inteiro" data-block="Gráficos">
+        <span class="kicker">Gráfico de linhas · 365 dias</span>
+        <h2>E no ano inteiro?</h2>
+        <pre class="code sm"><code data-lang="python">ano = pd.read_csv("corridas-2019.csv", parse_dates=["dia"], index_col="dia")
+
+ano["corridas"].plot()                     # os 365 dias
+ano["corridas"].rolling(7).mean().plot()   # a mesma média de 7 dias</code></pre>
+        <figure class="fig fig-sm">
+          <img src="img/g4-ano-2019.png" alt="Corridas por dia em todo o ano de 2019, com março destacado em âmbar e mergulhos nos feriados; o menor dia do ano é o Natal">
+        </figure>
+        <div class="callout key">
+          <b>84,6 milhões</b> de corridas em 365 pontos. <b>Agosto</b> é o fundo do ano, <b>março</b> o topo — e cada mergulho é um feriado. O menor dia é o <b>Natal</b>.
+        </div>
+        <p class="dica"><b>Outro arquivo, duas colunas:</b> <code>dia</code> e <code>corridas</code> — já resumidas, uma linha por dia.</p>
+      </section>
+
+      <!-- ======================= FECHO ======================= -->
+      <section class="slide" data-title="Resumo" data-block="Fecho">
+        <span class="kicker">Fechando</span>
+        <h2>Resumo</h2>
+        <div class="bigdef">
+          <span class="bd-label">Pandas</span>
+          <p>Serve para <b>visualizar</b>, <b>agrupar</b> e <b>destilar</b> — sempre na tabela inteira, sem laço.</p>
+        </div>
+        <div class="cards c3">
+          <div class="card"><span class="ico">🔍</span><b>Visualizar</b><small>abrir o arquivo e ver o que tem dentro — <code>info</code> · <code>describe</code></small></div>
+          <div class="card"><span class="ico">🧮</span><b>Agrupar</b><small>uma resposta por categoria — <code>groupby</code> · <code>value_counts</code></small></div>
+          <div class="card"><span class="ico">📈</span><b>Destilar</b><small>milhões de linhas viram poucos números — que cabem num gráfico</small></div>
+        </div>
+      </section>
+
+    </div><!-- /deck -->
+
+    <!-- BARRA DE CONTROLE -->
+    <footer class="bar">
+      <div class="progress"><span id="progressFill"></span></div>
+      <button class="btn ghost" id="btnMenu" title="Índice (M)" aria-label="Índice">☰</button>
+      <div class="bar-title"><span id="barBlock">Abertura</span><b id="barTitle">Capa</b></div>
+      <div class="bar-nav">
+        <button class="btn" id="btnPrev" aria-label="Slide anterior">‹ Voltar</button>
+        <span class="counter"><b id="cur">1</b> / <span id="total">1</span></span>
+        <button class="btn primary" id="btnNext" aria-label="Próximo slide">Avançar ›</button>
+      </div>
+      <button class="btn ghost" id="btnPdf" title="Exportar para PDF (P)" aria-label="Exportar para PDF">PDF</button>
+      <button class="btn ghost" id="btnTheme" title="Tema claro/escuro (T)" aria-label="Alternar tema">◐</button>
+      <button class="btn ghost" id="btnFull" title="Tela cheia (F)" aria-label="Tela cheia">⛶</button>
+    </footer>
+
+    <!-- EXPORTAR PARA PDF -->
+    <div class="modal" id="pdfModal" aria-hidden="true">
+      <div class="modal-box">
+        <h3>Exportar os slides para PDF</h3>
+        <p>Vai abrir a janela de impressão do navegador. Confira estas três opções:</p>
+        <ul class="modal-list">
+          <li><b>Destino:</b> Salvar como PDF</li>
+          <li><b>Margens:</b> Nenhuma</li>
+          <li><b>Gráficos de segundo plano:</b> ativado <small>(fica em "Mais definições")</small></li>
+        </ul>
+        <p class="modal-note">Cada slide vira uma página no formato 4:3. O PDF sai sempre no tema claro, para não gastar tinta se você imprimir em papel.</p>
+        <div class="modal-actions">
+          <button class="btn" id="pdfCancel">Cancelar</button>
+          <button class="btn primary" id="pdfGo">Abrir impressão</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÍNDICE -->
+    <aside class="menu" id="menu" aria-hidden="true">
+      <header>Índice da aula<button class="btn ghost" id="btnMenuClose" aria-label="Fechar">✕</button></header>
+      <nav id="menuList"></nav>
+    </aside>
+
+  </div><!-- /stage -->
+</div>
+
+<script src="js/highlight.js"></script>
+<script src="js/slides.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

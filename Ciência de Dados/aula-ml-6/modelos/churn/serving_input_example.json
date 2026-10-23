@@ -1,0 +1,69 @@
+{
+  "dataframe_split": {
+    "columns": [
+      "gender",
+      "SeniorCitizen",
+      "Partner",
+      "Dependents",
+      "tenure",
+      "PhoneService",
+      "MultipleLines",
+      "InternetService",
+      "OnlineSecurity",
+      "OnlineBackup",
+      "DeviceProtection",
+      "TechSupport",
+      "StreamingTV",
+      "StreamingMovies",
+      "Contract",
+      "PaperlessBilling",
+      "PaymentMethod",
+      "MonthlyCharges",
+      "TotalCharges"
+    ],
+    "data": [
+      [
+        "Female",
+        "0",
+        "Yes",
+        "No",
+        71,
+        "Yes",
+        "Yes",
+        "DSL",
+        "Yes",
+        "Yes",
+        "Yes",
+        "Yes",
+        "Yes",
+        "Yes",
+        "Two year",
+        "No",
+        "Credit card (automatic)",
+        85.75,
+        6223.8
+      ],
+      [
+        "Male",
+        "0",
+        "Yes",
+        "Yes",
+        1,
+        "Yes",
+        "No",
+        "No",
+        "No internet service",
+        "No internet service",
+        "No internet service",
+        "No internet service",
+        "No internet service",
+        "No internet service",
+        "One year",
+        "No",
+        "Credit card (automatic)",
+        19.85,
+        19.85
+      ]
+    ]
+  }
+}

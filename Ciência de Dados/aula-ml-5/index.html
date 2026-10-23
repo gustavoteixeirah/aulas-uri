@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula ML 05 — Séries temporais</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+    <div class="deck" id="deck">
+
+      <section class="slide cover" data-title="Capa" data-block="Abertura">
+        <div class="cover-tag">Programação para Ciência de Dados · 2026.1</div>
+        <h1>Quantas bicicletas saem <em>na próxima hora</em></h1>
+        <p class="cover-sub">10.886 horas · dias 1 a 19 de cada mês<br>2011 ajusta, 2012 prova</p>
+        <div class="cover-meta">
+          <span>Aula ML 05</span><i></i><span>corte no tempo</span><i></i><span>baseline semanal</span>
+        </div>
+        <div class="cover-hint"><kbd>→</kbd> <kbd>←</kbd> · <kbd>M</kbd> índice · <kbd>P</kbd> PDF</div>
+      </section>
+
+      <section class="slide" data-title="A data muda o corte" data-block="Abertura">
+        <span class="kicker">Sortear o teste usa o futuro para prever o passado</span>
+        <h2>O bloco da prova fica depois</h2>
+        <div class="cards c2">
+          <div class="card"><b>Corte no tempo</b><small>um bloco no passado ajusta. Um bloco no futuro prova. Nenhuma hora do teste está no meio do treino.</small></div>
+          <div class="card"><b>Pontos sorteados</b><small>o teste contém horas vizinhas às do treino. A métrica vê o que, na prática, ainda não aconteceu.</small></div>
+        </div>
+        <div class="callout warn">A segunda figura é a armadilha. O algoritmo desta aula é a reta da aula 2. O assunto novo é o corte.</div>
+      </section>
+
+      <section class="slide" data-title="O arquivo" data-nb="arquivo" data-block="Os dados">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Bike Sharing Demand · train.csv · uma linha é uma hora</span>
+        <h2>O arquivo não tem o mês inteiro</h2>
+        <figure class="fig">
+          <img src="img/g1-janeiro.png" alt="Aluguéis hora a hora em janeiro de 2011">
+        </figure>
+        <p class="note">Dias 1 a 19 de cada mês, só. O corte e a baseline usam o timestamp que existe, sem completar os dias 20 a 31. Janeiro de 2011 já mostra o sobe-e-desce do dia.</p>
+      </section>
+
+      <section class="slide" data-title="O alvo disfarçado" data-nb="vazamento" data-block="Os dados">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">casual + registered = count, nas 10.886 linhas</span>
+        <h2>Duas colunas são o alvo escrito de outro jeito</h2>
+        <table class="tbl">
+          <thead><tr><th>casual</th><th>registered</th><th>soma</th><th>count</th></tr></thead>
+          <tbody>
+            <tr><td>3</td><td>13</td><td>16</td><td>16</td></tr>
+            <tr><td>8</td><td>32</td><td>40</td><td>40</td></tr>
+            <tr><td>5</td><td>27</td><td>32</td><td>32</td></tr>
+          </tbody>
+        </table>
+        <div class="callout key"><code>casual</code> e <code>registered</code> ficam de fora. <code>atemp</code> também: é a temperatura sentida, colada em <code>temp</code>. O modelo usa <code>temp</code>.</div>
+      </section>
+
+      <section class="slide" data-title="O corte" data-nb="corte" data-block="O corte">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Nenhum train_test_split neste caminho</span>
+        <h2>2011 ajusta. 2012 prova</h2>
+        <div class="cards c2">
+          <div class="card"><b>5.422 horas</b><small>treino. O ano de 2011, só com os dias que o arquivo tem.</small></div>
+          <div class="card"><b>5.464 horas</b><small>teste. O ano de 2012, o mesmo recorte de dias.</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="O que se repete" data-nb="hora" data-block="O corte">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Média de count no treino de 2011</span>
+        <h2>4h da manhã para. 17h dispara</h2>
+        <figure class="fig">
+          <img src="img/g2-hora.png" alt="Média de aluguéis por hora do dia em 2011">
+        </figure>
+        <p class="note">Às 4h a média é 5 bicicletas. Às 8h, 265. Às 17h, 354. Esse desenho é o argumento da baseline: a hora de sete dias atrás já carrega o ritmo.</p>
+      </section>
+
+      <section class="slide" data-title="A previsão ingênua" data-nb="baseline" data-block="As runs">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Run baseline-semana · só as horas em que o lag existe</span>
+        <h2>Repetir a mesma hora, sete dias antes</h2>
+        <div class="bigdef">
+          <span class="bd-label">RMSE 95</span>
+          <p>Em <b>3.445</b> horas de 2012 o arquivo tem o par de sete dias antes. MAE 56. As outras 2.019 horas de 2012 caem no dia 20–31 do mês anterior, que o arquivo não traz, e ficam de fora desta conta.</p>
+        </div>
+      </section>
+
+      <section class="slide" data-title="O modelo com calendário" data-nb="reta" data-block="As runs">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Run reta-calendario · ajustada em 2011, medida em 2012</span>
+        <h2>A reta perde para a semana anterior</h2>
+        <div class="cards c2">
+          <div class="card"><b>2012 inteiro</b><small>RMSE <b>159</b>, MAE 112, nas 5.464 horas.</small></div>
+          <div class="card"><b>As mesmas 3.445</b><small>RMSE <b>162</b>. No recorte em que a baseline fez 95, a reta faz 162.</small></div>
+        </div>
+        <p class="note">Hora, dia da semana, mês, estação e clima entram como categoria. Temperatura, umidade e vento entram na escala. Tudo dentro do pipeline, ajustado só em 2011.</p>
+      </section>
+
+      <section class="slide" data-title="O split aleatório" data-nb="aleatorio" data-block="As runs">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Run reta-split-aleatorio · o teste não é 2012</span>
+        <h2>111 parece melhor. Não é o futuro</h2>
+        <table class="tbl">
+          <thead><tr><th>run</th><th>o que o teste é</th><th>RMSE</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td>baseline-semana</td><td>2012, onde o lag existe</td><td>95</td></tr>
+            <tr><td>reta-calendario</td><td>2012 inteiro</td><td>159</td></tr>
+            <tr><td>reta-split-aleatorio</td><td>25% das linhas, sorteadas</td><td>111</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">A run sorteada fica melhor que a mesma reta cortada no tempo porque o teste viu horas vizinhas às do treino. Ainda perde para repetir a semana anterior.</div>
+      </section>
+
+      <section class="slide" data-title="A regra" data-block="Fecho">
+        <span class="kicker">O assunto novo foi o corte, não o algoritmo</span>
+        <h2>Ordene pelo tempo</h2>
+        <div class="bigdef">
+          <span class="bd-label">A regra</span>
+          <p>Se a linha tem data e o alvo é o próximo período: corte no tempo, comece pela repetição da semana anterior, e desconfie de métrica que veio de linha sorteada.</p>
+        </div>
+      </section>
+
+    </div>
+    <footer class="bar">
+      <div class="progress"><span id="progressFill"></span></div>
+      <button class="btn ghost" id="btnMenu" title="Índice (M)" aria-label="Índice">☰</button>
+      <div class="bar-title"><span id="barBlock">Abertura</span><b id="barTitle">Capa</b></div>
+      <div class="bar-nav">
+        <button class="btn" id="btnPrev" aria-label="Anterior">‹ Voltar</button>
+        <span class="counter"><b id="cur">1</b> / <span id="total">1</span></span>
+        <button class="btn primary" id="btnNext" aria-label="Próximo">Avançar ›</button>
+      </div>
+      <button class="btn ghost" id="btnPdf" title="PDF" aria-label="PDF">PDF</button>
+      <button class="btn ghost" id="btnTheme" title="Tema" aria-label="Tema">◐</button>
+      <button class="btn ghost" id="btnFull" title="Tela cheia" aria-label="Tela cheia">⛶</button>
+    </footer>
+    <div class="modal" id="pdfModal" aria-hidden="true">
+      <div class="modal-box">
+        <h3>Exportar os slides para PDF</h3>
+        <p>Destino: Salvar como PDF. Margens: nenhuma. Gráficos de segundo plano: ativado.</p>
+        <div class="modal-actions">
+          <button class="btn" id="pdfCancel">Cancelar</button>
+          <button class="btn primary" id="pdfGo">Abrir impressão</button>
+        </div>
+      </div>
+    </div>
+    <aside class="menu" id="menu" aria-hidden="true">
+      <header>Índice da aula<button class="btn ghost" id="btnMenuClose" aria-label="Fechar">✕</button></header>
+      <nav id="menuList"></nav>
+    </aside>
+  </div>
+</div>
+<script src="js/highlight.js"></script>
+<script src="js/slides.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+artifact_uri: /Users/teixeirah/work/uri/Ciência de Dados/aula-ml-4/mlruns/930715090834459132/7d1b26bb3bc34c3785c9d5bd11d1463b/artifacts
+end_time: 1792643120626
+entry_point_name: ''
+experiment_id: '930715090834459132'
+lifecycle_stage: active
+run_id: 7d1b26bb3bc34c3785c9d5bd11d1463b
+run_name: knn
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1792643120621
+status: 3
+tags: []
+user_id: teixeirah

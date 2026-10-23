@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula ML 06 — Deploy e agrupamento</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+    <div class="deck" id="deck">
+
+      <section class="slide cover" data-title="Capa" data-block="Abertura">
+        <div class="cover-tag">Programação para Ciência de Dados · 2026.1</div>
+        <h1>Servir a predição. E agrupar <em>sem alvo</em>.</h1>
+        <p class="cover-sub">O churn da aula 3 vira um serviço.<br>200 clientes de shopping, sem coluna de resposta.</p>
+        <div class="cover-meta">
+          <span>Aula ML 06</span><i></i><span>MLflow serve</span><i></i><span>k-means</span>
+        </div>
+        <div class="cover-hint"><kbd>→</kbd> <kbd>←</kbd> · <kbd>M</kbd> índice · <kbd>P</kbd> PDF</div>
+      </section>
+
+      <section class="slide" data-title="A run promovida" data-block="Publicar">
+        <span class="kicker">Aula 3 · logistica-balanceada · corte 0,5</span>
+        <h2>Publicar é apontar para a run, não ajustar de novo</h2>
+        <table class="tbl">
+          <thead><tr><th>recall de quem sai</th><th>precisão</th><th>acurácia</th><th>por que esta</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td>0,801</td><td>0,518</td><td>0,750</td><td>deixar passar quem sai pesa mais</td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">O diretório <code>modelos/churn</code> é essa run, copiada para cá. A aula não retreina o churn. O corte 0,5 viaja dentro do serviço, para ninguém inventar outro na hora.</div>
+      </section>
+
+      <section class="slide" data-title="O contrato" data-block="Publicar">
+        <span class="kicker">19 campos · o JSON completo está em pedido.json</span>
+        <h2>O que entra, o que volta</h2>
+        <div class="cards c2">
+          <div class="card"><b>Entra</b><small>as colunas do pipeline da aula 3, sem <code>customerID</code> e sem <code>Churn</code>. O exemplo de hoje: tenure 1, contrato mensal, cobrança mensal 29,85.</small></div>
+          <div class="card"><b>Volta</b><small><code>probabilidade_sai</code> e <code>sai</code>, já no corte 0,5. Não é a classe crua do <code>predict</code>.</small></div>
+        </div>
+        <p class="note">Serviço, contrato, permanência, cobrança. <code>TotalCharges</code> entra como número. Célula vazia quebra o pedido — o imputador mora no modelo, mas o campo tem de existir.</p>
+      </section>
+
+      <section class="slide" data-title="O serviço" data-block="Publicar">
+        <span class="kicker">O comando, e a resposta que ele devolveu</span>
+        <h2>Fora do notebook</h2>
+        <pre class="code sm"><code>mlflow models serve -m modelos/churn -p 5001 --no-conda
+
+curl -s -X POST http://127.0.0.1:5001/invocations \
+  -H "Content-Type: application/json" \
+  -d @pedido.json</code></pre>
+        <div class="callout ok">A resposta, neste cliente: <code>{"probabilidade_sai": 0.851, "sai": 1}</code></div>
+      </section>
+
+      <section class="slide" data-title="Campo faltando" data-block="Publicar">
+        <span class="kicker">O mesmo pedido, sem MonthlyCharges</span>
+        <h2>O contrato também é o erro</h2>
+        <div class="bigdef alt">
+          <span class="bd-label">400</span>
+          <p><code>Model is missing inputs ['MonthlyCharges']</code></p>
+        </div>
+        <p class="note">O arquivo <code>pedido-incompleto.json</code> tira essa coluna. O serviço recusa. Não devolve uma probabilidade educada no lugar do campo que faltou.</p>
+      </section>
+
+      <section class="slide" data-title="Drift" data-nb="drift" data-block="Publicar">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">MonthlyCharges do arquivo da aula 3, e a mesma coluna deslocada US$ 25</span>
+        <h2>A run antiga deixa de ser a evidência</h2>
+        <figure class="fig">
+          <img src="img/g4-drift.png" alt="Histograma da cobrança mensal e de uma versão deslocada em 25 dólares">
+        </figure>
+        <p class="note">O deslocamento é desenhado, não é um arquivo novo de produção. Quando o dado novo se afasta assim, retreinar é repetir o ciclo das aulas 2 e 3 e registrar outra run. Não é editar o serviço à mão.</p>
+      </section>
+
+      <section class="slide" data-title="Sem alvo" data-block="Agrupar">
+        <span class="kicker">A família anunciada na aula 1</span>
+        <h2>Não existe a coluna do grupo certo</h2>
+        <div class="bigdef">
+          <span class="bd-label">Agrupar</span>
+          <p>Uma linha do shopping não diz a qual grupo o cliente deveria pertencer. O trabalho é formar os grupos e nomeá-los pela posição do centro.</p>
+        </div>
+      </section>
+
+      <section class="slide" data-title="O shopping" data-nb="shopping" data-block="Agrupar">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Mall_Customers.csv · 200 clientes · antes do algoritmo</span>
+        <h2>Renda e score, sem cor</h2>
+        <figure class="fig">
+          <img src="img/g1-sem-cor.png" alt="Dispersão de renda anual contra score de gasto, sem grupos">
+        </figure>
+        <p class="note"><code>CustomerID</code> não entra. Idade e gênero ficam de fora deste ajuste: duas colunas, para o grupo aparecer a olho. Não há teste, então a escala pode ficar fora do pipeline. Na aula 2 ela ia para dentro porque existia um teste que não podia vazar.</p>
+      </section>
+
+      <section class="slide" data-title="O cotovelo" data-nb="cotovelo" data-block="Agrupar">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Inércia para k de 1 a 10 · o ponto âmbar é o k adotado</span>
+        <h2>Até 5 a queda é grande. Depois, não</h2>
+        <figure class="fig">
+          <img src="img/g2-cotovelo.png" alt="Curva de inércia do k-means, com k igual a 5 marcado">
+        </figure>
+        <p class="note">De 4 para 5 a inércia cai 43. De 5 para 6 cai 10. k é escolha de quem analisa. Este arquivo dobra em 5, e é o k que a aula adota.</p>
+      </section>
+
+      <section class="slide" data-title="Os grupos" data-nb="grupos" data-block="Agrupar">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">A frase sai do centro, não de um rótulo do arquivo</span>
+        <h2>Cinco posições</h2>
+        <figure class="fig fig-sm">
+          <img src="img/g3-grupos.png" alt="Clientes coloridos pelo grupo, com os centros marcados">
+        </figure>
+        <table class="tbl mini">
+          <thead><tr><th>centro</th><th>n</th><th>leitura</th></tr></thead>
+          <tbody>
+            <tr><td>renda 55 · score 50</td><td>81</td><td>o meio da tabela</td></tr>
+            <tr><td>87 · 82</td><td>39</td><td>renda alta e score alto</td></tr>
+            <tr><td>88 · 17</td><td>35</td><td>renda alta e score baixo</td></tr>
+            <tr><td>26 · 21</td><td>23</td><td>renda baixa e score baixo</td></tr>
+            <tr><td>26 · 79</td><td>22</td><td>renda baixa e score alto</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="slide" data-title="As duas regras" data-block="Fecho">
+        <span class="kicker">O que as seis aulas fecham</span>
+        <h2>Sem alvo, agrupe. Com modelo medido, sirva</h2>
+        <div class="cards c2">
+          <div class="card"><b>Sem coluna de resposta</b><small>k-means, k pelo cotovelo, grupo nomeado pelo centro.</small></div>
+          <div class="card"><b>Modelo já medido</b><small>a run vira serviço, o contrato é explícito, e o retreino acontece quando o dado novo deixa de parecer o da run.</small></div>
+        </div>
+      </section>
+
+    </div>
+    <footer class="bar">
+      <div class="progress"><span id="progressFill"></span></div>
+      <button class="btn ghost" id="btnMenu" title="Índice (M)" aria-label="Índice">☰</button>
+      <div class="bar-title"><span id="barBlock">Abertura</span><b id="barTitle">Capa</b></div>
+      <div class="bar-nav">
+        <button class="btn" id="btnPrev" aria-label="Anterior">‹ Voltar</button>
+        <span class="counter"><b id="cur">1</b> / <span id="total">1</span></span>
+        <button class="btn primary" id="btnNext" aria-label="Próximo">Avançar ›</button>
+      </div>
+      <button class="btn ghost" id="btnPdf" title="PDF" aria-label="PDF">PDF</button>
+      <button class="btn ghost" id="btnTheme" title="Tema" aria-label="Tema">◐</button>
+      <button class="btn ghost" id="btnFull" title="Tela cheia" aria-label="Tela cheia">⛶</button>
+    </footer>
+    <div class="modal" id="pdfModal" aria-hidden="true">
+      <div class="modal-box">
+        <h3>Exportar os slides para PDF</h3>
+        <p>Destino: Salvar como PDF. Margens: nenhuma. Gráficos de segundo plano: ativado.</p>
+        <div class="modal-actions">
+          <button class="btn" id="pdfCancel">Cancelar</button>
+          <button class="btn primary" id="pdfGo">Abrir impressão</button>
+        </div>
+      </div>
+    </div>
+    <aside class="menu" id="menu" aria-hidden="true">
+      <header>Índice da aula<button class="btn ghost" id="btnMenuClose" aria-label="Fechar">✕</button></header>
+      <nav id="menuList"></nav>
+    </aside>
+  </div>
+</div>
+<script src="js/highlight.js"></script>
+<script src="js/slides.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

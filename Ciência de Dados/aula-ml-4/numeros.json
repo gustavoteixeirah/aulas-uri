@@ -1,0 +1,304 @@
+{
+  "n_bruto": 53940,
+  "n_zero": 20,
+  "n": 53920,
+  "n_treino": 40440,
+  "n_teste": 13480,
+  "cortes": [
+    "Fair",
+    "Good",
+    "Ideal",
+    "Premium",
+    "Very Good"
+  ],
+  "cores": [
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J"
+  ],
+  "clarezas": [
+    "I1",
+    "IF",
+    "SI1",
+    "SI2",
+    "VS1",
+    "VS2",
+    "VVS1",
+    "VVS2"
+  ],
+  "resultados": {
+    "reta": {
+      "teste_rmse": 1142.2750762384333,
+      "teste_mae": 738.1497505720595,
+      "treino_rmse": 1122.471979246186
+    },
+    "arvore-rasa": {
+      "teste_rmse": 1430.4416825574517,
+      "teste_mae": 812.2035598848382,
+      "treino_rmse": 1410.9170702581914
+    },
+    "arvore-funda": {
+      "teste_rmse": 820.9991336124741,
+      "teste_mae": 384.4449925816024,
+      "treino_rmse": 8.82029789531418
+    },
+    "floresta": {
+      "teste_rmse": 623.7588852329266,
+      "teste_mae": 301.71318846783464,
+      "treino_rmse": 367.3118701389817
+    },
+    "boosting": {
+      "teste_rmse": 891.4446242683006,
+      "teste_mae": 460.72323610881335,
+      "treino_rmse": 871.575301399588
+    },
+    "knn": {
+      "teste_rmse": 895.679848056017,
+      "teste_mae": 449.60376854599406,
+      "treino_rmse": 822.3869570740483
+    }
+  },
+  "primeira_pergunta": {
+    "feature": "carat",
+    "limiar": 0.9950000060375626
+  },
+  "permutacao": [
+    {
+      "coluna": "carat",
+      "rmse_piora": 3033.732276043787
+    },
+    {
+      "coluna": "y",
+      "rmse_piora": 1956.801915674296
+    },
+    {
+      "coluna": "clarity",
+      "rmse_piora": 1041.3582632967452
+    },
+    {
+      "coluna": "color",
+      "rmse_piora": 674.8161772770619
+    },
+    {
+      "coluna": "z",
+      "rmse_piora": 214.54283501056423
+    },
+    {
+      "coluna": "x",
+      "rmse_piora": 73.55359031629985
+    },
+    {
+      "coluna": "depth",
+      "rmse_piora": 33.93474500031808
+    },
+    {
+      "coluna": "cut",
+      "rmse_piora": 14.789369356731717
+    },
+    {
+      "coluna": "table",
+      "rmse_piora": 10.30240669624781
+    }
+  ],
+  "importancia_interna_top": [
+    {
+      "feature": "num__carat",
+      "peso": 0.6229766978974473
+    },
+    {
+      "feature": "num__y",
+      "peso": 0.26681310220515014
+    },
+    {
+      "feature": "cat__clarity_SI2",
+      "peso": 0.018875919043597696
+    },
+    {
+      "feature": "cat__clarity_SI1",
+      "peso": 0.01378425965480845
+    }
+  ],
+  "diamante_157": {
+    "posicao_teste": 157,
+    "dados": {
+      "carat": 2.01,
+      "depth": 61.7,
+      "table": 57.0,
+      "x": 8.13,
+      "y": 8.1,
+      "z": 5.01,
+      "cut": "Ideal",
+      "color": "G",
+      "clarity": "SI2"
+    },
+    "preco_real": 18259.0,
+    "reta": {
+      "previsao": 14081.124386397147,
+      "erro": -4177.875613602853,
+      "intercepto": -223.1891946043861,
+      "top_contribuicoes": [
+        {
+          "feature": "num__carat",
+          "valor_padronizado": 2.5602664029301883,
+          "peso": 5441.577555849297,
+          "contribuicao": 13931.888195179925
+        },
+        {
+          "feature": "num__x",
+          "valor_padronizado": 2.1457347859207503,
+          "peso": -1355.2676767372402,
+          "contribuicao": -2908.0449982090945
+        },
+        {
+          "feature": "cat__clarity_SI2",
+          "valor_padronizado": 1.0,
+          "peso": 2729.2448844574633,
+          "contribuicao": 2729.2448844574633
+        },
+        {
+          "feature": "cat__cut_Ideal",
+          "valor_padronizado": 1.0,
+          "peso": 822.186765186823,
+          "contribuicao": 822.186765186823
+        },
+        {
+          "feature": "cat__color_G",
+          "valor_padronizado": 1.0,
+          "peso": -463.0790599627665,
+          "contribuicao": -463.0790599627665
+        },
+        {
+          "feature": "num__y",
+          "valor_padronizado": 2.117844209128617,
+          "peso": 148.50121194489677,
+          "contribuicao": 314.50243176608103
+        }
+      ]
+    },
+    "arvore_rasa": {
+      "previsao": 14898.048076923076,
+      "erro": -3360.951923076924,
+      "folha": 14,
+      "amostras_folha": 1560,
+      "caminho": [
+        {
+          "no": 0,
+          "feature": "num__carat",
+          "limiar": 0.4184727966785431,
+          "valor": 2.5602664029301883,
+          "resposta_sim": false
+        },
+        {
+          "no": 8,
+          "feature": "num__y",
+          "limiar": 1.3087480068206787,
+          "valor": 2.117844209128617,
+          "resposta_sim": false
+        },
+        {
+          "no": 12,
+          "feature": "num__y",
+          "limiar": 1.9256280064582825,
+          "valor": 2.117844209128617,
+          "resposta_sim": false
+        }
+      ]
+    },
+    "arvore_funda": {
+      "previsao": 18181.0,
+      "erro": -78.0
+    },
+    "floresta": {
+      "previsao": 16131.18512381546,
+      "erro": -2127.8148761845405,
+      "min_arvore": 10972.5,
+      "max_arvore": 18168.0,
+      "primeiras_5": [
+        16151.03409090909,
+        16429.688622754493,
+        16704.833333333332,
+        15779.739130434782,
+        16963.285714285714
+      ]
+    },
+    "boosting": {
+      "previsao": 15460.550778885428,
+      "erro": -2798.4492211145716
+    },
+    "knn": {
+      "previsao": 15277.466666666667,
+      "erro": -2981.533333333333,
+      "top5_vizinhos": [
+        {
+          "carat": 2.03,
+          "depth": 62.2,
+          "table": 57.0,
+          "x": 8.09,
+          "y": 8.06,
+          "z": 5.03,
+          "cut": "Ideal",
+          "color": "G",
+          "clarity": "SI2",
+          "distancia": 0.3572381971772386,
+          "preco": 12573.0
+        },
+        {
+          "carat": 2.0,
+          "depth": 62.2,
+          "table": 57.0,
+          "x": 8.13,
+          "y": 8.0,
+          "z": 5.02,
+          "cut": "Ideal",
+          "color": "G",
+          "clarity": "SI2",
+          "distancia": 0.3621023874741639,
+          "preco": 11988.0
+        },
+        {
+          "carat": 2.03,
+          "depth": 61.1,
+          "table": 57.0,
+          "x": 8.16,
+          "y": 8.21,
+          "z": 5.0,
+          "cut": "Ideal",
+          "color": "G",
+          "clarity": "SI2",
+          "distancia": 0.43444436711063494,
+          "preco": 17182.0
+        },
+        {
+          "carat": 2.05,
+          "depth": 61.6,
+          "table": 56.0,
+          "x": 8.16,
+          "y": 8.11,
+          "z": 5.01,
+          "cut": "Ideal",
+          "color": "G",
+          "clarity": "SI2",
+          "distancia": 0.4629840974348672,
+          "preco": 18181.0
+        },
+        {
+          "carat": 2.05,
+          "depth": 61.6,
+          "table": 56.0,
+          "x": 8.11,
+          "y": 8.16,
+          "z": 5.01,
+          "cut": "Ideal",
+          "color": "G",
+          "clarity": "SI2",
+          "distancia": 0.46556696661755026,
+          "preco": 18017.0
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,14 @@
+artifact_uri: /Users/teixeirah/work/uri/Ciência de Dados/aula-ml-4/mlruns/930715090834459132/4de356b7b7a6422f8e3e5f6f02d29cbc/artifacts
+end_time: 1792643144262
+entry_point_name: ''
+experiment_id: '930715090834459132'
+lifecycle_stage: active
+run_id: 4de356b7b7a6422f8e3e5f6f02d29cbc
+run_name: floresta
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1792643144257
+status: 3
+tags: []
+user_id: teixeirah

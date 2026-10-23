@@ -1,0 +1,14 @@
+artifact_uri: /Users/teixeirah/work/uri/Ciência de Dados/aula-ml-5/mlruns/734750316141193240/54d3228bc0a94afcaba0e28abee8db75/artifacts
+end_time: 1790742924844
+entry_point_name: ''
+experiment_id: '734750316141193240'
+lifecycle_stage: active
+run_id: 54d3228bc0a94afcaba0e28abee8db75
+run_name: reta-split-aleatorio
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1790742924840
+status: 3
+tags: []
+user_id: teixeirah

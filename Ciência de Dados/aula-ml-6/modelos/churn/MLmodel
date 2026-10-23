@@ -1,0 +1,43 @@
+flavors:
+  python_function:
+    cloudpickle_version: 3.1.2
+    code: null
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.pyfunc.model
+    python_model: python_model.pkl
+    python_version: 3.12.13
+    streamable: false
+is_signature_from_type_hint: false
+mlflow_version: 3.16.1
+model_id: null
+model_size_bytes: 9577
+model_uuid: 7cd035b2db164179816cb96e3a9693e7
+prompts: null
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  serving_input_path: serving_input_example.json
+  type: dataframe
+signature:
+  inputs: '[{"type": "string", "name": "gender", "required": true}, {"type": "string",
+    "name": "SeniorCitizen", "required": true}, {"type": "string", "name": "Partner",
+    "required": true}, {"type": "string", "name": "Dependents", "required": true},
+    {"type": "long", "name": "tenure", "required": true}, {"type": "string", "name":
+    "PhoneService", "required": true}, {"type": "string", "name": "MultipleLines",
+    "required": true}, {"type": "string", "name": "InternetService", "required": true},
+    {"type": "string", "name": "OnlineSecurity", "required": true}, {"type": "string",
+    "name": "OnlineBackup", "required": true}, {"type": "string", "name": "DeviceProtection",
+    "required": true}, {"type": "string", "name": "TechSupport", "required": true},
+    {"type": "string", "name": "StreamingTV", "required": true}, {"type": "string",
+    "name": "StreamingMovies", "required": true}, {"type": "string", "name": "Contract",
+    "required": true}, {"type": "string", "name": "PaperlessBilling", "required":
+    true}, {"type": "string", "name": "PaymentMethod", "required": true}, {"type":
+    "double", "name": "MonthlyCharges", "required": true}, {"type": "double", "name":
+    "TotalCharges", "required": true}]'
+  outputs: '[{"type": "double", "name": "probabilidade_sai", "required": true}, {"type":
+    "long", "name": "sai", "required": true}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-09-30 04:30:16.819450'

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula ML 03 — Algoritmos de classificação</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .mfont{ font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif; }
+  .formula{ text-align:center; margin:.25em 0 .1em !important; }
+  .mat td{ min-width: 92px; }
+  .mat th{ font-family: var(--font); font-size: 11px; }
+  .tbl td.num, .tbl th.num{ text-align:right; font-variant-numeric: tabular-nums; }
+  .escada .deg small{ line-height:1.35; }
+  .slide .cards.c2 .card.bom{ border-top:3px solid var(--green); }
+  .slide .cards.c2 .card.ruim{ border-top:3px solid var(--amber); }
+  .tbl td.best{ color: var(--accent); font-weight:700; }
+  .steps + .cards, .escada + .cards, p.lead + .cards{ margin-top:10px; }
+</style>
+</head>
+<body>
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+    <div class="deck" id="deck">
+
+      <!-- ===================== ABERTURA ===================== -->
+      <section class="slide cover" data-title="Capa" data-block="Abertura">
+        <div class="cover-tag">Programação para Ciência de Dados · 2026.1</div>
+        <h1>Algoritmos de <em>classificação</em></h1>
+        <p class="cover-sub">Quatro jeitos de responder “sai ou fica”,<br>no mesmo problema, comparados no mesmo teste</p>
+        <div class="cover-meta">
+          <span>Aula ML 03</span><i></i><span>15/10</span><i></i><span>Algoritmos de classificação</span><i></i><span>aula gravada</span>
+        </div>
+        <div class="cover-hint">Use <kbd>→</kbd> <kbd>←</kbd> · <kbd>M</kbd> índice · <kbd>P</kbd> PDF · <kbd>F</kbd> tela cheia</div>
+      </section>
+
+      <section class="slide" data-title="O que é classificar" data-block="Abertura">
+        <span class="kicker">Lembrando a aula 1</span>
+        <h2>Classificar = escolher uma categoria</h2>
+        <div class="bigdef">
+          <span class="bd-label">Classificação</span>
+          <p>A resposta é <b>uma opção de uma lista</b>, não um número. Com os pinguins, a lista era Adelie, Chinstrap ou Gentoo.</p>
+        </div>
+        <table class="tbl mini">
+          <thead><tr><th>pergunta</th><th>resposta</th><th>tipo</th></tr></thead>
+          <tbody>
+            <tr><td>Qual é a espécie do pinguim? (aula 1)</td><td>1 de 3 opções</td><td>classificação</td></tr>
+            <tr><td>Quantos litros de cerveja amanhã? (aula 2)</td><td>um número</td><td>regressão</td></tr>
+            <tr class="hi"><td><b>Este cliente vai cancelar? (hoje)</b></td><td>sim ou não</td><td><b>classificação</b></td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">Na aula 1 usamos <b>um</b> algoritmo, a regressão logística. Existem vários. Hoje: <b>quatro</b>, cada um com um jeito diferente de decidir.</div>
+      </section>
+
+      <section class="slide" data-title="O caso: quem vai cancelar" data-nb="dados" data-block="O caso">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Telco Customer Churn · uma linha = um cliente</span>
+        <h2>O caso: quem vai cancelar?</h2>
+        <div class="cards c3">
+          <div class="card"><b>7.032 clientes</b><small>depois de tirar 11 linhas com o total pago vazio.</small></div>
+          <div class="card"><b>4 colunas de entrada</b><small>meses de casa, conta do mês, total já pago, tipo de contrato (mensal, 1 ano, 2 anos).</small></div>
+          <div class="card"><b>26,6% saíram</b><small>1 em cada 4. Quem sai é <b>minoria</b>.</small></div>
+        </div>
+        <div class="steps">
+          <div class="step"><span>1</span><div><b>Treino</b>: 5.274 clientes. <b>Teste</b>: 1.758, que nenhum modelo vê no treino. A mesma % de quem sai dos dois lados.</div></div>
+          <div class="step"><span>2</span><div>O <b>mesmo preparo</b> para os 4: o contrato vira 3 colunas de 0 e 1, e as numéricas vão para a mesma escala.</div></div>
+        </div>
+        <div class="callout key"><b>Por que a escala?</b> KNN mede distância e a logística soma pesos: sem escala, o total pago (milhares de US$) abafaria os meses de casa (dezenas).</div>
+      </section>
+
+      <!-- ===================== OS 4 ALGORITMOS ===================== -->
+      <section class="slide" data-title="Regressão logística" data-nb="logistica" data-block="Os 4 algoritmos">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Algoritmo 1 de 4 · o da aula 1</span>
+        <h2>Regressão logística</h2>
+        <div class="bigdef">
+          <span class="bd-label">A ideia</span>
+          <p>Soma <b>peso × coluna</b> (o score) e transforma essa soma numa <b>probabilidade</b> entre 0 e 1.</p>
+        </div>
+        <div class="escada">
+          <div class="deg"><b>cliente 157</b><small>2 meses · US$ 95,65/mês<br>contrato mensal</small></div>
+          <span class="seta">→</span>
+          <div class="deg"><b>score 0,95</b><small>soma de<br>peso × coluna</small></div>
+          <span class="seta">→</span>
+          <div class="deg"><b>0,72</b><small>probabilidade<br>de sair</small></div>
+          <span class="seta">→</span>
+          <div class="deg" style="border-color:var(--accent);background:var(--accent-2)"><b>“sai”</b><small>0,72 ≥ 0,5</small></div>
+        </div>
+        <div class="cards c2">
+          <div class="card bom"><b>Ponto forte</b><small>cada coluna tem um <b>peso</b> que dá para ler: “contrato mensal empurra para sair”. Rápida.</small></div>
+          <div class="card ruim"><b>Ponto fraco</b><small>cada coluna só empurra <b>sempre para o mesmo lado</b>. Não monta regras do tipo “se isto <b>e</b> aquilo”.</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="KNN" data-nb="knn" data-block="Os 4 algoritmos">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Algoritmo 2 de 4 · k vizinhos mais próximos</span>
+        <h2>KNN</h2>
+        <div class="bigdef">
+          <span class="bd-label">A ideia</span>
+          <p>Procura os <b>5 clientes do treino mais parecidos</b> e segue a maioria deles.</p>
+        </div>
+        <table class="tbl mini">
+          <thead><tr><th>os 5 vizinhos do cliente 157</th><th class="num">meses</th><th class="num">conta do mês</th><th>contrato</th><th>saiu?</th></tr></thead>
+          <tbody>
+            <tr><td>vizinho 1</td><td class="num">2</td><td class="num">US$ 95,50</td><td>mensal</td><td>não</td></tr>
+            <tr class="hi"><td>vizinho 2</td><td class="num">2</td><td class="num">US$ 96,00</td><td>mensal</td><td><b>sim</b></td></tr>
+            <tr class="hi"><td>vizinho 3</td><td class="num">2</td><td class="num">US$ 95,15</td><td>mensal</td><td><b>sim</b></td></tr>
+            <tr class="hi"><td>vizinho 4</td><td class="num">2</td><td class="num">US$ 94,95</td><td>mensal</td><td><b>sim</b></td></tr>
+            <tr class="hi"><td>vizinho 5</td><td class="num">2</td><td class="num">US$ 94,20</td><td>mensal</td><td><b>sim</b></td></tr>
+          </tbody>
+        </table>
+        <p class="lead" style="text-align:center;margin:8px 0 0">4 de 5 saíram → probabilidade <b>0,80</b> → <b>“sai”</b></p>
+        <div class="cards c2">
+          <div class="card bom"><b>Ponto forte</b><small>fácil de entender: “clientes parecidos fazem coisas parecidas”. Não precisa de fórmula.</small></div>
+          <div class="card ruim"><b>Ponto fraco</b><small>compara com <b>todo o treino</b> a cada pergunta (lento com muitos dados) e depende da escala.</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Naive Bayes" data-nb="bayes" data-block="Os 4 algoritmos">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Algoritmo 3 de 4 · GaussianNB</span>
+        <h2>Naive Bayes</h2>
+        <div class="bigdef">
+          <span class="bd-label">A ideia</span>
+          <p>Compara o cliente com o <b>perfil de quem sai</b> e o <b>de quem fica</b>, uma coluna por vez, e junta as pistas.</p>
+        </div>
+        <table class="tbl mini">
+          <thead><tr><th>média no treino</th><th class="num">meses de casa</th><th class="num">conta do mês</th><th class="num">total já pago</th></tr></thead>
+          <tbody>
+            <tr><td>quem <b>fica</b></td><td class="num">37,6</td><td class="num">US$ 61,60</td><td class="num">US$ 2.556,85</td></tr>
+            <tr><td>quem <b>sai</b></td><td class="num">17,8</td><td class="num">US$ 74,12</td><td class="num">US$ 1.508,23</td></tr>
+            <tr class="hi"><td><b>cliente 157</b></td><td class="num"><b>2</b></td><td class="num"><b>US$ 95,65</b></td><td class="num"><b>US$ 167,30</b></td></tr>
+          </tbody>
+        </table>
+        <p class="lead" style="text-align:center;margin:8px 0 0">Todas as pistas apontam para “sai” → probabilidade <b>0,98</b> → <b>“sai”</b></p>
+        <div class="cards c2">
+          <div class="card bom"><b>Ponto forte</b><small>muito rápido e funciona com pouco dado.</small></div>
+          <div class="card ruim"><b>Ponto fraco</b><small>“naive” = ingênuo: trata cada coluna como pista separada. Meses e total pago andam juntos, então a mesma pista conta duas vezes e ele fica <b>confiante demais</b>.</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Árvore de decisão" data-nb="arvore" data-block="Os 4 algoritmos">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Algoritmo 4 de 4 · no máximo 4 perguntas</span>
+        <h2>Árvore de decisão</h2>
+        <div class="bigdef">
+          <span class="bd-label">A ideia</span>
+          <p>Faz <b>perguntas de sim ou não</b>, uma depois da outra, até chegar numa resposta. As perguntas saem do treino.</p>
+        </div>
+        <div class="steps">
+          <div class="step"><span>1</span><div>Contrato mensal? <b>sim</b></div></div>
+          <div class="step"><span>2</span><div>Conta do mês acima de US$ 68,72? <b>sim</b> (US$ 95,65)</div></div>
+          <div class="step"><span>3</span><div>Até 15,5 meses de casa? <b>sim</b> (2 meses)</div></div>
+          <div class="step"><span>4</span><div>Total pago acima de US$ 118,10? <b>sim</b> (US$ 167,30) → grupo de <b>630</b> clientes do treino, <b>61%</b> saíram → probabilidade <b>0,61</b> → <b>“sai”</b></div></div>
+        </div>
+        <div class="cards c2">
+          <div class="card bom"><b>Ponto forte</b><small>as regras dão para <b>ler e desenhar</b>, como um fluxograma.</small></div>
+          <div class="card ruim"><b>Ponto fraco</b><small>com muitas perguntas, <b>decora</b> o treino. Por isso limitamos a 4. Árvores e florestas: aula 4, 22/10.</small></div>
+        </div>
+      </section>
+
+      <!-- ===================== COMPARAR ===================== -->
+      <section class="slide" data-title="Como comparar" data-nb="baseline" data-block="Comparar">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Mesmo treino, mesmo teste: 1.758 clientes, 467 saíram</span>
+        <h2>Como comparar</h2>
+        <div class="callout warn"><b>A acurácia que mente:</b> chutar “fica” para todo mundo, sem modelo nenhum, já acerta <b>0,734</b>, porque 73,4% ficam. E não acha <b>nenhum</b> cliente que sai. Esse chute é o <b>baseline</b>: todo modelo precisa ganhar dele.</div>
+        <div class="cards c3" style="margin-top:12px">
+          <div class="card"><b>Precisão</b><small>dos que eu disse que <b>saem</b>, quantos saíram mesmo? Alta = poucos alarmes à toa.</small></div>
+          <div class="card"><b>Recall</b><small>dos que <b>saíram</b>, quantos eu peguei? Alto = pouca gente sai sem aviso.</small></div>
+          <div class="card"><b>F1</b><small>junta precisão e recall num número só. Cai se <b>um dos dois</b> for baixo.</small></div>
+        </div>
+        <p class="note">Todas as métricas olham para a classe que interessa: quem <b>sai</b>. Vão de 0 a 1, e maior é melhor.</p>
+      </section>
+
+      <section class="slide" data-title="Tabela comparativa" data-nb="tabela" data-block="Comparar">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Os 1.758 clientes do teste · em azul, o melhor de cada coluna</span>
+        <h2>Os quatro, lado a lado</h2>
+        <table class="tbl">
+          <thead><tr><th>algoritmo</th><th class="num">acurácia</th><th class="num">precisão</th><th class="num">recall</th><th class="num">F1</th></tr></thead>
+          <tbody>
+            <tr><td>chutar sempre “fica”</td><td class="num">0,734</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+            <tr><td>regressão logística</td><td class="num">0,788</td><td class="num best">0,638</td><td class="num">0,469</td><td class="num">0,541</td></tr>
+            <tr><td>KNN (5 vizinhos)</td><td class="num best">0,790</td><td class="num">0,629</td><td class="num">0,507</td><td class="num">0,562</td></tr>
+            <tr><td>Naive Bayes</td><td class="num">0,664</td><td class="num">0,432</td><td class="num best">0,833</td><td class="num best">0,569</td></tr>
+            <tr><td>árvore (4 perguntas)</td><td class="num">0,786</td><td class="num">0,625</td><td class="num">0,486</td><td class="num">0,547</td></tr>
+          </tbody>
+        </table>
+        <div class="callout key"><b>Nenhum ganha em tudo.</b> Logística, KNN e árvore quase empatam (acurácia perto de 0,79, pegam cerca de metade de quem sai). O Naive Bayes tem a <b>pior acurácia</b>, mas pega <b>83%</b> de quem sai.</div>
+      </section>
+
+      <section class="slide" data-title="Gráfico comparativo" data-nb="grafico" data-block="Comparar">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">img/g-comparacao.png · gerado no caderno</span>
+        <h2>Acurácia, recall e F1</h2>
+        <figure class="fig">
+          <img src="img/g-comparacao.png" alt="Três painéis de barras horizontais. Acurácia: sempre fica 0,73, logística 0,79, KNN 0,79, Naive Bayes 0,66, árvore 0,79. Recall: 0,00, 0,47, 0,51, 0,83, 0,49. F1: 0,00, 0,54, 0,56, 0,57, 0,55">
+        </figure>
+        <div class="callout key">Pela <b>acurácia</b>, o Naive Bayes parece o pior. Pelo <b>recall</b>, é de longe o que mais encontra quem sai. A métrica escolhida muda o vencedor.</div>
+      </section>
+
+      <section class="slide" data-title="O mesmo cliente nos 4" data-nb="cliente" data-block="Comparar">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Cliente 157 do teste · na vida real: saiu</span>
+        <h2>O mesmo cliente, quatro caminhos</h2>
+        <p class="note" style="margin:0 0 6px;padding-top:0;border-top:0">2 meses de casa · US$ 95,65/mês · US$ 167,30 no total · contrato mensal</p>
+        <table class="tbl">
+          <thead><tr><th>algoritmo</th><th>como chegou lá</th><th class="num">probabilidade de sair</th><th>resposta</th></tr></thead>
+          <tbody>
+            <tr><td>regressão logística</td><td>score 0,95 → probabilidade</td><td class="num"><b>0,72</b></td><td>“sai” ✓</td></tr>
+            <tr><td>KNN</td><td>4 dos 5 vizinhos saíram</td><td class="num"><b>0,80</b></td><td>“sai” ✓</td></tr>
+            <tr><td>Naive Bayes</td><td>perfil parecido com quem sai, em todas as colunas</td><td class="num"><b>0,98</b></td><td>“sai” ✓</td></tr>
+            <tr><td>árvore</td><td>4 perguntas → grupo de 630, 61% saíram</td><td class="num"><b>0,61</b></td><td>“sai” ✓</td></tr>
+          </tbody>
+        </table>
+        <div class="callout ok">Os quatro acertam este cliente, cada um por um caminho. A <b>certeza</b> muda: o Naive Bayes está quase certo (0,98), a árvore bem menos (0,61).</div>
+      </section>
+
+      <!-- ===================== FECHO ===================== -->
+      <section class="slide" data-title="Qual escolher" data-block="Fecho">
+        <span class="kicker">Depende de qual erro custa mais</span>
+        <h2>Qual escolher?</h2>
+        <div class="compare">
+          <div class="cmp cmp-a">
+            <h3>Perder cliente custa mais</h3>
+            <p>Ex.: a ligação é barata, e o cliente paga todo mês.</p>
+            <ul>
+              <li>Olhe o <b>recall</b>.</li>
+              <li><b>Naive Bayes</b>: pega 83 de cada 100 que saem.</li>
+              <li>Preço: só 43 de cada 100 alertas são de verdade.</li>
+            </ul>
+          </div>
+          <div class="cmp cmp-b">
+            <h3>Ligar à toa custa mais</h3>
+            <p>Ex.: a oferta é um desconto grande.</p>
+            <ul>
+              <li>Olhe a <b>precisão</b>.</li>
+              <li><b>Logística</b>: 64 de cada 100 alertas são de verdade (KNN logo atrás).</li>
+              <li>Preço: pega só 47 de cada 100 que saem.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout key">Ninguém definiu o custo? Use o <b>F1</b>: Naive Bayes (0,569) e KNN (0,562) quase empatados. Diferenças tão pequenas podem trocar de lugar com outro sorteio do teste.</div>
+      </section>
+
+      <section class="slide" data-title="Resumo" data-block="Fecho">
+        <span class="kicker">Quatro algoritmos em uma linha cada</span>
+        <h2>Resumo</h2>
+        <table class="tbl mini">
+          <thead><tr><th>algoritmo</th><th>como decide</th><th>bom em</th><th>cuidado com</th></tr></thead>
+          <tbody>
+            <tr><td><b>regressão logística</b></td><td>soma peso × coluna → probabilidade</td><td>explicar os pesos</td><td>regras “isto e aquilo”</td></tr>
+            <tr><td><b>KNN</b></td><td>segue os 5 mais parecidos</td><td>ideia simples</td><td>escala, muitos dados</td></tr>
+            <tr><td><b>Naive Bayes</b></td><td>compara com o perfil de cada grupo</td><td>rapidez, pegar quem sai</td><td>confiança demais</td></tr>
+            <tr><td><b>árvore de decisão</b></td><td>perguntas de sim ou não</td><td>regras legíveis</td><td>decorar o treino</td></tr>
+          </tbody>
+        </table>
+        <div class="callout key"><b>A regra:</b> compare vários algoritmos no <b>mesmo teste</b>, sempre contra o chute “sempre fica”, e escolha pela métrica do <b>erro que mais custa</b>.</div>
+        <p class="note">Caderno <b>aula-ml-3.ipynb</b>. Cada algoritmo virou uma run no MLflow, experimento <b>classificadores</b>. O comando para abrir a interface está no fim do caderno.</p>
+      </section>
+
+    </div>
+    <footer class="bar">
+      <div class="progress"><span id="progressFill"></span></div>
+      <button class="btn ghost" id="btnMenu" title="Índice (M)" aria-label="Índice">☰</button>
+      <div class="bar-title"><span id="barBlock">Abertura</span><b id="barTitle">Capa</b></div>
+      <div class="bar-nav">
+        <button class="btn" id="btnPrev" aria-label="Slide anterior">‹ Voltar</button>
+        <span class="counter"><b id="cur">1</b> / <span id="total">1</span></span>
+        <button class="btn primary" id="btnNext" aria-label="Próximo slide">Avançar ›</button>
+      </div>
+      <button class="btn ghost" id="btnPdf" title="PDF (P)" aria-label="PDF">PDF</button>
+      <button class="btn ghost" id="btnTheme" title="Tema (T)" aria-label="Tema">◐</button>
+      <button class="btn ghost" id="btnFull" title="Tela cheia (F)" aria-label="Tela cheia">⛶</button>
+    </footer>
+    <div class="modal" id="pdfModal" aria-hidden="true">
+      <div class="modal-box">
+        <h3>Exportar os slides para PDF</h3>
+        <p>Destino: Salvar como PDF. Margens: nenhuma. Gráficos de segundo plano: ativado.</p>
+        <div class="modal-actions">
+          <button class="btn" id="pdfCancel">Cancelar</button>
+          <button class="btn primary" id="pdfGo">Abrir impressão</button>
+        </div>
+      </div>
+    </div>
+    <aside class="menu" id="menu" aria-hidden="true">
+      <header>Índice da aula<button class="btn ghost" id="btnMenuClose" aria-label="Fechar">✕</button></header>
+      <nav id="menuList"></nav>
+    </aside>
+  </div>
+</div>
+<script src="js/highlight.js"></script>
+<script src="js/slides.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+artifact_location: /Users/teixeirah/work/uri/Ciência de Dados/aula-ml-3/mlruns/627870810618935987
+creation_time: 1792030868576
+effective_trace_archival_retention: null
+experiment_id: '627870810618935987'
+last_update_time: 1792030868576
+lifecycle_stage: active
+name: churn
+trace_location: null
+workspace: default

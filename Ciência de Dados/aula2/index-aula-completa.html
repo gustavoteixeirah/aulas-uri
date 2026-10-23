@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 02 — Datasets e o Projeto Final</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+
+    <div class="deck" id="deck">
+
+
+      <!-- 1 — CAPA -->
+      <section class="slide cover" data-title="Capa" data-block="Abertura">
+        <div class="cover-tag">Programação para Ciência de Dados · 2026.1</div>
+        <h1><em>Datasets</em></h1>
+        <p class="cover-sub">De onde vem o dado, o que há dentro dele — e o trabalho<br>que responde pelas duas notas do semestre</p>
+        <div class="cover-meta">
+          <span>Aula 02</span><i></i><span>~3h20</span><i></i><span>Kaggle · Titanic · notebook ao vivo</span>
+        </div>
+        <div class="cover-hint">Use <kbd>→</kbd> <kbd>←</kbd> ou os botões abaixo · <kbd>M</kbd> índice · <kbd>F</kbd> tela cheia</div>
+      </section>
+
+      <!-- 2 — ROTEIRO -->
+      <section class="slide" data-title="Roteiro da aula" data-block="Abertura">
+        <span class="kicker">Abertura</span>
+        <h2>O caminho de hoje</h2>
+        <div class="roadmap">
+          <div class="rm-item"><span class="rm-n">01</span><div><strong>De onde vem o dado</strong><small>onde os datasets vivem — e como se avalia um antes de baixar</small></div></div>
+          <div class="rm-item"><span class="rm-n">02</span><div><strong>Mãos na massa</strong><small>no notebook, juntos: Titanic, do arquivo bruto a cinco achados</small></div></div>
+          <div class="rm-item"><span class="rm-n">03</span><div><strong>O trabalho</strong><small>o projeto final, em detalhe — duas entregas, duas notas</small></div></div>
+        </div>
+        <p class="note">Saia daqui com um <b>dataset escolhido</b> e três perguntas rascunhadas. É a tarefa da semana.</p>
+      </section>
+
+      <!-- ═══════════ BLOCO 01 ═══════════ -->
+
+      <!-- 3 — DIVISOR 01 -->
+      <section class="slide divider" data-title="01 · De onde vem o dado" data-block="01">
+        <span class="div-n">01</span>
+        <h2>De onde vem o dado</h2>
+        <p>Onde os datasets vivem · Kaggle por dentro · como avaliar · licença e LGPD — e <b>só então</b> baixar</p>
+      </section>
+
+      <!-- 4 — ONDE ESTAMOS NO PIPELINE -->
+      <section class="slide" data-title="Onde estamos no pipeline" data-block="01">
+        <span class="kicker">Bloco 1 · Retomando o mapa</span>
+        <h2>Onde estamos</h2>
+        <div class="pipeline">
+          <div class="pl"><span class="pl-n">1</span><b>Pergunta</b><small>o que queremos saber</small></div>
+          <div class="pl-arrow">→</div>
+          <div class="pl hi"><span class="pl-n">2</span><b>Coleta</b><small>de onde vem o dado</small></div>
+          <div class="pl-arrow">→</div>
+          <div class="pl hi"><span class="pl-n">3</span><b>Entendimento</b><small>o que há aqui dentro</small></div>
+          <div class="pl-arrow">→</div>
+          <div class="pl"><span class="pl-n">4</span><b>Preparação</b><small>limpar e transformar</small></div>
+        </div>
+        <div class="callout key">
+          <b>Este bloco é a etapa 2</b> — de onde vem o dado, e se dá para confiar nele.<br>
+          O bloco 02, no notebook, mora na <b>3</b> e encosta na <b>4</b>. Juntas, são <b>60 a 80%</b> do tempo real de um projeto.
+        </div>
+        <p class="note">Aula 1 sobrevoou as oito etapas. Da aula 2 até a 11, descemos uma por uma.</p>
+      </section>
+
+      <!-- 5 — O MAPA DAS FONTES -->
+      <section class="slide" data-title="Onde os datasets vivem" data-block="01">
+        <span class="kicker">Bloco 1 · O mapa</span>
+        <h2>Onde os datasets vivem</h2>
+        <div class="cards c2 tight">
+          <div class="card"><span class="ico">🏆</span><b>Kaggle</b><small>o maior repositório aberto · <code>kaggle.com/datasets</code></small></div>
+          <div class="card"><span class="ico">🇧🇷</span><b>dados.gov.br</b><small>portal oficial de dados abertos federais</small></div>
+          <div class="card"><span class="ico">📊</span><b>IBGE · SIDRA</b><small>censo, PNAD, IPCA — a fonte estatística do país</small></div>
+          <div class="card"><span class="ico">🔎</span><b>Brasil.io</b><small>dados públicos já limpos e normalizados</small></div>
+          <div class="card"><span class="ico">🏛️</span><b>Portal da Transparência</b><small>gastos, servidores, convênios, sanções</small></div>
+          <div class="card"><span class="ico">🤗</span><b>UCI · HuggingFace</b><small>clássicos acadêmicos e datasets de ML</small></div>
+        </div>
+        <p class="note">Órgãos com dado bom e pouco explorado: ANAC, ANTAQ, INEP, DATASUS, TSE, ANP, INMET, Banco Central.</p>
+      </section>
+
+      <!-- 6 — KAGGLE: O QUE É -->
+      <section class="slide" data-title="Kaggle — o que é" data-block="01">
+        <span class="kicker">Bloco 1 · Kaggle</span>
+        <h2>O que é o Kaggle</h2>
+        <div class="cards c2 tight">
+          <div class="card"><span class="ico">📦</span><b>Datasets</b><small>centenas de milhares, com prévia, licença e discussão</small></div>
+          <div class="card"><span class="ico">🥇</span><b>Competições</b><small>problema real, métrica pública, ranking ao vivo</small></div>
+          <div class="card"><span class="ico">📓</span><b>Notebooks</b><small>código de outras pessoas <b>sobre o mesmo dataset</b></small></div>
+          <div class="card"><span class="ico">🎓</span><b>Learn</b><small>micro-cursos gratuitos — Pandas, viz, ML</small></div>
+        </div>
+        <div class="callout key">
+          Para esta disciplina, o recurso mais subestimado são os <b>notebooks públicos</b>:<br>é a leitura de código alheio que mais rápido melhora o seu.
+        </div>
+        <p class="note">Conta gratuita. Para baixar via API, precisa de conta verificada por telefone.</p>
+      </section>
+
+      <!-- 7 — ANATOMIA DA PÁGINA -->
+      <section class="slide" data-title="A página de um dataset" data-block="01">
+        <span class="kicker">Bloco 1 · Tour · leia nesta ordem</span>
+        <h2>A página de um dataset, por dentro</h2>
+        <table class="tbl">
+          <thead><tr><th>Onde olhar</th><th>O que procurar</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td class="rh">Data Card</td><td>origem, método de coleta, o que cada coluna significa</td></tr>
+            <tr><td class="rh">Aba <b>Data</b></td><td>arquivos, tamanho, e a <b>prévia por coluna</b> — histograma e % de vazio</td></tr>
+            <tr><td class="rh">Usability</td><td>nota de 0 a 10 do <b>metadado</b> — não da qualidade do dado</td></tr>
+            <tr><td class="rh">License</td><td>o que você pode fazer com ele <span class="tag mid">crítico</span></td></tr>
+            <tr><td class="rh">Provenance</td><td>fonte original · <b>quase sempre há uma</b>, e ela é melhor</td></tr>
+            <tr><td class="rh">Code</td><td>notebooks públicos: os achados e as armadilhas já mapeados</td></tr>
+            <tr><td class="rh">Discussion</td><td>onde alguém já reclamou do erro que você levaria 3h para achar</td></tr>
+          </tbody>
+        </table>
+        <p class="note">A prévia por coluna, na aba Data, é a melhor ferramenta gratuita de triagem que existe.</p>
+      </section>
+
+      <!-- 8 — O SELO MENTE -->
+      <section class="slide" data-title="Usability mente" data-block="01">
+        <span class="kicker">Bloco 1 · Ceticismo</span>
+        <h2>O selo de <em>usability</em> mente</h2>
+        <div class="split tight">
+          <div class="cmp cmp-b"><h3><span class="ico">📛</span>O que ele mede</h3>
+            <ul>
+              <li>tem descrição?</li>
+              <li>tem licença declarada?</li>
+              <li>as colunas têm nome legível?</li>
+              <li>tem imagem de capa?</li>
+            </ul>
+            <p><b>Metadado.</b> Nada além disso.</p>
+          </div>
+          <div class="cmp cmp-a"><h3><span class="ico">🔬</span>O que ele <i>não</i> mede</h3>
+            <ul>
+              <li>o dado está correto?</li>
+              <li>a amostra representa alguém?</li>
+              <li>as datas estão coerentes?</li>
+              <li>alguém inventou as linhas?</li>
+            </ul>
+            <p><b>Existe dataset 10.0 inteiramente sintético.</b></p>
+          </div>
+        </div>
+        <div class="callout key">
+          Nota alta significa <b>bem documentado</b>. Documentação boa de dado ruim continua sendo dado ruim.
+        </div>
+      </section>
+
+      <!-- 9 — CHECKLIST -->
+      <section class="slide" data-title="Checklist antes de baixar" data-block="01">
+        <span class="kicker">Bloco 1 · Triagem · 5 minutos</span>
+        <h2>Oito perguntas antes de baixar</h2>
+        <ul class="checks">
+          <li><b>Quem</b> coletou, e por quê? Quem paga a coleta escolhe o que medir.</li>
+          <li><b>Quando</b>? Dado de 2015 responde perguntas de 2015.</li>
+          <li>É a <b>fonte original</b> ou uma cópia de cópia? Suba a cadeia.</li>
+          <li>Quantas <b>linhas e colunas</b>? Menos de 1.000 linhas limita a análise.</li>
+          <li>Tem <b>mistura de tipos</b> — número, categoria, data, texto?</li>
+          <li>Tem <b>dicionário de dados</b>?</li>
+          <li>Qual a <b>licença</b>?</li>
+          <li>É <b>sintético</b>? (variância limpa demais, zero faltantes, nomes gerados)</li>
+        </ul>
+        <div class="callout key">Cinco minutos aqui economizam duas semanas depois.</div>
+      </section>
+
+      <!-- 10 — LICENÇA -->
+      <section class="slide" data-title="Licença" data-block="01">
+        <span class="kicker">Bloco 1 · Jurídico, mas rápido</span>
+        <h2>Licença: o que serve para o trabalho</h2>
+        <table class="tbl">
+          <thead><tr><th>Licença</th><th>Significa</th><th>Serve?</th></tr></thead>
+          <tbody>
+            <tr><td class="rh">CC0 · Public Domain</td><td>uso livre, sem condições</td><td><span class="tag ok">sim</span></td></tr>
+            <tr><td class="rh">CC BY / CC BY-SA</td><td>livre, <b>citando a fonte</b></td><td><span class="tag ok">sim</span></td></tr>
+            <tr><td class="rh">CC BY-NC</td><td>proibido uso comercial</td><td><span class="tag ok">sim</span> — trabalho acadêmico</td></tr>
+            <tr><td class="rh">ODbL</td><td>livre, derivados sob a mesma licença</td><td><span class="tag ok">sim</span></td></tr>
+            <tr class="hi"><td class="rh">"Other" / não declarada</td><td>ninguém sabe</td><td><span class="tag bad">evite</span></td></tr>
+            <tr><td class="rh">Só para a competição</td><td>uso restrito ao Kaggle</td><td><span class="tag bad">não</span></td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">
+          <b>Regra do projeto:</b> a licença vai citada no notebook, junto com o link da fonte. Sem isso, a entrega volta.
+        </div>
+      </section>
+
+      <!-- 11 — LGPD -->
+      <section class="slide" data-title="Dado público ≠ dado livre" data-block="01">
+        <span class="kicker">Bloco 1 · LGPD</span>
+        <h2>Público não quer dizer livre</h2>
+        <div class="cards c3 tight">
+          <div class="card"><span class="ico">🪪</span><b>Dado pessoal</b><small>identifica alguém: CPF, nome, e-mail, endereço, matrícula</small></div>
+          <div class="card"><span class="ico">🔐</span><b>Dado sensível</b><small>saúde, raça, religião, política, biometria, orientação sexual</small></div>
+          <div class="card"><span class="ico">🧩</span><b>Reidentificação</b><small>CEP + data de nascimento + sexo já identificam a maioria</small></div>
+        </div>
+        <div class="callout warn">
+          Anonimizado <b>não é</b> "tirei a coluna nome". É garantir que nenhuma <b>combinação</b> de colunas volte à pessoa.
+        </div>
+        <p class="note">No projeto: se houver dado pessoal, agregue ou pseudonimize — e diga o que fez, na seção de limitações. Tratamos isso a fundo na aula 17.</p>
+      </section>
+
+      <!-- 12 — O DATASET LIMPO DEMAIS -->
+      <section class="slide" data-title="O dataset limpo demais" data-block="01">
+        <span class="kicker">Bloco 1 · A armadilha</span>
+        <h2>Cuidado com o dataset limpo demais</h2>
+        <div class="compare">
+          <div class="cmp cmp-b"><h3><span class="ico">🧼</span>Kaggle "pronto"</h3>
+            <ul>
+              <li>zero faltantes</li>
+              <li>tipos já corretos</li>
+              <li>categorias padronizadas</li>
+              <li>sem duplicatas</li>
+            </ul>
+            <p>Você pula direto para a etapa 5. <b>E não aprende as 2–4.</b></p>
+          </div>
+          <div class="cmp cmp-a"><h3><span class="ico">🧱</span>Dado real</h3>
+            <ul>
+              <li><code>encoding='latin-1'</code>, <code>sep=';'</code></li>
+              <li>número com vírgula decimal</li>
+              <li><code>"-"</code>, <code>"N/D"</code>, <code>"999"</code> como vazio</li>
+              <li>cabeçalho na linha 4</li>
+            </ul>
+            <p><b>É onde mora 70% do trabalho — e da nota.</b></p>
+          </div>
+        </div>
+        <div class="callout key">
+          Escolha um dataset com <b>defeitos de verdade</b>. Consertar sujeira é conteúdo avaliado; não há mérito em limpar o que já veio limpo.
+        </div>
+      </section>
+
+      <!-- 13 — COMO BAIXAR -->
+      <section class="slide" data-title="Três formas de baixar" data-block="01">
+        <span class="kicker">Bloco 1 · Aprovado na triagem? Agora sim</span>
+        <h2>Três formas de trazer o arquivo</h2>
+        <div class="split tight">
+          <div>
+            <p class="cap"><b>1 · Botão Download</b> — para começar</p>
+            <pre class="code term"><code class="no-hl"><span class="out">titanic.zip → descompactar
+→ pasta dados/ do projeto</span></code></pre>
+            <p class="cap"><b>2 · <code>kagglehub</code></b> — reprodutível</p>
+            <pre class="code"><code data-lang="python">import kagglehub, pandas as pd
+
+p = kagglehub.dataset_download(
+    "yasserh/titanic-dataset")
+df = pd.read_csv(f"{p}/Titanic-Dataset.csv")</code></pre>
+          </div>
+          <div>
+            <p class="cap"><b>3 · CLI oficial</b> — para automatizar</p>
+            <pre class="code"><code data-lang="python"># pip install kaggle
+# token em ~/.kaggle/kaggle.json
+
+# kaggle datasets download \
+#   -d yasserh/titanic-dataset --unzip</code></pre>
+            <div class="callout warn">
+              As formas 2 e 3 <b>exigem token</b> e <b>rede</b>.<br>Em sala usamos o CSV já baixado.
+            </div>
+          </div>
+        </div>
+        <p class="note">Regra do projeto: o notebook precisa rodar na máquina do professor. Versione o CSV, ou documente o download.<br>O nosso já está em <code>dados/titanic.csv</code> — <b>abram o Jupyter</b>.</p>
+      </section>
+
+      <!-- ═══════════ BLOCO 02 ═══════════ -->
+
+      <!-- 14 — DIVISOR 02 -->
+      <section class="slide divider" data-title="02 · Mãos na massa" data-block="02">
+        <span class="div-n">02</span>
+        <h2>Mãos na massa</h2>
+        <p>Titanic · do arquivo bruto a cinco achados, sem nenhum modelo · <b>abram o <code>aula02.ipynb</code></b></p>
+      </section>
+
+      <!-- 15 — COMO A AULA FUNCIONA -->
+      <section class="slide" data-title="Como este bloco funciona" data-block="02">
+        <span class="kicker">Bloco 2 · Combinado</span>
+        <h2>Aqui o slide não é o palco</h2>
+        <p class="lead">Este bloco acontece <b>dentro do Jupyter</b>, ao vivo, na minha tela. Abram o mesmo notebook e rodem junto.</p>
+        <div class="cards c2 tight">
+          <div class="card"><span class="ico">📓</span><b><code>aula02.ipynb</code></b><small>o roteiro executável — ferramental Python, anatomia do dado e o Titanic inteiro</small></div>
+          <div class="card"><span class="ico">🖥️</span><b>Projetado: o notebook</b><small>a saída de verdade, com erro de verdade quando der errado</small></div>
+          <div class="card"><span class="ico">📑</span><b>Estes slides</b><small>ficam para <b>consulta depois</b> — cada um marca uma seção do notebook</small></div>
+          <div class="card"><span class="ico">✋</span><b>Células <i>Sua vez</i></b><small>espalhadas pelo notebook — a gente para, vocês escrevem</small></div>
+        </div>
+        <div class="callout key">
+          Conceito que não se demonstra com dado na tela <b>não gruda</b>. Tipo de variável, faltante e cardinalidade são disso: você entende quando vê quebrar.
+        </div>
+      </section>
+
+      <!-- 16 — O MAPA DO NOTEBOOK -->
+      <section class="slide" data-title="O mapa do notebook" data-block="02">
+        <span class="kicker">Bloco 2 · Abram o Jupyter</span>
+        <h2>As doze seções do notebook</h2>
+        <table class="tbl mini">
+          <thead><tr><th>§</th><th>No notebook</th><th>Slide daqui</th></tr></thead>
+          <tbody>
+            <tr><td class="rh">1</td><td>abrir o arquivo · tamanho e o que está faltando</td><td>19–22</td></tr>
+            <tr><td class="rh">2</td><td>o que cada coluna quer dizer</td><td>17–18</td></tr>
+            <tr class="hi"><td class="rh">3</td><td><b>quem sobreviveu?</b> · as 891 pessoas em pontos · sexo × classe</td><td>23–24</td></tr>
+            <tr><td class="rh">4</td><td>criança tinha mais chance? · histograma e faixas</td><td>26</td></tr>
+            <tr><td class="rh">5</td><td>o preço do bilhete · a média que mente · idade × tarifa</td><td>25</td></tr>
+            <tr><td class="rh">6</td><td>o que está escondido dentro do nome</td><td>26</td></tr>
+            <tr><td class="rh">7</td><td>sozinho ou com a família?</td><td>27</td></tr>
+            <tr class="hi"><td class="rh">8</td><td><b>a coluna 77% vazia que era ouro</b> · e o deck do navio</td><td>28</td></tr>
+            <tr><td class="rh">9</td><td>e as 177 idades que faltam?</td><td>29</td></tr>
+            <tr><td class="rh">10</td><td>o painel — tudo em quatro gráficos</td><td>30–31</td></tr>
+            <tr class="hi"><td class="rh">11</td><td><b>e você, teria sobrevivido?</b></td><td>—</td></tr>
+            <tr><td class="rh">12</td><td>o validador do dataset do seu projeto</td><td>36–37</td></tr>
+          </tbody>
+        </table>
+        <p class="note">O § 11 é brincadeira séria: uma função que procura no dataset as pessoas parecidas com você e diz a chance delas. O § 12 valida o dataset que você vai propor.</p>
+      </section>
+
+      <!-- 17 — FICHA DO DATASET -->
+      <section class="slide" data-title="Ficha do dataset" data-block="02">
+        <span class="kicker">Bloco 2 · O dataset de hoje</span>
+        <h2>Ficha: Titanic</h2>
+        <div class="idcard">
+          <div class="idrow"><span>Origem</span><b>Kaggle · competição <i>Titanic: Machine Learning from Disaster</i></b></div>
+          <div class="idrow"><span>Arquivo</span><b><code>train.csv</code> · 61 KB</b></div>
+          <div class="idrow"><span>Forma</span><b>891 linhas × 12 colunas</b></div>
+          <div class="idrow"><span>Unidade</span><b>um passageiro</b> — de 2.224 a bordo: é uma <b>amostra</b></div>
+          <div class="idrow"><span>Alvo</span><b><code>Survived</code> · 0 ou 1</b></div>
+          <div class="idrow"><span>Licença</span><b>CC0 · domínio público</b></div>
+          <div class="idrow"><span>Pergunta</span><b>Quem tinha mais chance de sobreviver — e por quê?</b></div>
+        </div>
+        <p class="note">É o "olá, mundo" da ciência de dados: pequeno, sujo na medida certa, e com uma pergunta que qualquer um entende.</p>
+      </section>
+
+      <!-- 18 — DICIONÁRIO DE DADOS -->
+      <section class="slide" data-title="Dicionário do Titanic" data-block="02">
+        <span class="kicker">Bloco 2 · §2 · Metadado</span>
+        <h2>O dicionário de dados</h2>
+        <table class="tbl mini">
+          <thead><tr><th>Coluna</th><th>Significa</th><th>Tipo de variável</th></tr></thead>
+          <tbody>
+            <tr><td class="rh">PassengerId</td><td>identificador sequencial</td><td>identificador</td></tr>
+            <tr class="hi"><td class="rh">Survived</td><td>0 = morreu · 1 = sobreviveu</td><td>binária — <b>o alvo</b></td></tr>
+            <tr><td class="rh">Pclass</td><td>classe do bilhete (1 / 2 / 3)</td><td>ordinal</td></tr>
+            <tr><td class="rh">Name · Sex · Age</td><td>nome completo, sexo, idade em anos</td><td>texto · nominal · contínua</td></tr>
+            <tr><td class="rh">SibSp · Parch</td><td>nº de irmãos/cônjuges · pais/filhos a bordo</td><td>discretas</td></tr>
+            <tr><td class="rh">Ticket · Fare</td><td>código do bilhete · tarifa paga (£ de 1912)</td><td>identificador · contínua</td></tr>
+            <tr><td class="rh">Cabin</td><td>número da cabine</td><td>nominal · <b>77% vazia</b></td></tr>
+            <tr><td class="rh">Embarked</td><td>porto de embarque: C = Cherbourg · Q = Queenstown · S = Southampton</td><td>nominal</td></tr>
+          </tbody>
+        </table>
+        <p class="note"><code>Fare</code> é por <b>bilhete</b>, não por pessoa — e um bilhete pode cobrir a família inteira. Isso já é um achado.</p>
+      </section>
+
+      <!-- 19 — O RITUAL DE CHEGADA -->
+      <section class="slide" data-title="O ritual de chegada" data-block="02">
+        <span class="kicker">Bloco 2 · §1 · Etapa 3 · Entendimento</span>
+        <h2>O ritual de chegada</h2>
+        <p class="lead">Quatro comandos. <b>Sempre</b> estes quatro, <b>sempre</b> nesta ordem.</p>
+        <div class="steps">
+          <div class="step"><span>1</span><code>df.shape</code> — cabe na memória? tenho linhas suficientes?</div>
+          <div class="step"><span>2</span><code>df.head()</code> — o arquivo foi lido do jeito certo?</div>
+          <div class="step"><span>3</span><code>df.info()</code> — tipos e faltantes, de uma vez só</div>
+          <div class="step"><span>4</span><code>df.describe()</code> — a escala e a forma dos números</div>
+        </div>
+        <div class="callout key">
+          Antes de qualquer gráfico, qualquer filtro, qualquer modelo. <b>É o cinto de segurança.</b>
+        </div>
+      </section>
+
+      <!-- 20 — CARREGAR -->
+      <section class="slide" data-title="Carregar" data-block="02">
+        <span class="kicker">Bloco 2 · §1 · Passos 1 e 2</span>
+        <h2>Carregar e olhar</h2>
+        <div class="split tight">
+          <div>
+            <pre class="code"><code data-lang="python">import pandas as pd
+
+df = pd.read_csv("dados/titanic.csv")
+
+print(type(df))
+print(df.shape)
+df.head(3)</code></pre>
+          </div>
+          <div>
+            <pre class="code term"><code class="no-hl"><span class="out">&lt;class 'pandas.DataFrame'&gt;
+(891, 12)
+
+   PassengerId  Survived  Pclass  ...
+0            1         0       3
+1            2         1       1
+2            3         1       3
+
+[3 rows x 12 columns]</span></code></pre>
+          </div>
+        </div>
+        <div class="callout warn">
+          <code>read_csv</code> tem <b>50 parâmetros</b>. <code>sep</code>, <code>encoding</code>, <code>na_values</code>, <code>parse_dates</code>, <code>decimal</code> — cada um salva um dia de trabalho. Aula 4.
+        </div>
+      </section>
+
+      <!-- 21 — INFO -->
+      <section class="slide" data-title="df.info()" data-block="02">
+        <span class="kicker">Bloco 2 · §1 · Passo 3 · o mais denso</span>
+        <h2><code>df.info()</code> — leia as três colunas</h2>
+        <pre class="code term"><code class="no-hl"><span class="out"> #   Column       Non-Null Count  Dtype
+---  ------       --------------  -----
+ 0   PassengerId  891 non-null    int64
+ 1   Survived     891 non-null    int64
+ 2   Pclass       891 non-null    int64
+ 3   Name         891 non-null    object
+ 4   Sex          891 non-null    object
+ 5   Age          714 non-null    float64   ←  177 faltando
+ 6   SibSp        891 non-null    int64
+ 7   Parch        891 non-null    int64
+ 8   Ticket       891 non-null    object
+ 9   Fare         891 non-null    float64
+ 10  Cabin        204 non-null    object    ←  687 faltando (77%)
+ 11  Embarked     889 non-null    object    ←  2 faltando
+memory usage: 83.7+ KB</span></code></pre>
+        <div class="callout key">
+          <b>891 é o total.</b> Todo número menor que ele é um buraco — e cada buraco é uma decisão que você vai ter que tomar e justificar.
+        </div>
+      </section>
+
+      <!-- 22 — PERFIL DE COLUNAS -->
+      <section class="slide" data-title="Perfil de colunas" data-block="02">
+        <span class="kicker">Bloco 2 · §1 · Além do info()</span>
+        <h2>O perfil que eu monto em todo projeto</h2>
+        <div class="split tight">
+          <div>
+            <pre class="code"><code data-lang="python">perfil = pd.DataFrame({
+    "dtype": df.dtypes,
+    "distintos": df.nunique(),
+    "faltantes": df.isna().sum(),
+    "%": (df.isna().mean()*100).round(1),
+})
+perfil</code></pre>
+            <p class="cap"><b>Cardinalidade denuncia o tipo:</b><br>2 distintos → binária · 891 → identificador</p>
+          </div>
+          <div>
+            <pre class="code term"><code class="no-hl"><span class="out">              distintos  falta    %
+PassengerId         891      0   0.0
+Survived              2      0   0.0
+Pclass                3      0   0.0
+Name                891      0   0.0
+Sex                   2      0   0.0
+Age                  88    177  19.9
+SibSp                 7      0   0.0
+Ticket              681      0   0.0
+Fare                248      0   0.0
+Cabin               147    687  77.1
+Embarked              3      2   0.2</span></code></pre>
+          </div>
+        </div>
+        <p class="note"><code>Ticket</code>: 681 distintos em 891 linhas. Bilhetes se repetem — <b>pessoas viajavam juntas</b>. Outro achado de graça.</p>
+      </section>
+
+      <!-- 23 — GROUPBY -->
+      <section class="slide" data-title="Quem sobreviveu?" data-block="02">
+        <span class="kicker">Bloco 2 · §3 · Etapa 5 · Exploração</span>
+        <h2>Quem sobreviveu?</h2>
+        <div class="split tight">
+          <div>
+            <pre class="code"><code data-lang="python">df.groupby("Sex")["Survived"].mean()
+
+df.groupby("Pclass")["Survived"].mean()
+
+pd.pivot_table(df, values="Survived",
+               index="Sex", columns="Pclass",
+               aggfunc="mean")</code></pre>
+          </div>
+          <div>
+            <pre class="code term"><code class="no-hl"><span class="out">Sex
+female    0.742
+male      0.189
+
+Pclass
+1    0.630
+2    0.473
+3    0.242
+
+Pclass      1      2      3
+Sex
+female  0.968  0.921  0.500
+male    0.369  0.157  0.135</span></code></pre>
+          </div>
+        </div>
+        <div class="callout key">
+          <b>Três linhas de código.</b> Mulher na 1ª classe: 96,8%. Homem na 3ª: 13,5%. <b>Sete vezes.</b>
+        </div>
+      </section>
+
+      <!-- 24 — SEMPRE OLHE O N -->
+      <section class="slide" data-title="Sempre olhe o n" data-block="02">
+        <span class="kicker">Bloco 2 · §3 · Disciplina</span>
+        <h2>Taxa sem <em>n</em> é propaganda</h2>
+        <div class="split tight">
+          <div>
+            <pre class="code"><code data-lang="python">df.groupby(["Sex", "Pclass"])["Survived"] \
+  .agg(n="count", taxa="mean")</code></pre>
+            <pre class="code term"><code class="no-hl"><span class="out">                 n   taxa
+Sex    Pclass
+female 1        94  0.968
+       2        76  0.921
+       3       144  0.500
+male   1       122  0.369
+       2       108  0.157
+       3       347  0.135</span></code></pre>
+          </div>
+          <div>
+            <div class="cards c1 tight">
+              <div class="card"><b>Uma taxa de 100% sobre 3 casos</b><small>não é um achado — é ruído com cara de achado</small></div>
+              <div class="card"><b>Homens na 3ª classe: 347 pessoas</b><small>39% de todo o dataset em uma única célula</small></div>
+              <div class="card"><b>Grupo desbalanceado</b><small>volta a nos assombrar na aula 14, na classificação</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="callout warn">
+          Todo <code>mean()</code> vem acompanhado de <code>count()</code>. <b>Sempre.</b> É a regra mais barata de aprender e a mais cara de ignorar.
+        </div>
+      </section>
+
+      <!-- 25 — DESCRIBE -->
+      <section class="slide" data-title="describe() e a média que mente" data-block="02">
+        <span class="kicker">Bloco 2 · §5 · A média que mente</span>
+        <h2>A média que mente</h2>
+        <div class="split tight">
+          <div>
+            <pre class="code term"><code class="no-hl"><span class="out">          Age    Fare
+count  714.00  891.00
+mean    29.70   32.20
+std     14.53   49.69
+min      0.42    0.00
+25%     20.12    7.91
+50%     28.00   14.45
+75%     38.00   31.00
+max     80.00  512.33</span></code></pre>
+          </div>
+          <div>
+            <div class="cards c1 tight">
+              <div class="card"><b>Fare: média 32,20 · mediana 14,45</b><small>a média é mais que o <b>dobro</b> da mediana</small></div>
+              <div class="card"><b>Metade pagou menos de £14,45</b><small>e alguém pagou £512 — 35× a mediana</small></div>
+              <div class="card"><b>Distribuição assimétrica</b><small>a média não descreve ninguém: nem o pobre, nem o rico</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="callout warn">
+          <code>Fare</code> mínimo = <b>0,00</b>. Tripulação? Cortesia? Erro de registro? <b>Os dados não dizem</b> — e isso vai para as limitações.
+        </div>
+      </section>
+
+      <!-- 26 — FEATURE ENGINEERING -->
+      <section class="slide" data-title="O dado escondido" data-block="02">
+        <span class="kicker">Bloco 2 · §6 · Etapa 4 · Preparação</span>
+        <h2>O dado que já estava lá</h2>
+        <div class="split tight">
+          <div>
+            <pre class="code"><code data-lang="python"># texto livre → categoria
+df["Titulo"] = (df["Name"]
+    .str.extract(r",\s*([^\.]+)\."))
+
+# duas colunas → uma ideia
+df["Familia"] = df["SibSp"] + df["Parch"] + 1
+
+# contínua → ordinal
+df["Faixa"] = pd.cut(df["Age"],
+    bins=[0, 12, 18, 35, 60, 100],
+    labels=["criança", "adolesc.",
+            "adulto jovem", "adulto",
+            "idoso"])</code></pre>
+          </div>
+          <div>
+            <pre class="code term"><code class="no-hl"><span class="out">Titulo
+Mr        517
+Miss      182
+Mrs       125
+Master     40
+Dr          7
+
+Faixa           n   taxa
+criança        69  0.580
+adolescente    70  0.429
+adulto jovem  358  0.383
+adulto        195  0.400
+idoso          22  0.227</span></code></pre>
+          </div>
+        </div>
+        <div class="callout key">
+          <b><i>Feature engineering</i>:</b> criar colunas que ainda não existem a partir das que existem. Aqui, texto virou categoria e idade virou faixa.
+        </div>
+      </section>
+
+      <!-- 27 — FAMÍLIA -->
+      <section class="slide" data-title="Nem toda relação é reta" data-block="02">
+        <span class="kicker">Bloco 2 · §7 · Achado nº 4</span>
+        <h2>Nem toda relação é uma reta</h2>
+        <div class="split tight">
+          <div>
+            <pre class="code term"><code class="no-hl"><span class="out">Familia    n   taxa
+1        537  0.304
+2        161  0.553
+3        102  0.578
+4         29  0.724   ← pico
+5         15  0.200
+6         22  0.136
+7         12  0.333
+8          6  0.000
+11         7  0.000</span></code></pre>
+          </div>
+          <div>
+            <div class="cards c1 tight">
+              <div class="card"><span class="ico">📈</span><b>Sobe até 4, despenca depois</b><small>família pequena ajuda · família grande atrapalha</small></div>
+              <div class="card"><span class="ico">⚠️</span><b>Mas olhe o <i>n</i></b><small>famílias de 8 e 11: 6 e 7 pessoas. <b>Não conclua nada.</b></small></div>
+              <div class="card"><span class="ico">🤔</span><b>E cuidado com a causa</b><small>família grande viajava na 3ª classe. É o tamanho ou é a classe?</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="callout warn">
+          Correlação encontrada ≠ causa encontrada. Separar as duas é <b>a aula 7</b> — e é o que mais derruba projeto final.
+        </div>
+      </section>
+
+      <!-- 28 — CABIN -->
+      <section class="slide" data-title="O buraco é a informação" data-block="02">
+        <span class="kicker">Bloco 2 · §8 · O momento da aula</span>
+        <h2>77% vazia — jogar fora?</h2>
+        <div class="split tight">
+          <div>
+            <pre class="code"><code data-lang="python">tem_cabine = df["Cabin"].notna()
+
+df.groupby(tem_cabine)["Survived"] \
+  .agg(["count", "mean"])</code></pre>
+            <pre class="code term"><code class="no-hl"><span class="out">       count   mean
+Cabin
+False    687  0.300
+True     204  0.667</span></code></pre>
+          </div>
+          <div>
+            <div class="cards c1 tight">
+              <div class="card"><span class="ico">💡</span><b>Quem tem cabine registrada sobreviveu <b>2,2×</b> mais</b><small>0,667 contra 0,300</small></div>
+              <div class="card"><span class="ico">🧠</span><b>A ausência não é aleatória</b><small>é o terceiro tipo de faltante (§8 do notebook): falta <i>porque</i> a pessoa era de 3ª classe</small></div>
+              <div class="card"><span class="ico">⚒️</span><b>A coluna certa é <code>tem_cabine</code></b><small>booleana, 0% faltante, e informativa</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="callout key">
+          <code>dropna()</code> teria apagado <b>o segundo achado mais forte do dataset</b>.
+        </div>
+      </section>
+
+      <!-- 29 — IMPUTAÇÃO -->
+      <section class="slide" data-title="Imputar idade" data-block="02">
+        <span class="kicker">Bloco 2 · §9 · A decisão</span>
+        <h2>177 idades faltando. E agora?</h2>
+        <table class="tbl">
+          <thead><tr><th>Opção</th><th>O que acontece</th><th>Custo</th></tr></thead>
+          <tbody>
+            <tr><td class="rh">A · descartar</td><td>891 → <b>714 linhas</b></td><td>perde 20% da amostra — e não ao acaso</td></tr>
+            <tr><td class="rh">B · média (29,7)</td><td>mantém 891</td><td>achata a variância; dá 29,7 anos a bebês</td></tr>
+            <tr class="hi"><td class="rh">C · mediana por título</td><td>mantém 891, respeita o grupo</td><td>mais código — e é a melhor</td></tr>
+          </tbody>
+        </table>
+        <pre class="code term"><code class="no-hl"><span class="out">Titulo    n   mediana
+Mr      398      30.0
+Miss    146      21.0
+Mrs     108      35.0
+Master   36       3.5   ←  "Master" era como se chamava um MENINO</span></code></pre>
+        <div class="callout key">
+          A opção B daria <b>29,7 anos</b> a cada Master. A opção C dá <b>3,5</b>. O nome carregava a idade o tempo todo.
+        </div>
+      </section>
+
+      <!-- 30 — O GRÁFICO -->
+      <section class="slide" data-title="Do número ao gráfico" data-block="02">
+        <span class="kicker">Bloco 2 · §10 · Etapa 5 · Exploração</span>
+        <h2>Do número ao gráfico</h2>
+        <img class="fig" src="titanic.png" alt="Histograma de idade por sobrevivência e barras de taxa de sobrevivência por classe e sexo">
+        <div class="callout key">
+          À esquerda, a barra de crianças é a única em que o laranja domina. À direita, o abismo entre as barras é a história inteira do naufrágio.
+        </div>
+        <p class="note">§10 do notebook. Matplotlib e Seaborn a fundo nas aulas 8 e 9 — hoje o gráfico é só a última etapa da leitura.</p>
+      </section>
+
+      <!-- 31 — O QUE A DEMO PROVOU -->
+      <section class="slide" data-title="Cinco achados, zero modelos" data-block="02">
+        <span class="kicker">Bloco 2 · Balanço</span>
+        <h2>Cinco achados. Nenhum modelo.</h2>
+        <div class="recap">
+          <div class="rc"><span>1</span><p>Sexo e classe explicam quase tudo: <b>96,8% × 13,5%</b>.</p></div>
+          <div class="rc"><span>2</span><p>A coluna 77% vazia era <b>informação</b>, não lixo: 0,67 × 0,30.</p></div>
+          <div class="rc"><span>3</span><p>Família ajuda <b>até 4 pessoas</b> — depois vira risco.</p></div>
+          <div class="rc"><span>4</span><p>O nome carregava a idade: <b>Master = 3,5 anos</b>.</p></div>
+          <div class="rc"><span>5</span><p>A média da tarifa <b>não descreve ninguém</b>.</p></div>
+        </div>
+        <div class="callout key">
+          Tudo isso com <code>read_csv</code>, <code>info</code>, <code>describe</code>, <code>groupby</code> e <code>cut</code>. <b>É o que se espera do seu projeto.</b>
+        </div>
+      </section>
+
+      <!-- ═══════════ BLOCO 03 ═══════════ -->
+
+      <!-- 32 — DIVISOR 03 -->
+      <section class="slide divider" data-title="03 · O trabalho" data-block="03">
+        <span class="div-n">03</span>
+        <h2>O trabalho</h2>
+        <p>O projeto que atravessa o semestre — e responde pelas duas notas</p>
+      </section>
+
+      <!-- 33 — O TRABALHO EM UMA FRASE -->
+      <section class="slide" data-title="O trabalho em uma frase" data-block="03">
+        <span class="kicker">Bloco 3 · A tarefa</span>
+        <h2>O trabalho, em uma frase</h2>
+        <div class="bigdef">
+          <span class="bd-label">Projeto final</span>
+          <p>escolher um <b>dataset público real</b>, formular <b>três perguntas de negócio</b> e respondê-las percorrendo o pipeline inteiro — <b>incluindo o que você não conseguiu responder</b>.</p>
+        </div>
+        <div class="cards c4 tight">
+          <div class="card"><b>Até 3 pessoas</b><small>individual, dupla ou trio — <b>trio é o teto</b></small></div>
+          <div class="card"><b>Relatório SBC</b><small>artigo no template oficial da SBC, em PDF</small></div>
+          <div class="card"><b>2 entregas</b><small>setembro e novembro</small></div>
+          <div class="card"><b>Nota 1 + Nota 2</b><small>não há apresentação — o texto fala por vocês</small></div>
+        </div>
+        <p class="note">Comece na semana 2. Quem começa na semana 12 entrega notebook com gráfico bonito — não entrega projeto.</p>
+      </section>
+
+      <!-- 34 — AS DUAS ENTREGAS -->
+      <section class="slide" data-title="As duas entregas" data-block="03">
+        <span class="kicker">Bloco 3 · O calendário que importa</span>
+        <h2>Duas entregas, duas notas</h2>
+        <div class="compare">
+          <div class="cmp cmp-a"><h3><span class="ico">1️⃣</span>Etapa 1 · <b>Nota 1</b></h3>
+            <ul>
+              <li>prazo: <b>fim de setembro</b></li>
+              <li>seções <b>1 a 4</b> do relatório</li>
+              <li>pergunta · dados · entendimento · preparação</li>
+              <li><b>4 a 6 páginas</b> no template SBC</li>
+              <li>o dado tem que estar <b>carregado e limpo</b></li>
+            </ul>
+          </div>
+          <div class="cmp cmp-b"><h3><span class="ico">2️⃣</span>Etapa 2 · <b>Nota 2</b></h3>
+            <ul>
+              <li>prazo: <b>fim de novembro</b></li>
+              <li><b>o relatório completo</b> — seções 1 a 7</li>
+              <li>com as seções 1–4 <b>corrigidas</b> conforme o retorno</li>
+              <li><b>8 a 12 páginas</b> no template SBC</li>
+              <li>é o trabalho que fica no seu portfólio</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout warn">
+          A Etapa 2 <b>não é um anexo</b> da Etapa 1: é o documento inteiro, reescrito. O que eu apontei em setembro e continuou igual em novembro <b>conta duas vezes contra</b>.
+        </div>
+      </section>
+
+      <!-- 35 — ENTREGÁVEIS -->
+      <section class="slide" data-title="O que entregar" data-block="03">
+        <span class="kicker">Bloco 3 · Entregáveis · nas duas etapas</span>
+        <h2>Três artefatos. Sem apresentação.</h2>
+        <div class="cards c1 tight">
+          <div class="card"><span class="ico">📄</span><b>Relatório em PDF · template SBC</b><small>é <i>o</i> trabalho — artigo científico, com resumo, seções numeradas, figuras com legenda e referências</small></div>
+          <div class="card"><span class="ico">📓</span><b>Notebook <code>projeto.ipynb</code></b><small>a evidência do que o relatório afirma — narrado em markdown e <b>reproduzível do zero</b></small></div>
+          <div class="card"><span class="ico">🐙</span><b>Repositório Git</b><small>relatório + notebook + <code>requirements.txt</code> + <code>README.md</code> + os dados (ou o script que os baixa)</small></div>
+        </div>
+        <div class="callout warn">
+          <b>O teste:</b> clono o repositório, crio o ambiente, faço <i>Restart &amp; Run All</i> — e confiro se os números do PDF são <b>os mesmos</b> que saíram do notebook.<br>
+          Número no texto que não sai do código é <b>invenção</b>, e derruba a nota da etapa inteira.
+        </div>
+        <p class="note">Template SBC: modelo oficial para artigos (LaTeX no Overleaf ou <code>.docx</code>), disponível no site da SBC. Escolham o formato hoje, não em novembro.</p>
+      </section>
+
+      <!-- 36 — MÍNIMOS DO DATASET -->
+      <section class="slide" data-title="Mínimos do dataset" data-block="03">
+        <span class="kicker">Bloco 3 · Escolha do dataset · <b>requisitos duros</b></span>
+        <h2>O que o seu dataset precisa ter</h2>
+        <table class="tbl mini">
+          <thead><tr><th>Requisito</th><th>Mínimo — não negociável</th><th>Por quê</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td class="rh">Tamanho</td><td><b>≥ 2.000 registros</b>, <i>sem</i> as duplicatas exatas</td><td>menos que isso, todo grupo vira ruído</td></tr>
+            <tr><td class="rh">Largura</td><td><b>≥ 10 colunas</b> de conteúdo — identificador não conta</td><td>cruzar variáveis pede espaço</td></tr>
+            <tr class="hi"><td class="rh">Numéricas</td><td><b>≥ 3</b>, sendo <b>≥ 1 contínua</b></td><td>média, dispersão, correlação</td></tr>
+            <tr class="hi"><td class="rh">Categóricas</td><td><b>≥ 3</b>, sendo <b>≥ 1 com mais de 5 categorias</b></td><td><code>groupby</code> além de dois grupos</td></tr>
+            <tr class="hi"><td class="rh">Temporal</td><td><b>≥ 1 data</b>, cobrindo <b>≥ 12 meses</b></td><td>sem tempo não há recorte temporal</td></tr>
+            <tr><td class="rh">Texto</td><td><b>≥ 1 coluna</b> de texto livre ou alta cardinalidade</td><td>extrair o dado escondido (§8)</td></tr>
+            <tr class="hi"><td class="rh">Sujeira</td><td><b>≥ 1 coluna com 5% a 50% de faltantes</b></td><td>limpar vale 40% da Etapa 1</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <b>Mais dois, que nenhum código verifica:</b> uma coluna que sirva de <b>alvo</b> para o modelo da Etapa 2, e <b>fonte</b> — pública, com licença declarada e URL estável.<br>
+          <b>Todos</b> valem ao mesmo tempo. Falhou em um, não é "quase" aprovado: é reprovado.
+        </div>
+      </section>
+
+      <!-- 37 — PROIBIDOS E O VALIDADOR -->
+      <section class="slide" data-title="Proibidos e o validador" data-block="03">
+        <span class="kicker">Bloco 3 · Escolha do dataset · veto e prova</span>
+        <h2>Proibidos — e como provar que o seu passa</h2>
+        <div class="split tight">
+          <div>
+            <div class="cmp cmp-b"><h3><span class="ico">🚫</span>Vetados</h3>
+              <ul>
+                <li><b>Titanic</b>, Iris, Wine, Boston Housing, MNIST — e qualquer <i>toy dataset</i> do <code>sklearn</code></li>
+                <li>sintéticos, "<i>fake data</i>" ou <b>gerados por IA</b></li>
+                <li>o dataset <b>já reservado</b> por outro grupo — vale a ordem de chegada na aula 3</li>
+                <li>dado pessoal identificável sem agregar ou pseudonimizar</li>
+                <li>o "Kaggle limpo": zero faltantes, tudo padronizado</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <pre class="code term"><code class="no-hl"><span class="out">$ python valida_dataset.py meu.csv
+
+  registros ............... 4812   OK
+  colunas úteis .............. 14   OK
+  numéricas ..... 5 (2 contínuas)   OK
+  categóricas . 4 (1 com >5 cat.)   OK
+  coluna temporal ..... 38 meses    OK
+  texto livre ................. 2   OK
+  faltantes 5–50% ............. 3   OK
+  ------------------------------
+  APROVADO</span></code></pre>
+            <p class="cap">§11 do notebook de hoje. Rode <b>antes</b> de propor.</p>
+          </div>
+        </div>
+        <div class="callout key">
+          <b>Dataset brasileiro ganha meio ponto extra.</b> São mais sujos, menos explorados — e é onde vocês vão trabalhar.
+        </div>
+      </section>
+
+      <!-- 38 — A PERGUNTA DE NEGÓCIO -->
+      <section class="slide" data-title="A pergunta de negócio" data-block="03">
+        <span class="kicker">Bloco 3 · O que separa 6 de 10</span>
+        <h2>Pergunta de negócio × curiosidade</h2>
+        <ul class="alts">
+          <li><span class="alt-l">✗</span><span class="alt-t">"Analisar o dataset de vendas."</span></li>
+          <li><span class="alt-l">✗</span><span class="alt-t">"Qual a média de idade dos clientes?" <i>— isso é uma consulta, não uma pergunta</i></span></li>
+          <li><span class="alt-l">✗</span><span class="alt-t">"Aplicar machine learning nos dados." <i>— o modelo é meio, não fim</i></span></li>
+          <li class="is-right"><span class="alt-l">✓</span><span class="alt-t">"Que características de cliente antecipam o cancelamento em 90 dias — e com que antecedência dá para agir?"</span><span class="alt-ok">✓</span></li>
+        </ul>
+        <div class="callout key">
+          Boa pergunta: tem <b>sujeito</b>, tem <b>recorte de tempo</b>, e a resposta <b>muda uma decisão</b>.
+        </div>
+        <p class="note">Teste: se a resposta for "ok, interessante" e ninguém fizer nada diferente — a pergunta era fraca.</p>
+      </section>
+
+      <!-- 39 — ESTRUTURA DO RELATÓRIO -->
+      <section class="slide" data-title="Estrutura do relatório" data-block="03">
+        <span class="kicker">Bloco 3 · Molde · o sumário obrigatório</span>
+        <h2>As sete seções — e onde a linha passa</h2>
+        <div class="steps">
+          <div class="step"><span>1</span><b>Introdução</b> — contexto e as 3 perguntas, antes de qualquer número <span class="tag ok">etapa 1</span></div>
+          <div class="step"><span>2</span><b>Os dados</b> — fonte, licença, dicionário, unidade de observação <span class="tag ok">etapa 1</span></div>
+          <div class="step"><span>3</span><b>Entendimento</b> — ritual de chegada, perfil de colunas, qualidade <span class="tag ok">etapa 1</span></div>
+          <div class="step"><span>4</span><b>Preparação</b> — limpeza e derivadas, <b>com a justificativa de cada escolha</b> <span class="tag ok">etapa 1</span></div>
+          <div class="step"><span>5</span><b>Exploração</b> — estatística e gráficos que respondem às 3 perguntas <span class="tag mid">etapa 2</span></div>
+          <div class="step"><span>6</span><b>Modelagem</b> — ao menos um modelo, com <i>baseline</i> e métrica <span class="tag mid">etapa 2</span></div>
+          <div class="step"><span>7</span><b>Conclusão e limitações</b> — as respostas, e onde elas não valem <span class="tag mid">etapa 2</span></div>
+        </div>
+        <div class="callout key">
+          <b>Entrega 1 = seções 1 a 4</b> (mais resumo e referências). <b>Entrega 2 = as sete</b>, com as quatro primeiras revisadas.
+        </div>
+      </section>
+
+      <!-- 40 — LIMITAÇÕES -->
+      <section class="slide" data-title="A seção de limitações" data-block="03">
+        <span class="kicker">Bloco 3 · A seção que eu leio primeiro</span>
+        <h2>Limitações</h2>
+        <p class="lead">Não é humildade decorativa. É <b>a parte mais profissional do trabalho</b>.</p>
+        <div class="cards c2 tight">
+          <div class="card"><b>Quem ficou de fora</b><small>a amostra representa quem? e quem ela nunca viu?</small></div>
+          <div class="card"><b>O que você assumiu</b><small>cada imputação e cada exclusão é uma hipótese</small></div>
+          <div class="card"><b>Correlação sem causa</b><small>o que você <i>não</i> pode afirmar com esses dados</small></div>
+          <div class="card"><b>Validade temporal</b><small>até quando essa conclusão se sustenta?</small></div>
+        </div>
+        <div class="callout warn">
+          Trabalho sem limitações reais leva teto de nota. <b>Não existe análise sem limitação</b> — quem não achou, não procurou.
+        </div>
+      </section>
+
+      <!-- 41 — CRITÉRIOS -->
+      <section class="slide" data-title="Como será avaliado" data-block="03">
+        <span class="kicker">Bloco 3 · Critérios · cada etapa vale 100 pontos</span>
+        <h2>Como cada entrega é avaliada</h2>
+        <table class="tbl mini">
+          <thead><tr><th>Critério</th><th>O que se olha</th><th>Etapa 1</th><th>Etapa 2</th></tr></thead>
+          <tbody>
+            <tr><td class="rh">Perguntas</td><td>relevância, clareza e recorte das três</td><td>20%</td><td>10%</td></tr>
+            <tr><td class="rh">Dados e fonte</td><td>fonte, licença, dicionário, unidade de observação</td><td>20%</td><td>5%</td></tr>
+            <tr class="hi"><td class="rh">Tratamento dos dados</td><td>limpeza <b>justificada</b>, derivadas com propósito</td><td>40%</td><td>15%</td></tr>
+            <tr><td class="rh">Análise e visualização</td><td>as respostas se sustentam? os gráficos comunicam?</td><td>—</td><td>25%</td></tr>
+            <tr><td class="rh">Modelagem</td><td>escolha adequada, <i>baseline</i>, métrica bem lida</td><td>—</td><td>15%</td></tr>
+            <tr><td class="rh">Limitações</td><td>honestidade e profundidade</td><td>—</td><td>15%</td></tr>
+            <tr><td class="rh">Reprodutibilidade</td><td>clonar → instalar → <i>Run All</i> → os números batem</td><td>10%</td><td>10%</td></tr>
+            <tr><td class="rh">Texto e formato SBC</td><td>redação, figuras com legenda, citações, referências</td><td>10%</td><td>5%</td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">
+          Repare: na Etapa 1, <b>tratamento de dados vale 40%</b>. Modelagem, na Etapa 2, vale 15%. Os pesos seguem o esforço real da profissão — não o que é mais divertido.
+        </div>
+      </section>
+
+      <!-- 42 — CRONOGRAMA -->
+      <section class="slide" data-title="Cronograma" data-block="03">
+        <span class="kicker">Bloco 3 · Marcos</span>
+        <h2>Não deixe para a última semana</h2>
+        <div class="timeline wide">
+          <div class="tl hi"><span class="tl-y">Aula 3</span><b>Proposta</b><small>grupo (até 3), dataset com link e licença, saída do validador, 3 perguntas</small></div>
+          <div class="tl"><span class="tl-y">Aula 6</span><b>Checkpoint 1</b><small>dados carregados, dicionário escrito, perfil de colunas pronto</small></div>
+          <div class="tl"><span class="tl-y">Aulas 8–9</span><b>Oficina</b><small><b>duas aulas inteiras</b> para escrever as seções 1 a 4, com atendimento por grupo</small></div>
+          <div class="tl hi"><span class="tl-y">Setembro</span><b>Entrega 1</b><small><b>Nota 1</b> · relatório SBC com as seções 1 a 4 + notebook + repositório</small></div>
+          <div class="tl"><span class="tl-y">Aula 12</span><b>Checkpoint 2</b><small>EDA feita — as 3 perguntas já têm respostas preliminares</small></div>
+          <div class="tl"><span class="tl-y">Aula 14</span><b>Checkpoint 3</b><small>modelo rodando, com <i>baseline</i> e métrica escolhida</small></div>
+          <div class="tl"><span class="tl-y">Aulas 15–18</span><b>Oficina</b><small><b>quatro aulas</b>: exploração → modelagem → escrita → reprodutibilidade</small></div>
+          <div class="tl hi"><span class="tl-y">Novembro</span><b>Entrega 2</b><small><b>Nota 2</b> · relatório completo, seções 1 a 7, com as quatro primeiras revisadas</small></div>
+        </div>
+        <p class="note"><b>Seis das dezoito aulas são oficina</b> — o trabalho se faz em sala, comigo por perto. As datas exatas estão no plano de ensino; os checkpoints não valem nota isolada, mas quem chega sem eles perde o direito à orientação.</p>
+      </section>
+
+      <!-- 43 — COMO SE DÁ MAL -->
+      <section class="slide" data-title="Como se dá mal" data-block="03">
+        <span class="kicker">Bloco 3 · Antipadrões · vistos todo semestre</span>
+        <h2>Os cinco jeitos de se dar mal</h2>
+        <div class="cards c1 tight">
+          <div class="card"><span class="ico">1️⃣</span><b>Escolher o dataset na véspera da Etapa 1</b><small>não sobra tempo para limpar — e limpeza é 40% da nota da etapa</small></div>
+          <div class="card"><span class="ico">2️⃣</span><b>Fazer o modelo primeiro</b><small>acurácia de 0,94 sem <i>baseline</i> não significa absolutamente nada</small></div>
+          <div class="card"><span class="ico">3️⃣</span><b>Relatório que não bate com o notebook</b><small>número no PDF que o código não produz é invenção — e eu confiro</small></div>
+          <div class="card"><span class="ico">4️⃣</span><b>Caminho absoluto</b><small><code>C:/Users/joao/Downloads/…</code> — não roda na minha máquina, é zero</small></div>
+          <div class="card"><span class="ico">5️⃣</span><b>Colar saída de IA sem entender</b><small>texto genérico, sem os <i>seus</i> números, se reconhece de longe — e vale zero</small></div>
+        </div>
+      </section>
+
+      <!-- 44 — RECAP -->
+      <section class="slide" data-title="Se esquecer tudo, lembre destas" data-block="Fechamento">
+        <span class="kicker">Fechamento</span>
+        <h2>Se você esquecer tudo, lembre destas três</h2>
+        <div class="recap">
+          <div class="rc"><span>1</span><p>Todo dataset é um <b>recorte</b>. Pergunte sempre quem ficou de fora.</p></div>
+          <div class="rc"><span>2</span><p><code>dtype</code> é armazenamento; <b>tipo de variável é significado</b>. Não confunda.</p></div>
+          <div class="rc"><span>3</span><p>O <b>ritual de chegada</b> antes de tudo — e todo <code>mean()</code> vem com <code>count()</code>.</p></div>
+        </div>
+      </section>
+
+      <!-- 45 — TAREFA -->
+      <section class="slide closing" data-title="Para a próxima aula" data-block="Fechamento">
+        <span class="kicker">Até a próxima aula</span>
+        <h2>Para fazer em casa</h2>
+        <div class="cards c2 tight">
+          <div class="card"><b>1 · Escolha o dataset</b><small>passe as 8 perguntas de triagem · traga o link e a licença</small></div>
+          <div class="card"><b>2 · Rode o validador</b><small>§11 do notebook · no <i>seu</i> dataset · traga a saída impressa</small></div>
+          <div class="card"><b>3 · Rascunhe 3 perguntas</b><small>com sujeito, recorte de tempo e decisão associada</small></div>
+          <div class="card"><b>4 · Entregue a Lista 1</b><small>a lista de exercícios da aula 1 · até o início da aula 3</small></div>
+        </div>
+        <div class="callout key">
+          <b>Próxima aula:</b> NumPy.<br>Vou medir na frente de vocês o custo de iterar linha a linha — tragam café.
+        </div>
+        <p class="note">O <code>aula02.ipynb</code> e o <code>titanic.csv</code> estão na pasta da aula. Rode, quebre, mude os <code>bins</code> do <code>cut</code>.</p>
+      </section>
+
+    </div><!-- /deck -->
+
+    <!-- BARRA DE CONTROLE -->
+    <footer class="bar">
+      <div class="progress"><span id="progressFill"></span></div>
+      <button class="btn ghost" id="btnMenu" title="Índice (M)" aria-label="Índice">☰</button>
+      <div class="bar-title"><span id="barBlock">Abertura</span><b id="barTitle">Capa</b></div>
+      <div class="bar-nav">
+        <button class="btn" id="btnPrev" aria-label="Slide anterior">‹ Voltar</button>
+        <span class="counter"><b id="cur">1</b> / <span id="total">45</span></span>
+        <button class="btn primary" id="btnNext" aria-label="Próximo slide">Avançar ›</button>
+      </div>
+      <button class="btn ghost" id="btnPdf" title="Exportar para PDF (P)" aria-label="Exportar para PDF">PDF</button>
+      <button class="btn ghost" id="btnTheme" title="Tema claro/escuro (T)" aria-label="Alternar tema">◐</button>
+      <button class="btn ghost" id="btnFull" title="Tela cheia (F)" aria-label="Tela cheia">⛶</button>
+    </footer>
+
+    <!-- EXPORTAR PARA PDF -->
+    <div class="modal" id="pdfModal" aria-hidden="true">
+      <div class="modal-box">
+        <h3>Exportar os slides para PDF</h3>
+        <p>Vai abrir a janela de impressão do navegador. Confira estas três opções:</p>
+        <ul class="modal-list">
+          <li><b>Destino:</b> Salvar como PDF</li>
+          <li><b>Margens:</b> Nenhuma</li>
+          <li><b>Gráficos de segundo plano:</b> ativado <small>(fica em "Mais definições")</small></li>
+        </ul>
+        <p class="modal-note">Cada slide vira uma página no formato 4:3. O PDF sai sempre no tema claro, para não gastar tinta se você imprimir em papel.</p>
+        <div class="modal-actions">
+          <button class="btn" id="pdfCancel">Cancelar</button>
+          <button class="btn primary" id="pdfGo">Abrir impressão</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÍNDICE -->
+    <aside class="menu" id="menu" aria-hidden="true">
+      <header>Índice da aula<button class="btn ghost" id="btnMenuClose" aria-label="Fechar">✕</button></header>
+      <nav id="menuList"></nav>
+    </aside>
+
+  </div><!-- /stage -->
+</div>
+
+<script src="js/slides.js"></script>
+</body>
+</html>

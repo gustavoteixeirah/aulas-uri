@@ -1,0 +1,10 @@
+artifact_location: /Users/teixeirah/work/uri/Ciência de Dados/aula-ml-3/mlruns/627870810618935987/models/m-60c562a58c0c452eaf3d625cc0abdee9/artifacts
+creation_timestamp: 1792030877534
+experiment_id: '627870810618935987'
+last_updated_timestamp: 1792030881803
+model_id: m-60c562a58c0c452eaf3d625cc0abdee9
+model_type: null
+name: modelo
+source_run_id: e28fdd72aeb74d358c819489fda67e8a
+status: 2
+status_message: null

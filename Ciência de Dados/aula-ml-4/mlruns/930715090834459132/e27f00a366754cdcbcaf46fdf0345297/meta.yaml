@@ -1,0 +1,14 @@
+artifact_uri: /Users/teixeirah/work/uri/Ciência de Dados/aula-ml-4/mlruns/930715090834459132/e27f00a366754cdcbcaf46fdf0345297/artifacts
+end_time: 1792643420136
+entry_point_name: ''
+experiment_id: '930715090834459132'
+lifecycle_stage: active
+run_id: e27f00a366754cdcbcaf46fdf0345297
+run_name: arvore-rasa
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1792643420131
+status: 3
+tags: []
+user_id: teixeirah

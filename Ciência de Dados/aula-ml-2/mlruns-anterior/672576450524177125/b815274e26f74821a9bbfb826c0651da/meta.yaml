@@ -1,0 +1,14 @@
+artifact_uri: /Users/teixeirah/work/uri/Ciência de Dados/aula-ml-2/mlruns/672576450524177125/b815274e26f74821a9bbfb826c0651da/artifacts
+end_time: 1790742380481
+entry_point_name: ''
+experiment_id: '672576450524177125'
+lifecycle_stage: active
+run_id: b815274e26f74821a9bbfb826c0651da
+run_name: reta-idade
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1790742380476
+status: 3
+tags: []
+user_id: teixeirah

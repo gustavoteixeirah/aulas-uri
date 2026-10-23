@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Calendário do semestre — Programação para Ciência de Dados · 2026.1</title>
+<style>
+:root{
+  --bg:#f7f6f3; --panel:#ffffff; --panel-2:#fbfaf8; --ink:#14161a; --ink-soft:#3c4149;
+  --muted:#757c88; --line:#e5e2db; --line-soft:#efedE7;
+  --accent:#4f46e5; --accent-2:#eef0ff; --amber:#b45309; --amber-2:#fdf5e6;
+  --green:#047857; --green-2:#eaf6f1; --red:#b91c1c; --red-2:#fdeeee;
+  --teal:#0e7490; --teal-2:#e7f4f8;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+@page{ size:A4 portrait; margin:11mm 10mm; }
+*{ box-sizing:border-box; }
+body{
+  margin:0; background:var(--bg); color:var(--ink); font-family:var(--font);
+  font-size:10px; line-height:1.4; -webkit-print-color-adjust:exact; print-color-adjust:exact;
+}
+.folha{ max-width:190mm; margin:0 auto; padding:3mm 0 6mm; }
+
+header{ border-bottom:2px solid var(--ink); padding-bottom:6px; margin-bottom:10px; }
+.eyebrow{ font-size:9px; letter-spacing:.13em; text-transform:uppercase; color:var(--accent); font-weight:700; }
+h1{ font-size:21px; letter-spacing:-.02em; margin:2px 0 3px; }
+.sub{ color:var(--muted); font-size:10px; }
+
+.grade{ display:grid; grid-template-columns:repeat(3,1fr); gap:7px; }
+.mes{ border:1px solid var(--line); border-radius:7px; background:var(--panel); padding:7px 8px 8px; break-inside:avoid; }
+.mes h2{
+  font-size:12.5px; margin:0 0 5px; letter-spacing:-.01em; text-transform:capitalize;
+  display:flex; align-items:baseline; justify-content:space-between;
+}
+.mes h2 span{ font-size:9px; color:var(--muted); font-weight:600; text-transform:none; }
+
+table{ width:100%; border-collapse:collapse; table-layout:fixed; }
+th{
+  font-size:7.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted);
+  font-weight:700; padding-bottom:3px;
+}
+td{
+  height:46px; vertical-align:top; border:1px solid var(--line-soft); border-radius:4px;
+  padding:2px 3px; background:var(--panel-2);
+}
+td.fora{ border-color:transparent; background:transparent; }
+td .n{ display:block; font-size:10.5px; font-weight:600; color:var(--ink-soft); line-height:1.1; }
+td.fds .n{ color:var(--muted); }
+td b{ display:block; font-size:8.2px; line-height:1.2; margin-top:2px; letter-spacing:-.01em; }
+td i{ display:block; font-style:normal; font-size:7.2px; line-height:1.15; margin-top:2px; }
+
+td.aula{ background:var(--accent-2); border-color:var(--accent); }
+td.aula .n, td.aula b{ color:var(--accent); }
+td.prazo{ background:var(--amber-2); border-color:var(--amber); }
+    td.aula.prazo{ background:var(--amber-2); border-color:var(--amber); }
+    td.aula.prazo .n, td.aula.prazo b{ color:var(--amber); }
+    td u{ display:block; text-decoration:none; font-weight:700;
+          font-size:8.5px; letter-spacing:.02em; color:var(--amber); margin-top:1px; }
+td.prazo .n, td.prazo b{ color:var(--amber); }
+td.exame{ background:var(--teal-2); border-color:var(--teal); }
+td.exame .n, td.exame b{ color:var(--teal); }
+td.extra{ background:var(--panel); border-style:dashed; border-color:var(--muted); }
+td.extra b{ color:var(--muted); }
+td.feriado{ background:var(--red-2); border-color:var(--red); }
+td.feriado .n, td.feriado i{ color:var(--red); font-weight:600; }
+td.facultativo{ background:var(--panel); border-style:dashed; border-color:var(--line); }
+td.facultativo i{ color:var(--muted); }
+
+.rodape{ display:grid; grid-template-columns:1.25fr 1fr; gap:10px; margin-top:10px; }
+.caixa{ border:1px solid var(--line); border-radius:7px; background:var(--panel); padding:8px 10px; }
+.caixa h3{ font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin:0 0 6px; }
+.legenda{ display:flex; flex-wrap:wrap; gap:5px 12px; }
+.leg{ display:flex; align-items:center; gap:5px; font-size:9px; color:var(--ink-soft); }
+.amostra{ width:13px; height:13px; border-radius:3px; border:1px solid var(--line); flex:none; }
+.a-aula{ background:var(--accent-2); border-color:var(--accent); }
+.a-feriado{ background:var(--red-2); border-color:var(--red); }
+.a-prazo{ background:var(--amber-2); border-color:var(--amber); }
+.a-exame{ background:var(--teal-2); border-color:var(--teal); }
+.a-extra{ background:var(--panel); border-style:dashed; border-color:var(--muted); }
+.a-fac{ background:var(--panel); border-style:dashed; }
+
+.caixa ul{ margin:0; padding:0; list-style:none; }
+.caixa li{ font-size:9px; padding:2.5px 0; border-bottom:1px solid var(--line-soft); color:var(--ink-soft); }
+.caixa li:last-child{ border-bottom:none; }
+.caixa li b{ color:var(--ink); }
+.caixa li span{ color:var(--muted); }
+.caixa li em{ font-style:normal; color:var(--red); font-size:8px; }
+.nota{ font-size:8.6px; color:var(--muted); margin:8px 0 0; line-height:1.45; }
+</style>
+</head>
+<body>
+<div class="folha">
+
+  <header>
+    <div class="eyebrow">Programação para Ciência de Dados · 2026.1</div>
+    <h1>Calendário do semestre</h1>
+    <div class="sub">agosto a dezembro de 2026 · 18 aulas, feriados e prazos de entrega</div>
+  </header>
+
+  <div class="grade">
+<section class="mes">
+  <h2>agosto<span>2026</span></h2>
+  <table>
+    <thead><tr><th>dom</th><th>seg</th><th>ter</th><th>qua</th><th>qui</th><th>sex</th><th>sáb</th></tr></thead>
+    <tbody>
+      <tr>
+<td class="fora"></td>
+<td class="fora"></td>
+<td class="fora"></td>
+<td class="fora"></td>
+<td class="fora"></td>
+<td class="fora"></td>
+<td class="dia fds"><span class="n">1</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">2</span></td>
+<td class="dia"><span class="n">3</span></td>
+<td class="dia"><span class="n">4</span></td>
+<td class="dia"><span class="n">5</span></td>
+<td class="dia"><span class="n">6</span></td>
+<td class="dia aula"><span class="n">7</span><b>Aula 02</b></td>
+<td class="dia fds"><span class="n">8</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">9</span></td>
+<td class="dia"><span class="n">10</span></td>
+<td class="dia"><span class="n">11</span></td>
+<td class="dia"><span class="n">12</span></td>
+<td class="dia"><span class="n">13</span></td>
+<td class="dia aula"><span class="n">14</span><b>Aula 03</b></td>
+<td class="dia fds"><span class="n">15</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">16</span></td>
+<td class="dia"><span class="n">17</span></td>
+<td class="dia"><span class="n">18</span></td>
+<td class="dia"><span class="n">19</span></td>
+<td class="dia"><span class="n">20</span></td>
+<td class="dia aula"><span class="n">21</span><b>Aula 04</b></td>
+<td class="dia fds"><span class="n">22</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">23</span></td>
+<td class="dia"><span class="n">24</span></td>
+<td class="dia"><span class="n">25</span></td>
+<td class="dia"><span class="n">26</span></td>
+<td class="dia"><span class="n">27</span></td>
+<td class="dia aula"><span class="n">28</span><b>Aula 05</b></td>
+<td class="dia fds"><span class="n">29</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">30</span></td>
+<td class="dia"><span class="n">31</span></td>
+<td class="fora"></td>
+<td class="fora"></td>
+<td class="fora"></td>
+<td class="fora"></td>
+<td class="fora"></td>
+</tr>
+    </tbody>
+  </table>
+</section>
+<section class="mes">
+  <h2>setembro<span>2026</span></h2>
+  <table>
+    <thead><tr><th>dom</th><th>seg</th><th>ter</th><th>qua</th><th>qui</th><th>sex</th><th>sáb</th></tr></thead>
+    <tbody>
+      <tr>
+<td class="fora"></td>
+<td class="fora"></td>
+<td class="dia"><span class="n">1</span></td>
+<td class="dia"><span class="n">2</span></td>
+<td class="dia"><span class="n">3</span></td>
+<td class="dia aula"><span class="n">4</span><b>Aula 06</b></td>
+<td class="dia fds"><span class="n">5</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">6</span></td>
+<td class="dia feriado"><span class="n">7</span><i>Independência</i></td>
+<td class="dia"><span class="n">8</span></td>
+<td class="dia"><span class="n">9</span></td>
+<td class="dia"><span class="n">10</span></td>
+<td class="dia aula"><span class="n">11</span><b>Aula 07</b></td>
+<td class="dia fds"><span class="n">12</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">13</span></td>
+<td class="dia"><span class="n">14</span></td>
+<td class="dia"><span class="n">15</span></td>
+<td class="dia"><span class="n">16</span></td>
+<td class="dia"><span class="n">17</span></td>
+<td class="dia aula"><span class="n">18</span><b>Aula 08</b></td>
+<td class="dia fds"><span class="n">19</span></td>
+</tr>
+      <tr>
+<td class="dia fds feriado"><span class="n">20</span><i>Farroupilha</i></td>
+<td class="dia"><span class="n">21</span></td>
+<td class="dia"><span class="n">22</span></td>
+<td class="dia"><span class="n">23</span></td>
+<td class="dia"><span class="n">24</span></td>
+<td class="dia aula prazo"><span class="n">25</span><b>Aula 09</b><u>Entrega 1</u></td>
+<td class="dia fds"><span class="n">26</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">27</span></td>
+<td class="dia"><span class="n">28</span></td>
+<td class="dia"><span class="n">29</span></td>
+<td class="dia"><span class="n">30</span></td>
+<td class="fora"></td>
+<td class="fora"></td>
+<td class="fora"></td>
+</tr>
+    </tbody>
+  </table>
+</section>
+<section class="mes">
+  <h2>outubro<span>2026</span></h2>
+  <table>
+    <thead><tr><th>dom</th><th>seg</th><th>ter</th><th>qua</th><th>qui</th><th>sex</th><th>sáb</th></tr></thead>
+    <tbody>
+      <tr>
+<td class="fora"></td>
+<td class="fora"></td>
+<td class="fora"></td>
+<td class="fora"></td>
+<td class="dia aula"><span class="n">1</span><b>Aula 10</b></td>
+<td class="dia"><span class="n">2</span></td>
+<td class="dia fds"><span class="n">3</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">4</span></td>
+<td class="dia"><span class="n">5</span></td>
+<td class="dia"><span class="n">6</span></td>
+<td class="dia"><span class="n">7</span></td>
+<td class="dia aula"><span class="n">8</span><b>Aula 11</b></td>
+<td class="dia"><span class="n">9</span></td>
+<td class="dia fds"><span class="n">10</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">11</span></td>
+<td class="dia feriado"><span class="n">12</span><i>Aparecida</i></td>
+<td class="dia"><span class="n">13</span></td>
+<td class="dia"><span class="n">14</span></td>
+<td class="dia aula"><span class="n">15</span><b>Aula 12</b></td>
+<td class="dia"><span class="n">16</span></td>
+<td class="dia fds"><span class="n">17</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">18</span></td>
+<td class="dia"><span class="n">19</span></td>
+<td class="dia"><span class="n">20</span></td>
+<td class="dia"><span class="n">21</span></td>
+<td class="dia aula"><span class="n">22</span><b>Aula 13</b></td>
+<td class="dia"><span class="n">23</span></td>
+<td class="dia fds"><span class="n">24</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">25</span></td>
+<td class="dia"><span class="n">26</span></td>
+<td class="dia"><span class="n">27</span></td>
+<td class="dia facultativo"><span class="n">28</span><i>Servidor</i></td>
+<td class="dia aula"><span class="n">29</span><b>Aula 14</b></td>
+<td class="dia"><span class="n">30</span></td>
+<td class="dia fds"><span class="n">31</span></td>
+</tr>
+    </tbody>
+  </table>
+</section>
+<section class="mes">
+  <h2>novembro<span>2026</span></h2>
+  <table>
+    <thead><tr><th>dom</th><th>seg</th><th>ter</th><th>qua</th><th>qui</th><th>sex</th><th>sáb</th></tr></thead>
+    <tbody>
+      <tr>
+<td class="dia fds"><span class="n">1</span></td>
+<td class="dia feriado"><span class="n">2</span><i>Finados</i></td>
+<td class="dia"><span class="n">3</span></td>
+<td class="dia"><span class="n">4</span></td>
+<td class="dia aula"><span class="n">5</span><b>Aula 15</b></td>
+<td class="dia"><span class="n">6</span></td>
+<td class="dia fds"><span class="n">7</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">8</span></td>
+<td class="dia"><span class="n">9</span></td>
+<td class="dia"><span class="n">10</span></td>
+<td class="dia"><span class="n">11</span></td>
+<td class="dia aula"><span class="n">12</span><b>Aula 16</b></td>
+<td class="dia"><span class="n">13</span></td>
+<td class="dia fds"><span class="n">14</span></td>
+</tr>
+      <tr>
+<td class="dia fds feriado"><span class="n">15</span><i>República</i></td>
+<td class="dia"><span class="n">16</span></td>
+<td class="dia"><span class="n">17</span></td>
+<td class="dia"><span class="n">18</span></td>
+<td class="dia aula prazo"><span class="n">19</span><b>Aula 17</b><u>Entrega 2</u></td>
+<td class="dia feriado"><span class="n">20</span><i>C. Negra</i></td>
+<td class="dia fds"><span class="n">21</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">22</span></td>
+<td class="dia"><span class="n">23</span></td>
+<td class="dia"><span class="n">24</span></td>
+<td class="dia"><span class="n">25</span></td>
+<td class="dia aula"><span class="n">26</span><b>Aula 18</b></td>
+<td class="dia"><span class="n">27</span></td>
+<td class="dia fds"><span class="n">28</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">29</span></td>
+<td class="dia"><span class="n">30</span></td>
+<td class="fora"></td>
+<td class="fora"></td>
+<td class="fora"></td>
+<td class="fora"></td>
+<td class="fora"></td>
+</tr>
+    </tbody>
+  </table>
+</section>
+<section class="mes">
+  <h2>dezembro<span>2026</span></h2>
+  <table>
+    <thead><tr><th>dom</th><th>seg</th><th>ter</th><th>qua</th><th>qui</th><th>sex</th><th>sáb</th></tr></thead>
+    <tbody>
+      <tr>
+<td class="fora"></td>
+<td class="fora"></td>
+<td class="dia"><span class="n">1</span></td>
+<td class="dia"><span class="n">2</span></td>
+<td class="dia extra"><span class="n">3</span><b>aula reserva</b></td>
+<td class="dia"><span class="n">4</span></td>
+<td class="dia fds"><span class="n">5</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">6</span></td>
+<td class="dia"><span class="n">7</span></td>
+<td class="dia"><span class="n">8</span></td>
+<td class="dia"><span class="n">9</span></td>
+<td class="dia exame"><span class="n">10</span><b>Exame</b></td>
+<td class="dia"><span class="n">11</span></td>
+<td class="dia fds"><span class="n">12</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">13</span></td>
+<td class="dia"><span class="n">14</span></td>
+<td class="dia"><span class="n">15</span></td>
+<td class="dia"><span class="n">16</span></td>
+<td class="dia"><span class="n">17</span></td>
+<td class="dia"><span class="n">18</span></td>
+<td class="dia fds"><span class="n">19</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">20</span></td>
+<td class="dia"><span class="n">21</span></td>
+<td class="dia"><span class="n">22</span></td>
+<td class="dia"><span class="n">23</span></td>
+<td class="dia facultativo"><span class="n">24</span><i>véspera</i></td>
+<td class="dia feriado"><span class="n">25</span><i>Natal</i></td>
+<td class="dia fds"><span class="n">26</span></td>
+</tr>
+      <tr>
+<td class="dia fds"><span class="n">27</span></td>
+<td class="dia"><span class="n">28</span></td>
+<td class="dia"><span class="n">29</span></td>
+<td class="dia"><span class="n">30</span></td>
+<td class="dia facultativo"><span class="n">31</span><i>véspera</i></td>
+<td class="fora"></td>
+<td class="fora"></td>
+</tr>
+    </tbody>
+  </table>
+</section>
+  </div>
+
+  <div class="rodape">
+    <div class="caixa">
+      <h3>Legenda</h3>
+      <div class="legenda">
+        <span class="leg"><i class="amostra a-aula"></i>dia de aula</span>
+        <span class="leg"><i class="amostra a-feriado"></i>feriado</span>
+        <span class="leg"><i class="amostra a-prazo"></i>prazo de entrega</span>
+        <span class="leg"><i class="amostra a-exame"></i>exame</span>
+        <span class="leg"><i class="amostra a-extra"></i>aula reserva</span>
+        <span class="leg"><i class="amostra a-fac"></i>ponto facultativo</span>
+      </div>
+      <p class="nota">
+        A <b>Aula 01</b> foi em <b>31/07</b>, fora do período mostrado.
+        As aulas 1 a 9 caem na <b>sexta-feira</b>; da aula 10 em diante, na
+        <b>quinta-feira</b> — a virada acontece entre 25/09 e 01/10.
+        Nenhuma aula cai em feriado.
+      </p>
+    </div>
+    <div class="caixa">
+      <h3>Feriados no período</h3>
+      <ul>
+<li><b>07/09</b> <span>seg</span> Independência</li>
+<li><b>20/09</b> <span>dom</span> Revolução Farroupilha <em>estadual · RS</em></li>
+<li><b>12/10</b> <span>seg</span> N. Sra. Aparecida</li>
+<li><b>02/11</b> <span>seg</span> Finados</li>
+<li><b>15/11</b> <span>dom</span> Proclamação da República</li>
+<li><b>20/11</b> <span>sex</span> Consciência Negra</li>
+<li><b>25/12</b> <span>sex</span> Natal</li>
+      </ul>
+      <p class="nota">Confira ainda o <b>feriado municipal</b> da cidade do campus, que não entra nesta lista.</p>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

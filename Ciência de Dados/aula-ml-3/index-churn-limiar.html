@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula ML 03 — Classificação</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .mfont{ font-family:'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif; }
+  .formula{ text-align:center; margin:.25em 0 .1em !important; }
+  .mat td{ min-width: 92px; }
+  .mat th{ font-family: var(--font); font-size: 11px; }
+  .tbl td.num, .tbl th.num{ text-align:right; font-variant-numeric: tabular-nums; }
+  .escada .deg small{ line-height:1.35; }
+</style>
+</head>
+<body>
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+    <div class="deck" id="deck">
+
+      <!-- ===================== ABERTURA ===================== -->
+      <section class="slide cover" data-title="Capa" data-block="Abertura">
+        <div class="cover-tag">Programação para Ciência de Dados · 2026.1</div>
+        <h1><em>Classificação</em>:<br>quem vai cancelar?</h1>
+        <p class="cover-sub">Prever “sai” ou “fica” com regressão logística,<br>medir os erros e escolher qual erro dá para tolerar</p>
+        <div class="cover-meta">
+          <span>Aula ML 03</span><i></i><span>15/10</span><i></i><span>Classificação</span><i></i><span>aula gravada</span>
+        </div>
+        <div class="cover-hint">Use <kbd>→</kbd> <kbd>←</kbd> · <kbd>M</kbd> índice · <kbd>P</kbd> PDF · <kbd>F</kbd> tela cheia</div>
+      </section>
+
+      <section class="slide" data-title="Regressão ou classificação" data-block="Abertura">
+        <span class="kicker">Lembrando as aulas 1 e 2</span>
+        <h2>Número ou categoria?</h2>
+        <div class="cards c2">
+          <div class="card"><b>Regressão · aula 2</b><small>a resposta é um <b>número</b>: quantos litros de cerveja num dia.</small></div>
+          <div class="card"><b>Classificação · aulas 1 e 3</b><small>a resposta é uma <b>opção de uma lista</b>: a espécie do pinguim, ou “sai / fica”.</small></div>
+        </div>
+        <table class="tbl mini">
+          <thead><tr><th>pergunta</th><th>resposta</th><th>tipo</th></tr></thead>
+          <tbody>
+            <tr><td>Quantos litros amanhã?</td><td>um número</td><td>regressão</td></tr>
+            <tr><td>Qual é a espécie do pinguim?</td><td>1 de 3 opções</td><td>classificação</td></tr>
+            <tr class="hi"><td><b>Este cliente vai cancelar?</b></td><td>sim ou não</td><td><b>classificação (hoje)</b></td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">Com os pinguins, o modelo deu uma <b>chance</b> para cada espécie e ficou com a maior. Hoje são só duas opções, e a gente vai decidir <b>onde cortar</b>.</div>
+      </section>
+
+      <!-- ===================== OS DADOS ===================== -->
+      <section class="slide" data-title="O problema: churn" data-block="Os dados">
+        <span class="kicker">O caso de hoje</span>
+        <h2>Quem vai cancelar?</h2>
+        <div class="bigdef">
+          <span class="bd-label">Churn</span>
+          <p>Cliente que <b>cancela</b> o contrato. A operadora quer saber <b>antes</b> quem vai sair, para ligar e oferecer algo.</p>
+        </div>
+        <div class="cards c2">
+          <div class="card"><b>Erro 1 · deixar passar</b><small>o cliente ia sair, o modelo disse “fica”. Ninguém liga. <b>Cliente perdido.</b></small></div>
+          <div class="card"><b>Erro 2 · alarme à toa</b><small>o cliente ia ficar, o modelo disse “sai”. A empresa liga sem precisar. <b>Gasta tempo e desconto.</b></small></div>
+        </div>
+        <div class="callout warn">Os dois erros custam coisas <b>diferentes</b>. No fim da aula, vamos escolher qual deles tolerar.</div>
+      </section>
+
+      <section class="slide" data-title="O arquivo" data-nb="arquivo" data-block="Os dados">
+        <span class="nb-tag">caderno 01</span>
+        <span class="kicker">Telco Customer Churn · Kaggle · uma linha = um cliente</span>
+        <h2>O arquivo</h2>
+        <table class="tbl mini">
+          <thead><tr><th>tenure<br>meses de casa</th><th class="num">MonthlyCharges<br>conta do mês</th><th class="num">TotalCharges<br>total já pago</th><th>Contract<br>contrato</th><th>Churn<br>saiu?</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td class="num">29,85</td><td class="num">29,85</td><td>Month-to-month</td><td>No</td></tr>
+            <tr><td>34</td><td class="num">56,95</td><td class="num">1.889,50</td><td>One year</td><td>No</td></tr>
+            <tr class="hi"><td>2</td><td class="num">53,85</td><td class="num">108,15</td><td>Month-to-month</td><td><b>Yes</b></td></tr>
+          </tbody>
+        </table>
+        <div class="cards c3">
+          <div class="card"><b>7.043 clientes</b><small>21 colunas no arquivo. Usamos <b>4</b> para prever, mais o alvo <b>Churn</b>.</small></div>
+          <div class="card"><b>Valores em US$</b><small>contrato: <b>mensal</b> (Month-to-month), <b>1 ano</b> ou <b>2 anos</b>.</small></div>
+          <div class="card"><b>26,6% saíram</b><small>1.869 de 7.032 clientes. <b>73,4% ficaram.</b> Quem sai é minoria: 1 em cada 4.</small></div>
+        </div>
+        <p class="note">As primeiras três linhas do arquivo. As outras 17 colunas (serviços, forma de pagamento…) ficam de fora para o modelo caber na cabeça.</p>
+      </section>
+
+      <section class="slide" data-title="Limpeza mínima" data-nb="limpeza" data-block="Os dados">
+        <span class="nb-tag">caderno 01</span>
+        <span class="kicker">Só o necessário para o modelo rodar</span>
+        <h2>Limpeza mínima</h2>
+        <div class="steps">
+          <div class="step"><span>1</span><div><b>TotalCharges</b> veio como texto, com <b>11 células vazias</b>. Vira número, e essas 11 linhas saem: 7.043 → <b>7.032</b>.</div></div>
+          <div class="step"><span>2</span><div><b>Churn</b> vira número: <b>Yes → 1</b> (saiu) e <b>No → 0</b> (ficou). O modelo só faz conta com números.</div></div>
+          <div class="step"><span>3</span><div><b>Contract</b> é texto. Vira <b>3 colunas de 0 e 1</b>: mensal, 1 ano, 2 anos. Um cliente mensal fica 1, 0, 0.</div></div>
+          <div class="step"><span>4</span><div>As 3 colunas numéricas vão para a <b>mesma escala</b>, como na aula 1: meses são dezenas, o total pago chega a milhares.</div></div>
+        </div>
+        <div class="callout key">Os passos 3 e 4 ficam <b>dentro do pipeline</b>: o teste passa pelo mesmo caminho do treino.</div>
+      </section>
+
+      <section class="slide" data-title="Treino e teste" data-nb="separacao" data-block="Os dados">
+        <span class="nb-tag">caderno 01</span>
+        <span class="kicker">Separar antes de treinar · 75% e 25%</span>
+        <h2>Treino e teste, estratificado</h2>
+        <div class="cards c2">
+          <div class="card"><b>Treino · 5.274 clientes</b><small>o modelo <b>aprende</b> aqui: vê as 4 colunas e se o cliente saiu.</small></div>
+          <div class="card"><b>Teste · 1.758 clientes</b><small>a <b>prova</b>: o modelo não viu. Todas as métricas da aula saem daqui.</small></div>
+        </div>
+        <div class="bars">
+          <div class="br ok"><div class="br-lbl">treino<small>% que sai</small></div><div class="br-bar"><i style="width:26.6%"></i></div><div class="br-val">26,6%</div></div>
+          <div class="br ok"><div class="br-lbl">teste<small>% que sai</small></div><div class="br-bar"><i style="width:26.6%"></i></div><div class="br-val">26,6%</div></div>
+        </div>
+        <div class="callout key"><b>Estratificar</b> = sortear mantendo a mesma % de quem sai nos dois lados. Sem isso, o teste podia cair com mais ou menos gente que sai, e a nota mudaria <b>por sorte</b>. Semente fixa: todo mundo sorteia igual.</div>
+      </section>
+
+      <!-- ===================== O MODELO ===================== -->
+      <section class="slide" data-title="Regressão logística" data-block="O modelo">
+        <span class="kicker">Duas contas: score e probabilidade</span>
+        <h2>Regressão logística</h2>
+        <div class="bigdef">
+          <span class="bd-label">Passo 1 · o score</span>
+          <p class="formula mfont" style="font-size:1.45em">
+            <math display="block" class="mfont">
+              <mrow>
+                <mtext>score</mtext><mo>=</mo><mi>b</mi><mo>+</mo>
+                <msub><mi>w</mi><mn>1</mn></msub><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo>
+                <msub><mi>w</mi><mn>2</mn></msub><msub><mi>x</mi><mn>2</mn></msub><mo>+</mo><mo>…</mo><mo>+</mo>
+                <msub><mi>w</mi><mi>n</mi></msub><msub><mi>x</mi><mi>n</mi></msub>
+              </mrow>
+            </math>
+          </p>
+          <p class="note" style="text-align:center;margin-top:4px;padding-top:4px">a mesma soma da reta da aula 2: <b>x</b> = colunas do cliente · <b>w</b> = pesos aprendidos · <b>b</b> = ponto de partida</p>
+        </div>
+        <div class="bigdef">
+          <span class="bd-label">Passo 2 · a sigmoide</span>
+          <p class="formula mfont" style="font-size:1.45em">
+            <math display="block" class="mfont">
+              <mrow>
+                <mi>p</mi><mo stretchy="false">(</mo><mtext>sair</mtext><mo stretchy="false">)</mo><mo>=</mo>
+                <mfrac>
+                  <mn>1</mn>
+                  <mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mtext>score</mtext></mrow></msup></mrow>
+                </mfrac>
+              </mrow>
+            </math>
+          </p>
+        </div>
+        <div class="cards c3">
+          <div class="card"><b>score negativo</b><small>probabilidade <b>abaixo de 0,5</b></small></div>
+          <div class="card"><b>score = 0</b><small>probabilidade <b>exatamente 0,5</b></small></div>
+          <div class="card"><b>score positivo</b><small>probabilidade <b>acima de 0,5</b></small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Um cliente de verdade" data-nb="cliente" data-block="O modelo">
+        <span class="nb-tag">caderno 01</span>
+        <span class="kicker">Cliente 157 do teste · o modelo nunca viu este cliente</span>
+        <h2>Um cliente, do começo ao fim</h2>
+        <div class="escada">
+          <div class="deg"><b>4 colunas</b><small>2 meses de casa<br>US$ 95,65/mês<br>US$ 167,30 no total<br>contrato mensal</small></div>
+          <span class="seta">→</span>
+          <div class="deg"><b>score 0,95</b><small>a soma de<br>peso × coluna</small></div>
+          <span class="seta">→</span>
+          <div class="deg"><b>0,72</b><small>sigmoide:<br>1 / (1 + e<sup>−0,95</sup>)</small></div>
+          <span class="seta">→</span>
+          <div class="deg"><b>≥ 0,5</b><small>passa do<br>limiar</small></div>
+          <span class="seta">→</span>
+          <div class="deg" style="border-color:var(--accent);background:var(--accent-2)"><b>“vai sair”</b><small>classe 1</small></div>
+        </div>
+        <figure class="fig">
+          <img src="img/g-sigmoide.png" alt="Curva sigmoide do score para a probabilidade de sair, com o cliente 157 em score 0,95 e probabilidade 0,72, acima da linha do limiar 0,5">
+        </figure>
+        <div class="callout ok">Na vida real, este cliente <b>saiu</b>. O modelo acertou.</div>
+      </section>
+
+      <section class="slide" data-title="O que o modelo aprendeu" data-nb="pesos" data-block="O modelo">
+        <span class="nb-tag">caderno 01</span>
+        <span class="kicker">Os pesos w do treino · causa → efeito</span>
+        <h2>O que empurra para sair</h2>
+        <table class="tbl mini">
+          <thead><tr><th>coluna</th><th class="num">peso</th><th>o que quer dizer</th></tr></thead>
+          <tbody>
+            <tr><td>meses de casa</td><td class="num"><b>−1,23</b></td><td>mais meses de cliente → <b>menos</b> chance de sair</td></tr>
+            <tr><td>conta do mês</td><td class="num"><b>+0,73</b></td><td>conta mais cara → <b>mais</b> chance de sair</td></tr>
+            <tr><td>total já pago</td><td class="num">+0,39</td><td>empurra um pouco para sair</td></tr>
+            <tr class="hi"><td>contrato mensal</td><td class="num"><b>+0,55</b></td><td>sem fidelidade → <b>mais</b> chance de sair</td></tr>
+            <tr><td>contrato de 1 ano</td><td class="num">−0,60</td><td><b>menos</b> chance de sair</td></tr>
+            <tr><td>contrato de 2 anos</td><td class="num"><b>−1,30</b></td><td><b>bem menos</b> chance de sair</td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">O cliente 157 tem <b>poucos meses</b>, <b>conta alta</b> e <b>contrato mensal</b>: quase tudo empurra para “sai”. Por isso o score dele deu positivo (0,95).</div>
+        <p class="note">Peso + empurra para “sai”, peso − empurra para “fica”. Como as colunas estão na mesma escala, dá para comparar o tamanho dos pesos.</p>
+      </section>
+
+      <section class="slide" data-title="Limiar" data-nb="limiar" data-block="O modelo">
+        <span class="nb-tag">cadernos 01 e 03</span>
+        <span class="kicker">De probabilidade para decisão</span>
+        <h2>Limiar: onde cortar</h2>
+        <div class="bigdef">
+          <span class="bd-label">Limiar</span>
+          <p>Probabilidade <b>maior ou igual</b> ao limiar → “vai sair”. Abaixo → “fica”. O padrão é <b>0,5</b>.</p>
+        </div>
+        <table class="tbl">
+          <thead><tr><th>cliente do teste</th><th class="num">probabilidade de sair</th><th>com limiar 0,5</th><th>na vida real</th></tr></thead>
+          <tbody>
+            <tr><td>157 · 2 meses, US$ 95,65, mensal</td><td class="num"><b>0,72</b></td><td>“sai” ✓</td><td>saiu</td></tr>
+            <tr class="hi"><td>248 · 6 meses, US$ 50,80, mensal</td><td class="num"><b>0,42</b></td><td>“fica” ✗</td><td>saiu</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">O cliente 248 saiu, mas 0,42 ficou abaixo do corte: o modelo <b>deixou passar</b>. O 0,5 é uma <b>escolha</b>, não uma lei. Mais adiante, a gente muda o limiar e vê o que acontece.</div>
+      </section>
+
+      <!-- ===================== MEDIR ===================== -->
+      <section class="slide" data-title="A acurácia que mente" data-nb="acuracia" data-block="Medir">
+        <span class="nb-tag">caderno 01</span>
+        <span class="kicker">Os 1.758 clientes do teste · limiar 0,5</span>
+        <h2>A acurácia que mente</h2>
+        <div class="bigdef">
+          <span class="bd-label">Acurácia</span>
+          <p>Acertos ÷ total. De cada 100 clientes do teste, <b>quantos o modelo acertou</b>?</p>
+        </div>
+        <div class="bars">
+          <div class="br ok"><div class="br-lbl">regressão logística<small>o nosso modelo</small></div><div class="br-bar"><i style="width:78.8%"></i></div><div class="br-val">0,788<small>78,8%</small></div></div>
+          <div class="br"><div class="br-lbl">chutar “fica”<small>para todo mundo</small></div><div class="br-bar"><i style="width:73.4%"></i></div><div class="br-val">0,734<small>73,4%</small></div></div>
+        </div>
+        <div class="callout warn">Quem diz “fica” para todo mundo já acerta <b>73,4%</b>, porque 73,4% dos clientes ficam. E esse chute <b>não encontra nenhum</b> cliente que sai. A acurácia sozinha não mostra isso → precisamos olhar <b>os erros</b>.</div>
+      </section>
+
+      <section class="slide" data-title="Matriz de confusão" data-nb="matriz" data-block="Medir">
+        <span class="nb-tag">caderno 02</span>
+        <span class="kicker">Os 1.758 clientes do teste · limiar 0,5</span>
+        <h2>Matriz de confusão</h2>
+        <div class="mat-wrap">
+          <table class="mat">
+            <thead><tr><th></th><th>modelo disse<br>“fica”</th><th>modelo disse<br>“sai”</th></tr></thead>
+            <tbody>
+              <tr><th class="rot">ficou</th><td class="hi2">1.167<i>acertou quem fica</i></td><td class="fora">124<i>alarme à toa</i></td></tr>
+              <tr><th class="rot">saiu</th><td class="fora">248<i>deixou passar</i></td><td class="hi">219<i>acertou quem sai</i></td></tr>
+            </tbody>
+          </table>
+          <div class="cresce">
+            <ul class="bul">
+              <li><b>Linhas</b> = o que aconteceu. <b>Colunas</b> = o que o modelo disse.</li>
+              <li>Diagonal = acertos: 1.167 + 219 = 1.386. E 1.386 ÷ 1.758 = <b>0,788</b>, a acurácia.</li>
+              <li>Fora da diagonal, os <b>dois erros</b> do slide 3.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout warn"><b>467</b> clientes saíram de verdade. O modelo pegou <b>219</b> e deixou passar <b>248</b>: mais da metade.</div>
+      </section>
+
+      <section class="slide" data-title="Precisão" data-nb="metricas" data-block="Medir">
+        <span class="nb-tag">caderno 02</span>
+        <span class="kicker">Olha só a coluna “modelo disse sai”</span>
+        <h2>Precisão</h2>
+        <div class="bigdef">
+          <span class="bd-label">Em uma frase</span>
+          <p>Dos que eu disse que <b>saem</b>, quantos <b>saíram</b> mesmo?</p>
+          <p class="formula mfont" style="font-size:1.35em">
+            <math display="block" class="mfont">
+              <mrow>
+                <mtext>precisão</mtext><mo>=</mo>
+                <mfrac><mtext>acertou quem sai</mtext><mtext>acertou quem sai + alarme à toa</mtext></mfrac>
+                <mo>=</mo><mfrac><mn>219</mn><mrow><mn>219</mn><mo>+</mo><mn>124</mn></mrow></mfrac>
+                <mo>=</mo><mn>0,638</mn>
+              </mrow>
+            </math>
+          </p>
+        </div>
+        <div class="cards c2">
+          <div class="card"><b>Neste modelo</b><small>o modelo deu <b>343 alertas</b>. De cada 100 alertas, cerca de <b>64</b> eram clientes que iam sair.</small></div>
+          <div class="card"><b>Precisão alta</b><small>poucos alarmes à toa: quando o modelo avisa, <b>costuma ser verdade</b>.</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Recall" data-nb="metricas" data-block="Medir">
+        <span class="nb-tag">caderno 02</span>
+        <span class="kicker">Olha só a linha “saiu”</span>
+        <h2>Recall</h2>
+        <div class="bigdef">
+          <span class="bd-label">Em uma frase</span>
+          <p>Dos que <b>saíram</b>, quantos eu <b>peguei</b>?</p>
+          <p class="formula mfont" style="font-size:1.35em">
+            <math display="block" class="mfont">
+              <mrow>
+                <mtext>recall</mtext><mo>=</mo>
+                <mfrac><mtext>acertou quem sai</mtext><mtext>acertou quem sai + deixou passar</mtext></mfrac>
+                <mo>=</mo><mfrac><mn>219</mn><mrow><mn>219</mn><mo>+</mo><mn>248</mn></mrow></mfrac>
+                <mo>=</mo><mn>0,469</mn>
+              </mrow>
+            </math>
+          </p>
+        </div>
+        <div class="cards c2">
+          <div class="card"><b>Neste modelo</b><small><b>467</b> clientes saíram. De cada 100 que saíram, o modelo pegou cerca de <b>47</b>.</small></div>
+          <div class="card"><b>Recall baixo</b><small>muita gente sai <b>sem ninguém avisar</b>. Aqui, 248 clientes.</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="F1" data-nb="metricas" data-block="Medir">
+        <span class="nb-tag">caderno 02</span>
+        <span class="kicker">Precisão e recall num número só</span>
+        <h2>F1</h2>
+        <div class="bigdef">
+          <span class="bd-label">F1</span>
+          <p class="formula mfont" style="font-size:1.45em">
+            <math display="block" class="mfont">
+              <mrow>
+                <mi>F1</mi><mo>=</mo>
+                <mfrac><mrow><mn>2</mn><mo>×</mo><mtext>precisão</mtext><mo>×</mo><mtext>recall</mtext></mrow><mtext>precisão + recall</mtext></mfrac>
+                <mo>=</mo>
+                <mfrac><mrow><mn>2</mn><mo>×</mo><mn>0,638</mn><mo>×</mo><mn>0,469</mn></mrow><mrow><mn>0,638</mn><mo>+</mo><mn>0,469</mn></mrow></mfrac>
+                <mo>=</mo><mn>0,541</mn>
+              </mrow>
+            </math>
+          </p>
+        </div>
+        <div class="cards c2">
+          <div class="card"><b>Por que não a média simples?</b><small>o F1 <b>cai muito</b> se um dos dois for baixo. Exemplo de conta: precisão 1,0 e recall 0,1 → média 0,55, mas F1 só <b>0,18</b>.</small></div>
+          <div class="card"><b>Quando usar</b><small>quando ninguém disse qual erro custa mais: o F1 cobra os dois lados ao mesmo tempo.</small></div>
+        </div>
+        <table class="tbl mini">
+          <thead><tr><th>limiar 0,5</th><th class="num">acurácia</th><th class="num">precisão</th><th class="num">recall</th><th class="num">F1</th></tr></thead>
+          <tbody><tr class="hi"><td>o modelo do caderno 02</td><td class="num">0,788</td><td class="num">0,638</td><td class="num">0,469</td><td class="num"><b>0,541</b></td></tr></tbody>
+        </table>
+      </section>
+
+      <!-- ===================== AJUSTAR ===================== -->
+      <section class="slide" data-title="Mudar o limiar" data-nb="limiares" data-block="Ajustar">
+        <span class="nb-tag">caderno 03</span>
+        <span class="kicker">O mesmo modelo, três cortes · 467 clientes saíram no teste</span>
+        <h2>Mudar o limiar</h2>
+        <table class="tbl">
+          <thead><tr><th>limiar</th><th class="num">alertas</th><th class="num">desses, saíram</th><th class="num">precisão</th><th class="num">recall</th></tr></thead>
+          <tbody>
+            <tr><td><b>0,7</b> · corte alto</td><td class="num">26</td><td class="num">21</td><td class="num"><b>0,81</b></td><td class="num">0,05</td></tr>
+            <tr><td><b>0,5</b> · padrão (v1)</td><td class="num">343</td><td class="num">219</td><td class="num">0,64</td><td class="num">0,47</td></tr>
+            <tr class="hi"><td><b>0,3</b> · corte baixo (v2)</td><td class="num">680</td><td class="num">352</td><td class="num">0,52</td><td class="num"><b>0,75</b></td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">Limiar <b>mais baixo</b> → mais alertas → pega mais gente que sai (<b>recall ↑</b>), mas mais alertas são à toa (<b>precisão ↓</b>).</div>
+        <div class="callout ok">O cliente <b>248</b> (probabilidade 0,42) passava batido com 0,5. Com 0,3, ele vira “sai”: <b>agora o alerta pega</b>.</div>
+      </section>
+
+      <section class="slide" data-title="Peso da classe" data-nb="peso" data-block="Ajustar">
+        <span class="nb-tag">caderno 03</span>
+        <span class="kicker">Mexer no treino, não no corte · limiar 0,5 nos dois</span>
+        <h2>Peso da classe</h2>
+        <div class="bigdef">
+          <span class="bd-label">Peso balanceado</span>
+          <p>No treino, errar um cliente que <b>sai</b> passa a custar quase <b>3 vezes</b> mais do que errar um que fica, porque eles são só 1 em 4.</p>
+        </div>
+        <table class="tbl mini">
+          <thead><tr><th></th><th class="num">sem peso (v1)</th><th class="num">peso balanceado (v3)</th></tr></thead>
+          <tbody>
+            <tr><td>acertou quem sai</td><td class="num">219</td><td class="num"><b>380</b></td></tr>
+            <tr><td>deixou passar</td><td class="num">248</td><td class="num"><b>87</b></td></tr>
+            <tr><td>alarme à toa</td><td class="num">124</td><td class="num"><b>407</b></td></tr>
+            <tr><td>precisão</td><td class="num">0,64</td><td class="num">0,48</td></tr>
+            <tr class="hi"><td>recall</td><td class="num">0,47</td><td class="num"><b>0,81</b></td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">O modelo aprende a dar <b>probabilidades mais altas</b> para quem parece que vai sair. Efeito parecido com baixar o limiar: recall ↑, precisão ↓.</div>
+      </section>
+
+      <!-- ===================== MLFLOW ===================== -->
+      <section class="slide" data-title="MLflow: três runs" data-nb="runs" data-block="MLflow">
+        <span class="nb-tag">cadernos 02 e 03</span>
+        <span class="kicker">Experimento churn · pasta mlruns</span>
+        <h2>Uma run por tentativa</h2>
+        <div class="cards c3">
+          <div class="card"><b>v1 · limiar 0,5</b><small>o modelo do caderno 02, sem peso. O ponto de partida.</small></div>
+          <div class="card"><b>v2 · limiar 0,3</b><small>mudou <b>só o limiar</b>. O modelo é o mesmo.</small></div>
+          <div class="card"><b>v3 · peso balanceado</b><small>volta ao 0,5 e muda <b>só o peso</b> no treino.</small></div>
+        </div>
+        <table class="tbl mini">
+          <thead><tr><th>cada run grava</th><th>nesta aula</th></tr></thead>
+          <tbody>
+            <tr><td>parâmetros</td><td>colunas de entrada, limiar, peso</td></tr>
+            <tr><td>métricas</td><td>acurácia, precisão, recall, F1</td></tr>
+            <tr><td>dataset e modelo</td><td>o CSV e o modelo treinado</td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">Mudar <b>uma coisa por vez</b>: assim dá para saber o que causou cada mudança nos números. O comando que abre a interface está no fim do caderno 03.</div>
+      </section>
+
+      <section class="slide" data-title="Evolução v1 → v3" data-nb="grafico" data-block="MLflow">
+        <span class="nb-tag">caderno 03</span>
+        <span class="kicker">Números lidos de volta do MLflow</span>
+        <h2>De v1 a v3</h2>
+        <figure class="fig">
+          <img src="img/g-evolucao.png" alt="Dois painéis. Esquerda: precisão cai de 0,64 para 0,52 e 0,48; recall sobe de 0,47 para 0,75 e 0,81. Direita: F1 sobe de 0,54 para 0,61 e 0,61; acurácia cai de 0,79 para 0,75 e 0,72">
+        </figure>
+        <div class="callout key">Recall <b>0,47 → 0,81</b>, precisão <b>0,64 → 0,48</b>. A acurácia <b>caiu</b> (0,79 → 0,72), mas o F1 <b>subiu</b> (0,54 → 0,61). A acurácia mais alta não é o modelo mais útil.</div>
+      </section>
+
+      <!-- ===================== FECHO ===================== -->
+      <section class="slide" data-title="A escolha" data-block="Fecho">
+        <span class="kicker">Antes de comemorar um número</span>
+        <h2>Qual erro tolerar?</h2>
+        <div class="compare">
+          <div class="cmp cmp-a">
+            <h3>Perder cliente custa mais</h3>
+            <p>Ex.: o cliente paga todo mês, e uma ligação é barata.</p>
+            <ul>
+              <li>Olhe o <b>recall</b>.</li>
+              <li><b>v3</b>: pega 380 dos 467 que saem.</li>
+              <li>Preço: 407 ligações à toa.</li>
+            </ul>
+          </div>
+          <div class="cmp cmp-b">
+            <h3>Ligar à toa custa mais</h3>
+            <p>Ex.: a oferta é um desconto grande, caro para a empresa.</p>
+            <ul>
+              <li>Olhe a <b>precisão</b>.</li>
+              <li><b>v1</b>: 64% dos alertas são de verdade.</li>
+              <li>Preço: 248 clientes saem sem aviso.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout key"><b>A regra:</b> primeiro decida qual erro custa mais. Depois escolha a métrica. Só então escolha a run. Se ninguém decidiu, use o <b>F1</b>.</div>
+      </section>
+
+      <section class="slide" data-title="Resumo" data-block="Fecho">
+        <span class="kicker">O que a aula fez, com os números</span>
+        <h2>Resumo</h2>
+        <div class="pipeline">
+          <div class="pl hi"><b>Pergunta</b><small>este cliente vai sair?</small></div>
+          <div class="pl hi"><b>Dados</b><small>7.032 clientes · 26,6% saem</small></div>
+          <div class="pl hi"><b>Separação</b><small>estratificada · 5.274 / 1.758</small></div>
+          <div class="pl hi"><b>Modelo</b><small>logística: score → probabilidade</small></div>
+          <div class="pl hi"><b>Limiar</b><small>probabilidade → “sai” ou “fica”</small></div>
+          <div class="pl hi"><b>Medir</b><small>matriz, precisão, recall, F1</small></div>
+        </div>
+        <div class="cards c3" style="margin-top:12px">
+          <div class="card"><b>01-treino</b><small>limpar, separar, treinar, um cliente, acurácia contra o chute.</small></div>
+          <div class="card"><b>02-mlflow</b><small>matriz de confusão, precisão, recall, F1, e a run gravada.</small></div>
+          <div class="card"><b>03-comparar</b><small>v1, v2, v3 no MLflow e o gráfico da evolução.</small></div>
+        </div>
+        <div class="callout key">Alvo sim ou não, com uma classe rara: a acurácia engana. Olhe a matriz e escolha a métrica <b>pelo custo do erro</b>.</div>
+      </section>
+
+    </div>
+    <footer class="bar">
+      <div class="progress"><span id="progressFill"></span></div>
+      <button class="btn ghost" id="btnMenu" title="Índice (M)" aria-label="Índice">☰</button>
+      <div class="bar-title"><span id="barBlock">Abertura</span><b id="barTitle">Capa</b></div>
+      <div class="bar-nav">
+        <button class="btn" id="btnPrev" aria-label="Slide anterior">‹ Voltar</button>
+        <span class="counter"><b id="cur">1</b> / <span id="total">1</span></span>
+        <button class="btn primary" id="btnNext" aria-label="Próximo slide">Avançar ›</button>
+      </div>
+      <button class="btn ghost" id="btnPdf" title="PDF (P)" aria-label="PDF">PDF</button>
+      <button class="btn ghost" id="btnTheme" title="Tema (T)" aria-label="Tema">◐</button>
+      <button class="btn ghost" id="btnFull" title="Tela cheia (F)" aria-label="Tela cheia">⛶</button>
+    </footer>
+    <div class="modal" id="pdfModal" aria-hidden="true">
+      <div class="modal-box">
+        <h3>Exportar os slides para PDF</h3>
+        <p>Destino: Salvar como PDF. Margens: nenhuma. Gráficos de segundo plano: ativado.</p>
+        <div class="modal-actions">
+          <button class="btn" id="pdfCancel">Cancelar</button>
+          <button class="btn primary" id="pdfGo">Abrir impressão</button>
+        </div>
+      </div>
+    </div>
+    <aside class="menu" id="menu" aria-hidden="true">
+      <header>Índice da aula<button class="btn ghost" id="btnMenuClose" aria-label="Fechar">✕</button></header>
+      <nav id="menuList"></nav>
+    </aside>
+  </div>
+</div>
+<script src="js/highlight.js"></script>
+<script src="js/slides.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

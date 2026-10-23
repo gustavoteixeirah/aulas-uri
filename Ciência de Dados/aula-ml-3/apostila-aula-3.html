@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Aula ML 03 · Algoritmos de classificação · Apostila</title>
+<style>
+@page { size: A4; margin: 18mm 18mm 18mm 18mm;
+  @top-right { content: "Aula ML 03 · Algoritmos de classificação"; font: 8pt -apple-system, "Helvetica Neue", Arial, sans-serif; color: #888; }
+  @bottom-center { content: counter(page) " / " counter(pages); font: 8.5pt -apple-system, "Helvetica Neue", Arial, sans-serif; color: #888; }
+}
+@page :first { @top-right { content: none; } }
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; font-size: 10pt; line-height: 1.4; color: #1d1f24; margin: 0; }
+h1 { font-size: 21pt; margin: 0 0 4px; letter-spacing: -.3px; }
+h1 span { color: #5b5bd6; }
+.sub { color: #555; margin: 0 0 8px; font-size: 10.5pt; }
+.meta { font-size: 8.5pt; color: #777; letter-spacing: .6px; text-transform: uppercase; margin-bottom: 6px; }
+h2 { font-size: 15pt; margin: 0 0 6px; padding-bottom: 5px; border-bottom: 2px solid #5b5bd6; break-after: avoid; }
+h2 .n { color: #5b5bd6; margin-right: 6px; }
+h3 { font-size: 11pt; margin: 9px 0 3px; color: #333; break-after: avoid; }
+section.pg { break-before: page; }
+p { margin: 0 0 6px; }
+ul, ol { margin: 0 0 8px; padding-left: 20px; }
+li { margin-bottom: 3px; }
+table { border-collapse: collapse; width: 100%; margin: 3px 0 7px; font-size: 9.2pt; break-inside: avoid; }
+th { text-align: left; font-size: 7.6pt; text-transform: uppercase; letter-spacing: .5px; color: #666; border-bottom: 1.5px solid #ccc; padding: 3px 6px; }
+td { border-bottom: 1px solid #e6e6ea; padding: 2.5px 6px; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr.hi td { background: #eeeefc; font-weight: 600; }
+td.best { font-weight: 700; color: #3a3ab0; }
+.box { border-left: 4px solid #5b5bd6; background: #f4f4fb; padding: 6px 11px; margin: 6px 0 7px; border-radius: 0 6px 6px 0; break-inside: avoid; }
+.box.ok { border-color: #2f9e67; background: #eef8f2; }
+.box.warn { border-color: #d99a1c; background: #fdf6e7; }
+.box b.t { display: block; font-size: 8pt; text-transform: uppercase; letter-spacing: .6px; color: #666; margin-bottom: 2px; }
+.quote { font-style: italic; border-left: 3px solid #bbb; padding: 4px 12px; color: #333; margin: 6px 0 10px; }
+.formula { background: #fafafd; border: 1px solid #e3e3ee; border-radius: 6px; padding: 5px 12px 3px; margin: 5px 0; break-inside: avoid; }
+.formula .lbl { font-size: 8pt; text-transform: uppercase; letter-spacing: .6px; color: #777; }
+math[display="block"] { font-size: 1.35em; margin: 2px 0; }
+math { font-family: 'STIX Two Math','Cambria Math','Latin Modern Math','STIX',serif; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 6px 0; break-inside: avoid; }
+.two .box { margin: 0; }
+.steps { counter-reset: s; list-style: none; padding: 0; }
+.steps li { counter-increment: s; position: relative; padding: 2px 0 2px 28px; }
+.steps li::before { content: counter(s); position: absolute; left: 0; top: 2px; width: 19px; height: 19px; border-radius: 50%; background: #5b5bd6; color: #fff; font-size: 9pt; text-align: center; line-height: 19px; font-weight: 700; }
+code, .cmd { font-family: "SF Mono", Menlo, Consolas, monospace; font-size: 9pt; background: #f1f1f4; padding: 1px 4px; border-radius: 3px; }
+pre.cmd { display: block; padding: 8px 10px; white-space: pre-wrap; margin: 6px 0 10px; }
+img.fig { width: 92%; display:block; margin-left:auto; margin-right:auto; margin: 6px 0 2px; border: 1px solid #eee; }
+.cap { font-size: 8.8pt; color: #666; margin-bottom: 10px; }
+.small { font-size: 9pt; color: #555; }
+a { color: #3a3ab0; text-decoration: underline; word-break: break-all; }
+</style>
+</head>
+<body>
+
+<div class="meta">Programação para Ciência de Dados · 2026.1 · Aula ML 03 · 15/10</div>
+<h1>Algoritmos de <span>classificação</span></h1>
+<p class="sub">Apostila para ler no lugar da aula: quatro jeitos de responder “o cliente sai ou fica?”, no mesmo problema, comparados no mesmo teste.</p>
+<p class="small">Como ler: siga na ordem. Cada algoritmo tem a ideia, a fórmula e um exemplo com um cliente de verdade. Todos os números saíram do caderno <code>aula-ml-3.ipynb</code>, que você pode rodar no fim (seção 7).</p>
+
+<h2><span class="n">1</span>Classificar: escolher uma categoria</h2>
+<p>Até aqui vimos dois tipos de pergunta. Na <b>aula 1</b>, com os pinguins, a resposta era <b>uma opção de uma lista</b>: Adelie, Chinstrap ou Gentoo. Isso é <b>classificação</b>. Na <b>aula 2</b>, com a cerveja, a resposta era <b>um número</b>: quantos litros. Isso é <b>regressão</b>. Hoje voltamos à classificação, com uma pergunta de sim ou não.</p>
+<table>
+<tr><th>Pergunta</th><th>Resposta</th><th>Tipo</th></tr>
+<tr><td>Qual é a espécie do pinguim? (aula 1)</td><td>1 de 3 opções</td><td>classificação</td></tr>
+<tr><td>Quantos litros de cerveja amanhã? (aula 2)</td><td>um número</td><td>regressão</td></tr>
+<tr class="hi"><td>Este cliente vai cancelar? (hoje)</td><td>sim ou não</td><td>classificação</td></tr>
+</table>
+<p>Na aula 1 usamos <b>um</b> algoritmo (a regressão logística). Hoje veremos <b>quatro</b>, cada um decidindo de um jeito, e comparamos qual acerta mais.</p>
+
+<h3>O caso: Telco Customer Churn</h3>
+<p>Um arquivo público com clientes de uma empresa de telefonia e internet, uma linha por cliente. O arquivo tem 7.043 linhas. Em 11 delas o total pago está vazio; essas saem, e ficam <b>7.032 clientes</b>. <i>Churn</i> é a palavra em inglês para “o cliente cancelou”.</p>
+<p class="small"><b>Fonte:</b> Kaggle, <a href="https://www.kaggle.com/datasets/blastchar/telco-customer-churn">https://www.kaggle.com/datasets/blastchar/telco-customer-churn</a> (dados de exemplo da IBM). Baixe o CSV e salve como <code>dados/WA_Fn-UseC_-Telco-Customer-Churn.csv</code>, na pasta da aula.</p>
+<div class="quote">Pergunta de negócio: dado um cliente com tal tempo de casa, tal conta e tal contrato, qual a probabilidade de ele cancelar?</div>
+<p>O arquivo tem 21 colunas. Usamos só 4 de entrada, mais a resposta:</p>
+<table>
+<tr><th>Coluna</th><th>O que é</th><th>Papel</th></tr>
+<tr><td><b>tenure</b></td><td>meses de casa (há quanto tempo é cliente)</td><td>entrada</td></tr>
+<tr><td><b>MonthlyCharges</b></td><td>conta mensal, em US$</td><td>entrada</td></tr>
+<tr><td><b>TotalCharges</b></td><td>total já pago, em US$</td><td>entrada</td></tr>
+<tr><td><b>Contract</b></td><td>tipo de contrato: mensal, 1 ano ou 2 anos</td><td>entrada</td></tr>
+<tr class="hi"><td>Churn</td><td>cancelou? sim ou não · <b>26,6% saem</b></td><td>coluna alvo</td></tr>
+</table>
+<div class="box"><b class="t">Aprendizado supervisionado</b>A coluna da resposta (Churn) já existe no arquivo. O modelo aprende com clientes que já sabemos se saíram ou ficaram, e depois responde para clientes novos.</div>
+
+<h3>Treino e teste</h3>
+<p>Separamos os clientes em dois grupos: <b>75% para treino</b> (5.274 clientes) e <b>25% para teste</b> (1.758). Os dois grupos têm a mesma porcentagem de quem sai. O modelo aprende <b>só com o treino</b>; depois medimos quanto ele acerta no teste, em clientes que ele nunca viu. É como estudar com uma lista de exercícios e fazer a prova com questões novas.</p>
+<p>Preparo (igual para os quatro): as três colunas numéricas vão para <b>a mesma escala</b> (senão o total pago, na casa dos milhares, pesa mais que os meses, na casa das dezenas), e o contrato, que é texto, vira três colunas de 0 e 1.</p>
+
+
+
+<section class="pg">
+<div class="box ok"><b class="t">Antes de começar: o cliente que vamos acompanhar</b>Seguimos um mesmo cliente do teste, o <b>cliente 157</b>: <b>2 meses</b> de casa, conta de <b>US$ 95,65</b> por mês, <b>US$ 167,30</b> pagos no total, <b>contrato mensal</b>. Os modelos não sabem a resposta, mas nós sabemos: na vida real, <b>ele saiu</b>.</div>
+<h2 style="margin-top:12px"><span class="n">2</span>Regressão logística</h2>
+<p class="small">Algoritmo 1 de 4 · o mesmo da aula 1</p>
+<div class="box"><b class="t">A ideia</b>Dá uma <b>nota</b> para o cliente somando pistas: cada coluna empurra para “sai” ou para “fica”, com uma força (o peso) que o modelo aprendeu no treino. Depois transforma essa nota numa <b>probabilidade</b> entre 0 e 1.</div>
+
+<h3>A fórmula: duas contas</h3>
+<div class="formula"><div class="lbl">1 · a nota (score)</div>
+<math display="block"><mi>z</mi><mo>=</mo><msub><mi>w</mi><mn>1</mn></msub><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msub><mi>w</mi><mn>2</mn></msub><msub><mi>x</mi><mn>2</mn></msub><mo>+</mo><mo>…</mo><mo>+</mo><msub><mi>w</mi><mi>n</mi></msub><msub><mi>x</mi><mi>n</mi></msub><mo>+</mo><mi>b</mi></math>
+</div>
+<div class="formula"><div class="lbl">2 · a probabilidade (sigmoide)</div>
+<math display="block"><mi>p</mi><mo>=</mo><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mi>z</mi></mrow></msup></mrow></mfrac></math>
+</div>
+<p class="small"><b>x</b> = valor de cada coluna do cliente · <b>w</b> = peso aprendido para cada coluna · <b>b</b> = ponto de partida · <b>z</b> = a nota · <b>e</b> ≈ 2,718 · <b>p</b> = probabilidade de sair. Se <b>z</b> é negativo, <b>p</b> fica abaixo de 0,5; se <b>z</b> = 0, <b>p</b> = 0,5; se <b>z</b> é positivo, <b>p</b> fica acima de 0,5. A regra final: <b>p ≥ 0,5 → “sai”</b>.</p>
+
+<h3>Os pesos que o modelo aprendeu</h3>
+<p>Peso positivo empurra para “sai”, negativo empurra para “fica”. Como as colunas foram colocadas na mesma escala, dá para comparar os pesos entre si.</p>
+<table>
+<tr><th>Coluna</th><th class="num">Peso</th><th>Leitura</th></tr>
+<tr><td>meses de casa (tenure)</td><td class="num">−1,23</td><td>mais meses → mais chance de ficar (o mais forte)</td></tr>
+<tr><td>conta do mês</td><td class="num">+0,73</td><td>conta alta → mais chance de sair</td></tr>
+<tr><td>total já pago</td><td class="num">+0,39</td><td>empurra para sair (peso menor)</td></tr>
+<tr><td>contrato mensal</td><td class="num">+0,55</td><td>empurra para sair</td></tr>
+<tr><td>contrato de 1 ano</td><td class="num">−0,60</td><td>empurra para ficar</td></tr>
+<tr><td>contrato de 2 anos</td><td class="num">−1,30</td><td>empurra forte para ficar</td></tr>
+</table>
+
+<h3>Cliente 157, passo a passo</h3>
+<ol class="steps">
+<li>O cliente: 2 meses, US$ 95,65/mês, contrato mensal. <b>Poucos meses</b>, <b>conta alta</b> e <b>contrato mensal</b>: todas as pistas fortes apontam para “sai”.</li>
+<li>Somando peso × coluna (mais o ponto de partida), a nota dá <b>z = 0,95</b>. Positiva.</li>
+<li>Na sigmoide: <math style="font-size:1.3em"><mi>p</mi><mo>=</mo><mfrac><mn>1</mn><mrow><mn>1</mn><mo>+</mo><msup><mi>e</mi><mrow><mo>−</mo><mn>0,95</mn></mrow></msup></mrow></mfrac><mo>=</mo><mn>0,72</mn></math>.</li>
+<li>0,72 ≥ 0,5 → <b>“sai”</b>. Na vida real ele saiu: <b>acertou</b>.</li>
+</ol>
+<div class="two">
+<div class="box ok"><b class="t">Quando usar</b>Quando você quer <b>explicar o porquê</b>: cada coluna tem um peso que dá para ler. É um bom primeiro modelo para testar.</div>
+<div class="box warn"><b class="t">Cuidado</b>Cada coluna empurra <b>sempre para o mesmo lado</b>. Ela não monta regras do tipo “se isto <i>e</i> aquilo”. Precisa das colunas na mesma escala.</div>
+</div>
+</section>
+
+<section class="pg">
+<h2><span class="n">3</span>KNN: os k vizinhos mais próximos</h2>
+<p class="small">Algoritmo 2 de 4 · KNN = <i>k nearest neighbors</i></p>
+<div class="box"><b class="t">A ideia</b>Para um cliente novo, procura no treino os clientes <b>mais parecidos</b> com ele e copia a resposta da <b>maioria</b>. Aqui usamos os 5 mais parecidos (k = 5). Não há pesos para aprender: “treinar” é só guardar o treino.</div>
+
+<h3>A fórmula: parecido = perto</h3>
+<div class="formula"><div class="lbl">1 · a distância entre dois clientes (euclidiana)</div>
+<math display="block"><mi>d</mi><mo stretchy="false">(</mo><mi>x</mi><mo>,</mo><mi>y</mi><mo stretchy="false">)</mo><mo>=</mo><msqrt><mrow><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><msup><mrow><mo stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>−</mo><msub><mi>y</mi><mi>i</mi></msub><mo stretchy="false">)</mo></mrow><mn>2</mn></msup></mrow></msqrt></math>
+</div>
+<div class="formula"><div class="lbl">2 · o voto</div>
+<p style="text-align:center;margin:4px 0">resposta = a classe <b>mais comum</b> entre os <b>k</b> vizinhos de menor <b>d</b></p>
+</div>
+<p class="small"><b>x</b> = cliente novo · <b>y</b> = um cliente do treino · <b>i</b> = cada coluna · <b>n</b> = número de colunas · <b>d</b> = distância (0 = idênticos) · <b>k</b> = quantos vizinhos votam. Em palavras: para cada coluna, faz a diferença entre os dois clientes, eleva ao quadrado, soma tudo e tira a raiz. É a régua da escola, só que com várias colunas.</p>
+
+<h3>Cliente 157, passo a passo</h3>
+<p>O KNN mediu a distância do cliente 157 até os 5.274 clientes do treino e pegou os 5 mais perto (distâncias medidas com as colunas já na mesma escala):</p>
+<table>
+<tr><th>Vizinho</th><th class="num">Distância d</th><th class="num">Meses</th><th class="num">Conta do mês</th><th class="num">Total pago</th><th>Contrato</th><th>Saiu?</th></tr>
+<tr><td>1</td><td class="num">0,008</td><td class="num">2</td><td class="num">US$ 95,50</td><td class="num">US$ 181,65</td><td>mensal</td><td>não</td></tr>
+<tr class="hi"><td>2</td><td class="num">0,012</td><td class="num">2</td><td class="num">US$ 96,00</td><td class="num">US$ 174,80</td><td>mensal</td><td>sim</td></tr>
+<tr class="hi"><td>3</td><td class="num">0,021</td><td class="num">2</td><td class="num">US$ 95,15</td><td class="num">US$ 196,90</td><td>mensal</td><td>sim</td></tr>
+<tr class="hi"><td>4</td><td class="num">0,024</td><td class="num">2</td><td class="num">US$ 94,95</td><td class="num">US$ 178,10</td><td>mensal</td><td>sim</td></tr>
+<tr class="hi"><td>5</td><td class="num">0,048</td><td class="num">2</td><td class="num">US$ 94,20</td><td class="num">US$ 167,50</td><td>mensal</td><td>sim</td></tr>
+</table>
+<ol class="steps">
+<li>Os vizinhos são quase iguais a ele: 2 meses, conta perto de US$ 95, contrato mensal.</li>
+<li>Voto: 4 de 5 saíram → 4 ÷ 5 = <b>0,80</b>.</li>
+<li>A maioria saiu → <b>“sai”</b>. Na vida real ele saiu: <b>acertou</b>.</li>
+</ol>
+<div class="two">
+<div class="box ok"><b class="t">Quando usar</b>Quando clientes parecidos tendem a fazer a mesma coisa. É a ideia mais fácil de explicar: “quem era igual a você fez isto”.</div>
+<div class="box warn"><b class="t">Cuidado</b>Compara com <b>todo o treino</b> a cada cliente novo (fica lento com muitos dados). E depende da escala: sem ela, o total pago (milhares) abafa os meses (dezenas) no cálculo da distância.</div>
+</div>
+</section>
+
+<section class="pg">
+<h2><span class="n">4</span>Naive Bayes</h2>
+<p class="small">Algoritmo 3 de 4 · no caderno, <code>GaussianNB</code></p>
+<div class="box"><b class="t">A ideia</b>Pergunta, coluna por coluna: este valor é mais comum entre <b>quem sai</b> ou entre <b>quem fica</b>? Depois junta todas essas pistas com a proporção de quem sai no treino.</div>
+
+<h3>A fórmula: juntar as pistas multiplicando</h3>
+<div class="formula"><div class="lbl">chance de sair, dado o cliente</div>
+<math display="block"><mi>P</mi><mo stretchy="false">(</mo><mtext>sai</mtext><mo>∣</mo><mi>x</mi><mo stretchy="false">)</mo><mo>∝</mo><mi>P</mi><mo stretchy="false">(</mo><mtext>sai</mtext><mo stretchy="false">)</mo><mo>·</mo><munderover><mo>∏</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></munderover><mi>P</mi><mo stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>∣</mo><mtext>sai</mtext><mo stretchy="false">)</mo></math>
+</div>
+<table>
+<tr><th style="width:26%">Símbolo</th><th>Em palavras</th></tr>
+<tr><td><math><mi>P</mi><mo stretchy="false">(</mo><mtext>sai</mtext><mo>∣</mo><mi>x</mi><mo stretchy="false">)</mo></math></td><td>chance de sair, olhando o cliente <b>x</b> (é o que queremos)</td></tr>
+<tr><td><math><mi>P</mi><mo stretchy="false">(</mo><mtext>sai</mtext><mo stretchy="false">)</mo></math></td><td>proporção de quem sai no treino, antes de olhar o cliente: <b>0,266</b></td></tr>
+<tr><td><math><mi>P</mi><mo stretchy="false">(</mo><msub><mi>x</mi><mi>i</mi></msub><mo>∣</mo><mtext>sai</mtext><mo stretchy="false">)</mo></math></td><td>quão comum é o valor da coluna <b>i</b> entre quem sai</td></tr>
+<tr><td><math><mo>∏</mo></math></td><td>multiplica as <b>n</b> colunas, uma pista de cada</td></tr>
+<tr><td><math><mo>∝</mo></math></td><td>“proporcional a”: faz a mesma conta para “fica” e divide para as duas somarem 1</td></tr>
+</table>
+
+<h3>Cliente 157, passo a passo</h3>
+<p>O modelo guarda o perfil médio de quem fica e de quem sai no treino. Compare com o cliente 157:</p>
+<table>
+<tr><th>Média no treino</th><th class="num">Meses de casa</th><th class="num">Conta do mês</th><th class="num">Total já pago</th></tr>
+<tr><td>quem <b>fica</b></td><td class="num">37,6</td><td class="num">US$ 61,60</td><td class="num">US$ 2.556,85</td></tr>
+<tr><td>quem <b>sai</b></td><td class="num">17,8</td><td class="num">US$ 74,12</td><td class="num">US$ 1.508,23</td></tr>
+<tr class="hi"><td>cliente 157</td><td class="num">2</td><td class="num">US$ 95,65</td><td class="num">US$ 167,30</td></tr>
+</table>
+<ol class="steps">
+<li>Começa com <b>P(sai) = 0,266</b>: no treino, 26,6% saem.</li>
+<li>Nas três colunas numéricas, o cliente fica <b>mais perto do perfil de quem sai</b>. Cada pista puxa a conta para o lado de “sai”.</li>
+<li>Juntando tudo e dividindo para somar 1: <b>P(sai | cliente) = 0,98</b> → <b>“sai”</b>. Na vida real ele saiu: <b>acertou</b>, mas com 98% de certeza, o que é demais (veja o cuidado abaixo).</li>
+</ol>
+<div class="two">
+<div class="box ok"><b class="t">Quando usar</b>Quando você precisa de algo <b>muito rápido</b>, com pouco dado ou com muitas colunas. É clássico em filtro de spam.</div>
+<div class="box warn"><b class="t">Cuidado</b>“Naive” = <b>ingênuo</b>: trata cada coluna como uma pista separada. Mas meses e total pago andam juntos (quem tem poucos meses pagou pouco). A mesma pista conta duas vezes, e o modelo fica <b>confiante demais</b>.</div>
+</div>
+</section>
+
+<section class="pg">
+<h2><span class="n">5</span>Árvore de decisão</h2>
+<p class="small">Algoritmo 4 de 4 · aqui com no máximo 4 perguntas (<code>max_depth=4</code>)</p>
+<div class="box"><b class="t">A ideia</b>Faz <b>perguntas de sim ou não</b>, uma depois da outra, como um fluxograma. Cada resposta leva a um grupo menor de clientes, até chegar numa <b>folha</b>. A resposta é o que a maioria daquela folha fez.</div>
+
+<h3>A fórmula: como a árvore escolhe a pergunta (impureza de Gini)</h3>
+<div class="formula"><div class="lbl">quão misturado está um grupo</div>
+<math display="block"><mi>G</mi><mo>=</mo><mn>1</mn><mo>−</mo><munder><mo>∑</mo><mi>k</mi></munder><msubsup><mi>p</mi><mi>k</mi><mn>2</mn></msubsup></math>
+</div>
+<p class="small"><b>k</b> = cada classe (sai, fica) · <b>p<sub>k</sub></b> = fração do grupo em cada classe · <b>G = 0</b>: grupo puro (todos saem ou todos ficam) · quanto mais misturado, maior (no máximo 0,5 com duas classes).</p>
+<p>Exemplo com o treino inteiro, onde 26,6% saem e 73,4% ficam:</p>
+<math display="block" style="font-size:1.2em"><mi>G</mi><mo>=</mo><mn>1</mn><mo>−</mo><mo stretchy="false">(</mo><msup><mn>0,266</mn><mn>2</mn></msup><mo>+</mo><msup><mn>0,734</mn><mn>2</mn></msup><mo stretchy="false">)</mo><mo>=</mo><mn>0,39</mn></math>
+<p>A árvore testa várias perguntas e fica com a que <b>mais baixa o Gini</b> (a média dos grupos que sobram, pesada pelo tamanho de cada grupo). A primeira escolhida foi “contrato mensal?”:</p>
+<table>
+<tr><th>Clientes do treino</th><th class="num">Quantos</th><th class="num">Gini</th></tr>
+<tr><td>todos, antes de perguntar</td><td class="num">5.274</td><td class="num">0,39</td></tr>
+<tr><td>contrato mensal? <b>sim</b></td><td class="num">2.920</td><td class="num">0,49</td></tr>
+<tr><td>contrato mensal? <b>não</b></td><td class="num">2.354</td><td class="num">0,12</td></tr>
+<tr class="hi"><td>média depois da pergunta</td><td class="num"></td><td class="num">0,325</td></tr>
+</table>
+<p class="small">Conta da média: (2.920 × 0,49 + 2.354 × 0,12) ÷ 5.274 ≈ 0,325. Caiu de 0,39 para 0,325: a pergunta separou bem quem fica (o grupo “não” ficou quase puro).</p>
+
+<h3>Cliente 157, passo a passo: as 4 perguntas que ele respondeu</h3>
+<ol class="steps">
+<li>Contrato mensal? <b>sim</b></li>
+<li>Conta do mês acima de US$ 68,72? <b>sim</b> (US$ 95,65)</li>
+<li>Até 15,5 meses de casa? <b>sim</b> (2 meses)</li>
+<li>Total pago acima de US$ 118,10? <b>sim</b> (US$ 167,30)</li>
+</ol>
+<p>Ele cai numa folha com <b>630 clientes do treino</b>, dos quais <b>61% saíram</b> → probabilidade <b>0,61</b> → <b>“sai”</b>. Na vida real ele saiu: <b>acertou</b>, com menos certeza que os outros: essa folha ainda é bem misturada (Gini 0,475).</p>
+<div class="two">
+<div class="box ok"><b class="t">Quando usar</b>Quando você quer <b>regras que dá para ler e desenhar</b>: “contrato mensal e conta alta → risco”. Não precisa de escala.</div>
+<div class="box warn"><b class="t">Cuidado</b>Com muitas perguntas, ela <b>decora</b> o treino e erra clientes novos. Por isso limitamos a 4 perguntas.</div>
+</div>
+<div class="box"><b class="t">Próxima aula</b>Na <b>aula 4 (22/10)</b>: árvores e florestas (muitas árvores votando juntas).</div>
+</section>
+
+<section class="pg">
+<h2><span class="n">6</span>A comparação: qual se sai melhor?</h2>
+<p>Os quatro treinaram nos <b>mesmos 5.274</b> clientes e foram medidos nos <b>mesmos 1.758</b> do teste. Para ter uma régua, comparamos também com um “modelo” que nem olha os dados: o chute <b>“sempre fica”</b>. Um algoritmo precisa ganhar dele para valer a pena.</p>
+
+<h3>As quatro medidas, em palavras</h3>
+<ul>
+<li><b>Acurácia</b>: de todos os clientes do teste, quantos % o modelo acertou.</li>
+<li><b>Precisão</b>: dos clientes que o modelo disse “sai”, quantos % saíram de verdade. Precisão baixa = muito alarme falso.</li>
+<li><b>Recall</b>: dos clientes que saíram de verdade, quantos % o modelo pegou. Recall baixo = muito cliente perdido sem aviso.</li>
+<li><b>F1</b>: uma nota só que junta precisão e recall. Só é alta se as duas forem boas.</li>
+</ul>
+
+<table>
+<tr><th>Modelo</th><th class="num">Acurácia</th><th class="num">Precisão</th><th class="num">Recall</th><th class="num">F1</th></tr>
+<tr><td>sempre fica (o chute)</td><td class="num">0,734</td><td class="num">0,000</td><td class="num">0,000</td><td class="num">0,000</td></tr>
+<tr><td>regressão logística</td><td class="num">0,788</td><td class="num best">0,638</td><td class="num">0,469</td><td class="num">0,541</td></tr>
+<tr><td>KNN (k = 5)</td><td class="num best">0,790</td><td class="num">0,629</td><td class="num">0,507</td><td class="num">0,562</td></tr>
+<tr><td>Naive Bayes</td><td class="num">0,664</td><td class="num">0,432</td><td class="num best">0,833</td><td class="num best">0,569</td></tr>
+<tr><td>árvore (4 perguntas)</td><td class="num">0,786</td><td class="num">0,625</td><td class="num">0,486</td><td class="num">0,547</td></tr>
+</table>
+<p class="cap">Resultados no teste (1.758 clientes). Em destaque, o melhor de cada coluna.</p>
+<img class="fig" src="img/g-comparacao.png" alt="Gráfico de barras: acurácia, recall e F1 dos cinco modelos">
+<p class="cap">O mesmo resultado em barras: acurácia, recall e F1, um painel por medida. Leia cada painel separado: barra maior = melhor naquela medida.</p>
+
+<h3>Como ler</h3>
+<ul>
+<li>O chute “sempre fica” acerta <b>73,4%</b> sem fazer nada, porque a maioria fica. Mas não pega <b>ninguém</b> que sai (recall 0). Acurácia sozinha engana.</li>
+<li>Logística, KNN e árvore ficam perto de <b>0,79</b> de acurácia e pegam cerca de <b>metade</b> de quem sai (recall de 0,47 a 0,51).</li>
+<li>O Naive Bayes tem a <b>menor acurácia</b> (0,664), mas pega <b>83%</b> de quem sai (recall 0,833) e tem o maior F1 (0,569). Em troca, dá mais alarmes à toa (precisão 0,432).</li>
+<li>O cliente 157 foi acertado pelos quatro, com certezas diferentes: logística 0,72 · KNN 0,80 · Naive Bayes 0,98 · árvore 0,61.</li>
+</ul>
+<div class="box"><b class="t">Qual escolher?</b>Depende do <b>erro que dói mais</b>. Se perder um cliente sem aviso custa caro → <b>Naive Bayes</b> (pega mais quem sai). Se ligar para o cliente à toa custa caro → <b>logística</b> (maior precisão, 0,638) ou <b>KNN</b>. Não existe “o melhor” sem dizer qual erro importa.</div>
+</section>
+
+<section class="pg">
+<h2><span class="n">7</span>Como rodar o caderno e o MLflow</h2>
+<ol class="steps">
+<li>Abra o caderno <code>aula-ml-3.ipynb</code> na pasta da aula, no mesmo ambiente da aula 2 (pandas, scikit-learn, matplotlib e mlflow). O arquivo de dados fica em <code>dados/WA_Fn-UseC_-Telco-Customer-Churn.csv</code>.</li>
+<li>Rode as células <b>de cima para baixo</b> (Run All). O caderno carrega e limpa os dados, separa treino e teste, treina o chute “sempre fica” e os 4 algoritmos com a mesma função, monta a tabela e o gráfico da seção 6, e no fim mostra o cliente 157 em cada modelo (os números das seções 2 a 5).</li>
+<li>Cada modelo treinado vira uma <b>run</b> no MLflow, no experimento <b>classificadores</b> (5 runs: sempre-fica, logistica, knn, naive-bayes, arvore), com as 4 medidas gravadas.</li>
+<li>Para ver as runs, abra um terminal na pasta da aula e rode:
+<pre class="cmd">MLFLOW_ALLOW_FILE_STORE=true mlflow ui --backend-store-uri mlruns</pre>
+Depois abra <code>http://127.0.0.1:5000</code> no navegador, entre em <b>classificadores</b>, marque as 5 runs e clique em <b>Compare</b>.</li>
+</ol>
+<p class="small">Experimente: troque <code>n_neighbors=5</code> por outro número no KNN, ou <code>max_depth=4</code> na árvore, rode de novo e veja a nova run no MLflow.</p>
+
+<h2 style="margin-top:20px"><span class="n">8</span>Resumo</h2>
+<table>
+<tr><th>Algoritmo</th><th>Ideia em uma linha</th><th class="num">Cliente 157</th><th>Bom para</th><th>Cuidado</th></tr>
+<tr><td><b>Regressão logística</b></td><td>soma peso × coluna → probabilidade</td><td class="num">0,72</td><td>explicar o porquê</td><td>cada coluna empurra sempre para o mesmo lado</td></tr>
+<tr><td><b>KNN</b></td><td>segue a maioria dos 5 clientes mais parecidos</td><td class="num">0,80</td><td>ideia simples, “quem era igual a você”</td><td>lento; precisa de escala</td></tr>
+<tr><td><b>Naive Bayes</b></td><td>junta pistas: cada coluna, comparada com quem sai e com quem fica</td><td class="num">0,98</td><td>rápido; pegou mais quem sai</td><td>confiante demais</td></tr>
+<tr><td><b>Árvore de decisão</b></td><td>perguntas de sim ou não até uma folha</td><td class="num">0,61</td><td>regras que dá para ler</td><td>decora o treino se crescer demais</td></tr>
+</table>
+<ul>
+<li><b>Classificação</b> responde com uma categoria (sai ou fica); <b>regressão</b>, com um número.</li>
+<li>Treine num grupo, meça em outro (teste) que o modelo nunca viu.</li>
+<li>Compare sempre com um chute simples: aqui, “sempre fica” já acerta 73,4%.</li>
+<li>Olhe mais que a acurácia: precisão e recall mostram <b>que tipo de erro</b> o modelo comete.</li>
+<li>O melhor modelo depende do erro que custa mais para o negócio.</li>
+</ul>
+<p class="small">Na aula 4 (22/10): árvores e florestas.</p>
+</section>
+</body>
+</html>

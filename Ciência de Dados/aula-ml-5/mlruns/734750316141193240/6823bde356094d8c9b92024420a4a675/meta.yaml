@@ -1,0 +1,14 @@
+artifact_uri: /Users/teixeirah/work/uri/Ciência de Dados/aula-ml-5/mlruns/734750316141193240/6823bde356094d8c9b92024420a4a675/artifacts
+end_time: 1790742924744
+entry_point_name: ''
+experiment_id: '734750316141193240'
+lifecycle_stage: active
+run_id: 6823bde356094d8c9b92024420a4a675
+run_name: baseline-semana
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1790742924739
+status: 3
+tags: []
+user_id: teixeirah

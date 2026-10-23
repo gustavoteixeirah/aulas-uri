@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 03 — NumPy</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+
+    <div class="deck" id="deck">
+
+      <!-- ======================= ABERTURA ======================= -->
+      <section class="slide cover" data-title="Capa" data-block="Abertura">
+        <div class="cover-tag">Programação para Ciência de Dados · 2026.1</div>
+        <h1><em>NumPy</em></h1>
+        <p class="cover-sub">A biblioteca que faz contas com muitos números de uma vez<br>— hoje, com 6.433 corridas de táxi de Nova York</p>
+        <div class="cover-meta">
+          <span>Aula 03</span><i></i><span>Python</span>
+        </div>
+        <div class="cover-hint">Use <kbd>→</kbd> <kbd>←</kbd> ou os botões abaixo · <kbd>M</kbd> índice · <kbd>P</kbd> PDF · <kbd>F</kbd> tela cheia</div>
+      </section>
+
+      <section class="slide" data-title="O que é" data-block="O que é">
+        <span class="kicker">Em uma frase</span>
+        <h2>O que é</h2>
+        <div class="bigdef">
+          <span class="bd-label">NumPy</span>
+          <p>Uma biblioteca do Python que faz a conta em <b>milhares de números de uma vez</b>.</p>
+        </div>
+        <div class="compare">
+          <div class="cmp cmp-b">
+            <h3>Python comum</h3>
+            <p>você repete a conta num laço, número por número</p>
+          </div>
+          <div class="cmp cmp-a">
+            <h3>NumPy</h3>
+            <p>você escreve a conta <b>uma vez</b>, e ela vale para todos</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Para que serve" data-block="O que é">
+        <span class="kicker">Três corridas de táxi, três coisas</span>
+        <h2>Para que serve</h2>
+        <pre class="code sm"><code data-lang="python">import numpy as np
+
+distancia = np.array([1.6, 0.8, 10.5])   # milhas rodadas
+tarifa    = np.array([7.0, 5.0, 33.0])   # dólares cobrados</code></pre>
+        <div class="cards c3 code-cards">
+          <div class="card">
+            <span class="ico">✖️</span><b>Calcular</b>
+            <small>a mesma conta em todos os valores</small>
+            <pre class="code"><code data-lang="python">distancia * 1.61
+# milhas → km</code></pre>
+          </div>
+          <div class="card">
+            <span class="ico">📊</span><b>Resumir</b>
+            <small>média, máximo — uma palavra cada</small>
+            <pre class="code"><code data-lang="python">tarifa.mean()
+# 15.0 dólares</code></pre>
+          </div>
+          <div class="card">
+            <span class="ico">🔎</span><b>Filtrar</b>
+            <small>só os valores que interessam</small>
+            <pre class="code"><code data-lang="python">tarifa[distancia &gt; 10]
+# [33.] — só a longa</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ======================= O DADO ======================= -->
+      <section class="slide" data-title="O dataset" data-block="O dado">
+        <span class="kicker">Táxis de Nova York · março de 2019</span>
+        <h2>6.433 corridas</h2>
+        <div class="cards c4 tight">
+          <div class="card"><b>distance</b><small>quantas milhas rodou</small></div>
+          <div class="card"><b>fare</b><small>quanto deu o taxímetro</small></div>
+          <div class="card"><b>tip</b><small>quanto foi de gorjeta</small></div>
+          <div class="card"><b>payment</b><small>dinheiro ou cartão</small></div>
+        </div>
+        <div class="callout key">
+          É o mesmo dado da <b>aula 1</b> — e hoje ele responde perguntas sem nenhum laço.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Do arquivo ao array" data-block="O dado">
+        <span class="kicker">O ponto de partida de tudo</span>
+        <h2>Carregar</h2>
+        <pre class="code"><code data-lang="python">import numpy as np, pandas as pd
+
+df = pd.read_csv("dados/taxis.csv")
+
+distancia = df["distance"].to_numpy()
+tarifa    = df["fare"].to_numpy()
+gorjeta   = df["tip"].to_numpy()</code></pre>
+        <div class="callout key">
+          Os <b>mesmos nomes</b> de antes — agora com as <b>6.433 corridas</b> do arquivo.
+        </div>
+      </section>
+
+      <!-- ======================= EXEMPLOS ======================= -->
+      <section class="slide divider" data-title="Exemplos" data-block="Exemplos">
+        <span class="div-n">→</span>
+        <h2>Na prática</h2>
+        <p>O mesmo problema, dos dois jeitos</p>
+      </section>
+
+      <section class="slide" data-title="Converter" data-block="Exemplos">
+        <span class="kicker">Exemplo 1 · milhas para quilômetros</span>
+        <h2>Converter</h2>
+        <div class="compare">
+          <div class="cmp cmp-b">
+            <h3>Sem NumPy</h3>
+            <pre class="code sm"><code data-lang="python">km = []
+
+for d in distancia:
+    km.append(d * 1.60934)</code></pre>
+          </div>
+          <div class="cmp cmp-a">
+            <h3>Com NumPy</h3>
+            <pre class="code sm"><code data-lang="python">km = distancia * 1.60934</code></pre>
+          </div>
+        </div>
+        <div class="callout key">
+          <b>Uma linha.</b> A conta vale para as 6.433 corridas de uma vez.
+        </div>
+      </section>
+
+      <section class="slide" data-title="O tempo" data-block="Exemplos">
+        <span class="kicker">A mesma conta · 10 milhões de valores</span>
+        <h2>O tempo</h2>
+        <div class="bars">
+          <div class="br"><span class="br-lbl">com laço</span><span class="br-bar"><i style="width:100%"></i></span><span class="br-val">153 ms</span></div>
+          <div class="br ok"><span class="br-lbl">com NumPy</span><span class="br-bar"><i style="width:1.7%"></i></span><span class="br-val">2,6 ms</span></div>
+        </div>
+        <div class="callout key">
+          <b>60 vezes mais rápido.</b> E quanto maior o dado, maior a diferença.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Somar" data-block="Exemplos">
+        <span class="kicker">Exemplo 2 · quanto os táxis faturaram</span>
+        <h2>Somar</h2>
+        <div class="compare">
+          <div class="cmp cmp-b">
+            <h3>Sem NumPy</h3>
+            <pre class="code sm"><code data-lang="python">total = 0
+
+for t in tarifa:
+    total = total + t</code></pre>
+          </div>
+          <div class="cmp cmp-a">
+            <h3>Com NumPy</h3>
+            <pre class="code sm"><code data-lang="python">total = tarifa.sum()
+
+# 84 214.87 dólares</code></pre>
+          </div>
+        </div>
+        <div class="callout key">
+          <b>Ponto e o nome da conta.</b> É assim que funcionam quase todos os resumos.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Resumir" data-block="Exemplos">
+        <span class="kicker">Exemplo 3 · descrever a distância das corridas</span>
+        <h2>Resumir</h2>
+        <div class="split">
+          <div>
+            <pre class="code sm"><code data-lang="python">distancia.mean()    # média
+distancia.min()     # menor
+distancia.max()     # maior
+distancia.std()     # desvio padrão
+
+np.median(distancia)  # mediana</code></pre>
+          </div>
+          <div>
+            <div class="placas c2">
+              <div class="placa alt"><u>média</u><b>3,02</b><small>milhas</small></div>
+              <div class="placa"><u>mediana</u><b>1,64</b><small>milhas</small></div>
+              <div class="placa"><u>menor</u><b>0</b><small>não saiu do lugar</small></div>
+              <div class="placa"><u>maior</u><b>36,7</b><small>milhas</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="callout key">
+          A corrida <b>típica</b> tem 1,64 milha. A média é o dobro: poucas corridas longas puxam a conta.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Filtrar" data-block="Exemplos">
+        <span class="kicker">Exemplo 4 · só as corridas longas</span>
+        <h2>Filtrar</h2>
+        <div class="compare">
+          <div class="cmp cmp-b">
+            <h3>Sem NumPy</h3>
+            <pre class="code sm"><code data-lang="python">longas = []
+
+for d in distancia:
+    if d &gt; 10:
+        longas.append(d)</code></pre>
+          </div>
+          <div class="cmp cmp-a">
+            <h3>Com NumPy</h3>
+            <pre class="code sm"><code data-lang="python">longas = distancia[distancia &gt; 10]</code></pre>
+          </div>
+        </div>
+        <div class="callout key">
+          Leia como está escrito: <b>distância onde a distância é maior que 10</b>.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Combinar" data-block="Exemplos">
+        <span class="kicker">Exemplo 5 · duas condições ao mesmo tempo</span>
+        <h2>Combinar</h2>
+        <pre class="code"><code data-lang="python">longa_com_gorjeta = (distancia &gt; 10) &amp; (gorjeta &gt; 0)
+
+longa_com_gorjeta.sum()    # 225  de 394 corridas longas</code></pre>
+        <div class="placas c2">
+          <div class="placa"><u>corridas longas</u><b>394</b><small>acima de 10 milhas</small></div>
+          <div class="placa good"><u>com gorjeta</u><b>225</b><small>57% delas</small></div>
+        </div>
+        <div class="callout key">
+          <code>&amp;</code> é "e" · <code>|</code> é "ou". Cada condição entre <b>parênteses</b>.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Rotular" data-block="Exemplos">
+        <span class="kicker">Exemplo 6 · criar uma coluna nova</span>
+        <h2>Rotular</h2>
+        <div class="compare">
+          <div class="cmp cmp-b">
+            <h3>Sem NumPy</h3>
+            <pre class="code sm"><code data-lang="python">tipo = []
+
+for d in distancia:
+    if d &gt; 10:
+        tipo.append("longa")
+    else:
+        tipo.append("curta")</code></pre>
+          </div>
+          <div class="cmp cmp-a">
+            <h3>Com NumPy</h3>
+            <pre class="code sm"><code data-lang="python">tipo = np.where(distancia &gt; 10,
+                "longa",
+                "curta")</code></pre>
+          </div>
+        </div>
+        <div class="callout key">
+          <code>np.where</code> é o <b>if/else</b> aplicado à lista inteira: teste, resposta para o sim, resposta para o não.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Juntar duas" data-block="Exemplos">
+        <span class="kicker">Exemplo 7 · o que o passageiro pagou</span>
+        <h2>Juntar duas</h2>
+        <div class="compare">
+          <div class="cmp cmp-b">
+            <h3>Sem NumPy</h3>
+            <pre class="code sm"><code data-lang="python">pago = []
+
+for i in range(len(tarifa)):
+    pago.append(
+        tarifa[i] + gorjeta[i])</code></pre>
+          </div>
+          <div class="cmp cmp-a">
+            <h3>Com NumPy</h3>
+            <pre class="code sm"><code data-lang="python">pago = tarifa + gorjeta</code></pre>
+          </div>
+        </div>
+        <div class="callout key">
+          As duas colunas são somadas <b>corrida por corrida</b>: a primeira com a primeira, a segunda com a segunda.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Dividir" data-block="Exemplos">
+        <span class="kicker">Exemplo 8 · quanto custa cada milha</span>
+        <h2>Dividir</h2>
+        <div class="split">
+          <div>
+            <pre class="code sm"><code data-lang="python">por_milha = tarifa / distancia
+
+np.nanmedian(por_milha)
+# 5.42 dólares por milha</code></pre>
+          </div>
+          <div>
+            <div class="cards c1 tight">
+              <div class="card"><b>Nasce uma medida nova</b><small>preço por milha não estava no arquivo — saiu de duas colunas</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="callout warn">
+          51 corridas têm distância <b>zero</b>. Por isso o <code>nanmedian</code>: ele ignora essas.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Porcentagem" data-block="Exemplos">
+        <span class="kicker">Exemplo 9 · quanto se dá de gorjeta</span>
+        <h2>Porcentagem</h2>
+        <pre class="code"><code data-lang="python">pct = gorjeta / tarifa * 100
+
+np.median(pct[gorjeta &gt; 0])    # 26.5%  entre quem deu gorjeta</code></pre>
+        <div class="placas c2">
+          <div class="placa good"><u>deram gorjeta</u><b>64%</b><small>das corridas</small></div>
+          <div class="placa"><u>quanto deram</u><b>26,5%</b><small>da tarifa, na mediana</small></div>
+        </div>
+        <div class="callout key">
+          Repare no encaixe: <code>pct[gorjeta &gt; 0]</code> usa a máscara de <b>uma</b> coluna para selecionar em <b>outra</b>.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Valores impossíveis" data-block="Exemplos">
+        <span class="kicker">Exemplo 10 · o dado impossível</span>
+        <h2>O dado sujo</h2>
+        <div class="split">
+          <div>
+            <pre class="code sm"><code data-lang="python">(distancia == 0).sum()   # 51
+
+limpa = np.where(
+    distancia == 0,   # o teste
+    np.nan,           # onde deu certo
+    distancia)        # onde não deu
+
+distancia.mean()    # 3.02
+np.nanmean(limpa)   # 3.05</code></pre>
+          </div>
+          <div>
+            <div class="cards c1 tight">
+              <div class="card"><b>Zero aqui é mentira</b><small>o carro não saiu do lugar e mesmo assim cobrou tarifa</small></div>
+              <div class="card"><b><code>np.nan</code> é o "não sei"</b><small>não é zero: é a marca de que <b>ali não tem valor</b></small></div>
+              <div class="card"><b><code>nanmean</code> = média pulando os <code>nan</code></b><small>existem também <code>nanmax</code>, <code>nanmin</code>, <code>nansum</code></small></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="A maior de todas" data-block="Exemplos">
+        <span class="kicker">Exemplo 11 · achar o extremo</span>
+        <h2>A mais cara</h2>
+        <div class="split">
+          <div>
+            <pre class="code sm"><code data-lang="python">tarifa.max()      # 150.0  o VALOR
+tarifa.argmax()   # 5364   a LINHA dele
+
+# a linha 5364 é a mesma corrida
+# em qualquer coluna:
+distancia[5364]   # 36.7 milhas
+
+np.sort(tarifa)[-3:]   # ordena e
+# [143.5 150. 150.]    # pega as 3 últimas</code></pre>
+          </div>
+          <div>
+            <div class="cards c1 tight">
+              <div class="card"><b><code>arg…</code> devolve posição</b><small><code>max</code> responde <b>quanto</b>; <code>argmax</code> responde <b>qual linha</b></small></div>
+              <div class="card"><b>E a posição liga as colunas</b><small>todas têm a mesma ordem, então dá para ir ver a corrida inteira</small></div>
+              <div class="card"><b>Sempre visite o extremo</b><small>US$ 150 em 36,7 milhas: caro porque foi longe — não é erro</small></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Inventar dados" data-block="Exemplos">
+        <span class="kicker">Exemplo 12 · testar sem arquivo</span>
+        <h2>Inventar dados</h2>
+        <pre class="code"><code data-lang="python">np.arange(0, 10, 2)      # [0 2 4 6 8]
+np.zeros(5)              # [0. 0. 0. 0. 0.]
+
+rng = np.random.default_rng(42)
+rng.normal(13, 5, 1000)    # 1000 tarifas sorteadas</code></pre>
+        <div class="callout key">
+          O <b>42</b> é a semente: com ela, o sorteio dá o <b>mesmo resultado</b> amanhã. Sem ela, seu relatório muda a cada execução.
+        </div>
+      </section>
+
+      <!-- ======================= GRÁFICOS ======================= -->
+      <section class="slide divider" data-title="Gráficos" data-block="Gráficos">
+        <span class="div-n">📈</span>
+        <h2>Com gráficos</h2>
+        <p>O NumPy faz a conta · o Matplotlib só desenha</p>
+      </section>
+
+      <section class="slide" data-title="Histograma" data-block="Gráficos">
+        <span class="kicker">Combinação 1 · qual é a corrida típica</span>
+        <h2>Histograma</h2>
+        <pre class="code sm"><code data-lang="python"># bins = as bordas das faixas: 0, 1, 2 … 20
+# (o 21 só marca o fim e não vira faixa)
+alturas, faixas = np.histogram(distancia, bins=np.arange(0, 21, 1))
+
+# alturas = quantas corridas caem em cada faixa
+# faixas  = as bordas — sempre uma a mais que as barras
+
+plt.bar(faixas[:-1], alturas)      # daí o [:-1]</code></pre>
+        <figure class="fig">
+          <img src="img/g1-histograma.png" alt="Histograma das distâncias: pico entre 1 e 2 milhas">
+        </figure>
+        <div class="callout key">
+          O <b>NumPy conta</b> quantas corridas caem em cada faixa; o gráfico só desenha as barras. <b>2.125 corridas</b> ficaram entre 1 e 2 milhas.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Por hora" data-block="Gráficos">
+        <span class="kicker">Combinação 2 · quando as pessoas pegam táxi</span>
+        <h2>Por hora</h2>
+        <pre class="code sm"><code data-lang="python">hora = df["pickup"].dt.hour.to_numpy()     # 0 a 23
+
+# bincount = "contagem por caixa": conta quantas vezes
+# cada número aparece — a posição 18 guarda as das 18h
+por_hora = np.bincount(hora)
+
+plt.bar(np.arange(24), por_hora)</code></pre>
+        <figure class="fig fig-sm">
+          <img src="img/g2-por-hora.png" alt="Corridas por hora do dia: pico às 18h, vale às 5h">
+        </figure>
+        <div class="callout key">
+          Pico às <b>18h</b> (417 corridas) e fundo do poço às <b>5h</b> (51). <code>np.bincount</code> conta as repetições de cada número inteiro.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Média por hora" data-block="Gráficos">
+        <span class="kicker">Combinação 3 · o horário mais caro</span>
+        <h2>Média por hora</h2>
+        <pre class="code sm"><code data-lang="python"># hora == h marca as corridas daquela hora;
+# .mean() tira a média só delas
+media = np.array([tarifa[hora == h].mean() for h in range(24)])
+
+plt.plot(np.arange(24), media)     # x: 0 a 23 · y: a média</code></pre>
+        <figure class="fig fig-sm">
+          <img src="img/g3-tarifa-hora.png" alt="Tarifa média por hora do dia: pico às 5h da manhã">
+        </figure>
+        <div class="callout key">
+          A tarifa média é maior às <b>5h da manhã</b> (US$ 16,77) e menor às <b>2h</b> (US$ 12,07). Pergunta para a turma: por quê?
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ O padrão" data-block="Gráficos">
+        <span class="kicker">As três combinações são a mesma coisa</span>
+        <h2>O padrão</h2>
+        <div class="pipeline hy">
+          <div class="pl"><span class="pl-n">1</span><b>A coluna</b><small>6.433 números</small></div>
+          <div class="pl-arrow">›</div>
+          <div class="pl hi"><span class="pl-n">2</span><b>NumPy</b><small>filtra, conta, resume</small></div>
+          <div class="pl-arrow">›</div>
+          <div class="pl"><span class="pl-n">3</span><b>O gráfico</b><small>recebe pronto e desenha</small></div>
+        </div>
+        <div class="callout key">
+          <b>O gráfico não faz conta.</b> Se o desenho sair errado, o erro está no meio.
+        </div>
+      </section>
+
+
+      <!-- ======================= O QUE MAIS DÁ ======================= -->
+
+      <!-- ======================= NO TRABALHO ======================= -->
+      <section class="slide" data-title="No trabalho" data-block="No trabalho">
+        <span class="kicker">Onde isto entra no dia a dia</span>
+        <h2>No trabalho</h2>
+        <ul class="bul">
+          <li><b>Fechar o mês</b> — somar e tirar média da coluna inteira: <code>tarifa.sum()</code></li>
+          <li><b>Responder uma pergunta</b> — recortar e medir: <code>tarifa[distancia &gt; 10].mean()</code></li>
+          <li><b>Criar coluna nova</b> — a regra vale para todo mundo: <code>np.where(distancia &gt; 10, "longa", "curta")</code></li>
+          <li><b>Regra por faixa</b> — comissão, alíquota, frete por peso: <code>np.select([...], [...])</code></li>
+          <li><b>Achar o que está errado</b> — auditoria e fraude: <code>tarifa / distancia &gt; 20</code></li>
+          <li><b>Preparar o gráfico</b> — o NumPy conta, o gráfico só desenha: <code>np.histogram(distancia)</code></li>
+        </ul>
+        <pre class="code sm"><code data-lang="python"># o relatório de segunda-feira, em quatro linhas
+faturamento = tarifa.sum()                     # 84 214.87 dólares
+ticket      = tarifa.mean()                    # 13.09 por corrida
+longas      = (distancia &gt; 10).mean() * 100    # 6.1 % do total
+suspeitas   = (tarifa / distancia &gt; 20).sum()  # 34 para investigar</code></pre>
+      </section>
+
+    </div><!-- /deck -->
+
+    <!-- BARRA DE CONTROLE -->
+    <footer class="bar">
+      <div class="progress"><span id="progressFill"></span></div>
+      <button class="btn ghost" id="btnMenu" title="Índice (M)" aria-label="Índice">☰</button>
+      <div class="bar-title"><span id="barBlock">Abertura</span><b id="barTitle">Capa</b></div>
+      <div class="bar-nav">
+        <button class="btn" id="btnPrev" aria-label="Slide anterior">‹ Voltar</button>
+        <span class="counter"><b id="cur">1</b> / <span id="total">1</span></span>
+        <button class="btn primary" id="btnNext" aria-label="Próximo slide">Avançar ›</button>
+      </div>
+      <button class="btn ghost" id="btnPdf" title="Exportar para PDF (P)" aria-label="Exportar para PDF">PDF</button>
+      <button class="btn ghost" id="btnTheme" title="Tema claro/escuro (T)" aria-label="Alternar tema">◐</button>
+      <button class="btn ghost" id="btnFull" title="Tela cheia (F)" aria-label="Tela cheia">⛶</button>
+    </footer>
+
+    <!-- EXPORTAR PARA PDF -->
+    <div class="modal" id="pdfModal" aria-hidden="true">
+      <div class="modal-box">
+        <h3>Exportar os slides para PDF</h3>
+        <p>Vai abrir a janela de impressão do navegador. Confira estas três opções:</p>
+        <ul class="modal-list">
+          <li><b>Destino:</b> Salvar como PDF</li>
+          <li><b>Margens:</b> Nenhuma</li>
+          <li><b>Gráficos de segundo plano:</b> ativado <small>(fica em "Mais definições")</small></li>
+        </ul>
+        <p class="modal-note">Cada slide vira uma página no formato 4:3. O PDF sai sempre no tema claro, para não gastar tinta se você imprimir em papel.</p>
+        <div class="modal-actions">
+          <button class="btn" id="pdfCancel">Cancelar</button>
+          <button class="btn primary" id="pdfGo">Abrir impressão</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÍNDICE -->
+    <aside class="menu" id="menu" aria-hidden="true">
+      <header>Índice da aula<button class="btn ghost" id="btnMenuClose" aria-label="Fechar">✕</button></header>
+      <nav id="menuList"></nav>
+    </aside>
+
+  </div><!-- /stage -->
+</div>
+
+<script src="js/highlight.js"></script>
+<script src="js/questoes.js"></script>
+<script src="js/quiz.js"></script>
+<script src="js/slides.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

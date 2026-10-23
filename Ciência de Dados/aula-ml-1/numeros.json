@@ -1,0 +1,60 @@
+{
+  "n_bruto": 344,
+  "incompletas": 2,
+  "n": 342,
+  "contagem": {
+    "Adelie": 151,
+    "Gentoo": 123,
+    "Chinstrap": 68
+  },
+  "n_treino": 256,
+  "n_teste": 86,
+  "linha": {
+    "culmen_length_mm": 45.8,
+    "culmen_depth_mm": 18.9,
+    "flipper_length_mm": 197.0,
+    "body_mass_g": 4150.0
+  },
+  "verdadeiro": "Adelie",
+  "previsto": "Chinstrap",
+  "acc0": 0.9883720930232558,
+  "acc1": 0.9767441860465116,
+  "notas": [
+    0.9855072463768116,
+    0.9855072463768116,
+    1.0,
+    1.0,
+    0.9558823529411765
+  ],
+  "media": 0.98537936913896,
+  "primeiras": [
+    {
+      "culmen_length_mm": 39.1,
+      "culmen_depth_mm": 18.7,
+      "flipper_length_mm": 181.0,
+      "body_mass_g": 3750.0,
+      "species": "Adelie"
+    },
+    {
+      "culmen_length_mm": 39.5,
+      "culmen_depth_mm": 17.4,
+      "flipper_length_mm": 186.0,
+      "body_mass_g": 3800.0,
+      "species": "Adelie"
+    },
+    {
+      "culmen_length_mm": 40.3,
+      "culmen_depth_mm": 18.0,
+      "flipper_length_mm": 195.0,
+      "body_mass_g": 3250.0,
+      "species": "Adelie"
+    },
+    {
+      "culmen_length_mm": null,
+      "culmen_depth_mm": null,
+      "flipper_length_mm": null,
+      "body_mass_g": null,
+      "species": "Adelie"
+    }
+  ]
+}

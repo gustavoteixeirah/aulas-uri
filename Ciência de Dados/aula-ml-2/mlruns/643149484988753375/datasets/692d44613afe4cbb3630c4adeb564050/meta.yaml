@@ -1,0 +1,12 @@
+digest: 1e02beae
+name: cerveja
+profile: '{"num_rows": 365, "num_elements": 2555}'
+schema: '{"mlflow_colspec": [{"type": "string", "name": "Data", "required": true},
+  {"type": "double", "name": "Temperatura Media (C)", "required": true}, {"type":
+  "double", "name": "Temperatura Minima (C)", "required": true}, {"type": "double",
+  "name": "Temperatura Maxima (C)", "required": true}, {"type": "double", "name":
+  "Precipitacao (mm)", "required": true}, {"type": "long", "name": "Final de Semana",
+  "required": true}, {"type": "double", "name": "Consumo de cerveja (litros)", "required":
+  true}]}'
+source: '{"uri": "dados/Consumo_cerveja.csv"}'
+source_type: local

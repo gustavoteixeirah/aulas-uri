@@ -1,0 +1,14 @@
+artifact_uri: /Users/teixeirah/work/uri/Ciência de Dados/aula-ml-2/mlruns/672576450524177125/b585fc329d3842ffb445c654ba4a9afc/artifacts
+end_time: 1791308983407
+entry_point_name: ''
+experiment_id: '672576450524177125'
+lifecycle_stage: active
+run_id: b585fc329d3842ffb445c654ba4a9afc
+run_name: reta-pipeline
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1791308972265
+status: 3
+tags: []
+user_id: teixeirah

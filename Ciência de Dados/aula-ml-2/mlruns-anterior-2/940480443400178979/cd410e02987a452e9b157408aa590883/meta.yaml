@@ -1,0 +1,14 @@
+artifact_uri: /Users/teixeirah/work/uri/Ciência de Dados/aula-ml-2/mlruns/940480443400178979/cd410e02987a452e9b157408aa590883/artifacts
+end_time: 1791431331024
+entry_point_name: ''
+experiment_id: '940480443400178979'
+lifecycle_stage: active
+run_id: cd410e02987a452e9b157408aa590883
+run_name: linear-completa
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1791431331018
+status: 3
+tags: []
+user_id: teixeirah

@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula 05 — Limpeza e transformação</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+
+    <div class="deck" id="deck">
+
+      <!-- ======================= ABERTURA ======================= -->
+      <section class="slide cover" data-title="Capa" data-block="Abertura">
+        <div class="cover-tag">Programação para Ciência de Dados · 2026.1</div>
+        <h1>Limpeza e <em>transformação</em></h1>
+        <p class="cover-sub">O trabalho que ninguém mostra — e sem o qual<br>nenhum número está certo</p>
+        <div class="cover-meta">
+          <span>Aula 05</span><i></i><span>Pandas</span>
+        </div>
+        <div class="cover-hint">Use <kbd>→</kbd> <kbd>←</kbd> ou os botões abaixo · <kbd>M</kbd> índice · <kbd>P</kbd> PDF · <kbd>F</kbd> tela cheia</div>
+      </section>
+
+      <section class="slide" data-title="O que é" data-block="Abertura">
+        <span class="kicker">Em uma frase</span>
+        <h2>O que é</h2>
+        <div class="bigdef">
+          <span class="bd-label">Limpar dados</span>
+          <p>É transformar o que <b>chegou</b> no que <b>pode ser calculado</b> — e registrar cada decisão tomada no caminho.</p>
+        </div>
+        <div class="cards c2">
+          <div class="card"><b>Não é apagar linha</b><small>é decidir, com critério, o que fazer com cada defeito</small></div>
+          <div class="card"><b>Toda decisão muda o número</b><small>e por isso toda decisão precisa estar escrita</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Quanto tempo" data-block="Abertura">
+        <span class="kicker">O que a profissão diz</span>
+        <h2>Onde vai o tempo</h2>
+        <div class="bars">
+          <div class="br"><span class="br-lbl">Achar, ler e <b>limpar</b><small>o assunto desta aula</small></span><span class="br-bar"><i style="width:80%"></i></span><span class="br-val">≈ 80%</span></div>
+          <div class="br ok"><span class="br-lbl">Modelar e apresentar<small>a parte que aparece no slide</small></span><span class="br-bar"><i style="width:20%"></i></span><span class="br-val">≈ 20%</span></div>
+        </div>
+        <div class="callout key">
+          A aula 4 mostrou como <b>ler</b> a tabela. Esta mostra por que ela quase nunca está pronta.
+        </div>
+        <p class="dica">A proporção varia; a ordem de grandeza, não.</p>
+      </section>
+
+      <section class="slide" data-title="Os 5 datasets" data-nb="datasets" data-block="Abertura">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">O material de hoje</span>
+        <h2>Cinco tabelas, cinco doenças</h2>
+        <table class="tbl">
+          <thead><tr><th>arquivo</th><th>o que é</th><th>por que está aqui</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td><code>vendas-sujas</code></td><td>627 pedidos</td><td><b>18 defeitos plantados</b></td></tr>
+            <tr><td><code>sensores</code></td><td>3 sensores, 15 em 15 min</td><td>tempo, fuso e buraco</td></tr>
+            <tr><td><code>rh</code></td><td>222 pessoas</td><td>imputar por grupo; o outlier legítimo</td></tr>
+            <tr><td><code>titanic</code></td><td>891 passageiros <small>(real)</small></td><td>177 idades e 687 cabines vazias</td></tr>
+            <tr><td><code>taxis</code></td><td>6.433 corridas <small>(real)</small></td><td>o defeito em escala</td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">
+          Os três primeiros vêm de <code>gerar-dados.py</code>. Os dois últimos são reais, das aulas 2 e 3.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Os sete defeitos" data-block="Abertura">
+        <span class="kicker">O mapa da aula</span>
+        <h2>Sete defeitos, sete remédios</h2>
+        <div class="mural">
+          <div class="mu"><span class="mu-n">1</span><b>Faltante</b><p>o vazio e seus disfarces</p><div class="mu-io"><code>isna · fillna</code></div></div>
+          <div class="mu"><span class="mu-n">2</span><b>Duplicata</b><p>a repetida e a quase repetida</p><div class="mu-io"><code>drop_duplicates</code></div></div>
+          <div class="mu"><span class="mu-n">3</span><b>Tipo errado</b><p>número que veio como texto</p><div class="mu-io"><code>to_numeric</code></div></div>
+          <div class="mu"><span class="mu-n">4</span><b>Data</b><p>três formatos, um fuso oculto</p><div class="mu-io"><code>to_datetime</code></div></div>
+          <div class="mu"><span class="mu-n">5</span><b>Texto</b><p>acento, caixa, espaço</p><div class="mu-io"><code>.str · normalize</code></div></div>
+          <div class="mu"><span class="mu-n">6</span><b>Outlier</b><p>o absurdo e o raro</p><div class="mu-io"><code>IQR · z-score</code></div></div>
+        </div>
+        <div class="callout key">
+          O sétimo não tem comando: <b>saber o que o dado significa</b> — é ele que escolhe os outros seis.
+        </div>
+      </section>
+
+      <!-- ======================= DIAGNÓSTICO ======================= -->
+      <section class="slide divider" data-title="Diagnóstico" data-block="Diagnóstico">
+        <span class="div-n">🔍</span>
+        <h2>Antes de mexer</h2>
+        <p>Descrever é a primeira etapa da limpeza — e a única que não se pode pular</p>
+      </section>
+
+      <section class="slide" data-title="O sintoma · dtypes" data-nb="ler-errado" data-block="Diagnóstico">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Passo 1 · o sintoma</span>
+        <h2>O que o dtypes diz</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">bruto = pd.read_csv(&quot;dados/vendas-sujas.csv&quot;)</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">bruto.dtypes</span>
+<span class="out">id_pedido        int64
+data_pedido        str
+qtd                str
+valor              str
+frete              str
+avaliacao      float64
+entrega_dias     int64</span></code></pre>
+        <div class="callout key">
+          Quatro colunas que deveriam ser número ou data estão como <b>texto</b>. O <code>dtypes</code> diz <b>que</b> há um problema — não diz <b>qual</b>, nem <b>onde</b>.
+        </div>
+        <p class="dica">E ele não acusa nada em <code>avaliacao</code>: um <code>float64</code> parece perfeitamente saudável.</p>
+      </section>
+
+      <section class="slide" data-title="★ Quem é o culpado?" data-nb="culpado" data-block="Diagnóstico">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Passo 2 · olhar os valores</span>
+        <h2>Quem derrubou a coluna?</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">bruto[&quot;valor&quot;].unique()[:5]</span>
+<span class="out">[&#x27;R$ 659,70&#x27;, &#x27;R$ 526,52&#x27;, &#x27;3926.19&#x27;, &#x27;332.34&#x27;, &#x27;1286,40&#x27;]</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">bruto[&quot;data_pedido&quot;].unique()[:4]</span>
+<span class="out">[&#x27;16-07-2026&#x27;, &#x27;02/04/2026&#x27;, &#x27;18-06-2026&#x27;, &#x27;2026-05-07&#x27;]</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">bruto[&quot;qtd&quot;].unique()[:5]</span>
+<span class="out">[&#x27;2&#x27;, &#x27;3&#x27;, &#x27;1&#x27;, &#x27;-&#x27;, &#x27;5&#x27;]</span></code></pre>
+        <div class="callout key">
+          <b>Antes de qualquer conversão, olhe os valores.</b> Três colunas, três doenças diferentes — e todas ficam visíveis em uma linha de código cada.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★★ Contar os culpados" data-nb="contar-culpados" data-block="Diagnóstico">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Passo 3 · quantos são</span>
+        <h2>Exceção ou padrão?</h2>
+        <pre class="code sm"><code data-lang="python">culpados = bruto["qtd"][pd.to_numeric(bruto["qtd"], errors="coerce").isna()]
+culpados.value_counts()</code></pre>
+        <div class="io">
+          <div class="io-box">
+            <h4><code>qtd</code> — 16 de 627</h4>
+            <pre class="code sm"><code class="no-hl">-       6
+1 pç    4
+3 un    2
+duas    2
+...</code></pre>
+          </div>
+          <div class="io-box">
+            <h4><code>valor</code> — 495 de 627</h4>
+            <pre class="code sm"><code class="no-hl">R$ 370,28     3
+R$ 1.357,48   2
+15584,56      2
+...</code></pre>
+          </div>
+        </div>
+        <div class="callout key">
+          <b>O mesmo comando, dois diagnósticos.</b> Em <code>qtd</code>, dezesseis valores tortos: são a exceção, conserte-os. Em <code>valor</code>, quase toda a coluna: o <b>formato</b> é que é outro.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★★ O describe denuncia" data-nb="describe-denuncia" data-block="Diagnóstico">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Passo 4 · o que o tipo esconde</span>
+        <h2>E a coluna que parecia saudável?</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">bruto.describe()</span>
+<span class="out">       id_pedido  desconto_pct  avaliacao  entrega_dias
+count     627.00        558.00     588.00        627.00
+mean   100299.35         10.39    </span><span class="hit">-120.88</span><span class="out">         11.81
+min    100001.00          0.00    </span><span class="hit">-999.00</span><span class="out">          1.00
+50%    100301.00         10.00       4.00         10.00
+max    100600.00         25.00       5.00        </span><span class="hit">365.00</span></code></pre>
+        <div class="callout warn">
+          Duas anomalias na mesma tela: uma nota de <b>−999</b> numa escala de 1 a 5, e uma entrega em <b>365 dias</b>. O tipo estava certo; o <b>conteúdo</b>, não.
+        </div>
+        <p class="dica"><b>Leia sempre <code>min</code> e <code>max</code> antes de olhar a média.</b> É o hábito que separa quem acha o defeito de quem o publica.</p>
+      </section>
+
+      <section class="slide" data-title="★ O raio-x" data-nb="raio-x" data-block="Diagnóstico">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Uma função, sete respostas</span>
+        <h2>O raio-x</h2>
+        <pre class="code sm"><code data-lang="python">def raio_x(df):
+    return pd.DataFrame({
+        "tipo":       df.dtypes.astype(str),
+        "faltam":     df.isna().sum(),
+        "faltam_%":  (df.isna().mean() * 100).round(1),
+        "distintos":  df.nunique(),
+        "memória_KB": df.memory_usage(deep=True)[1:] / 1024,
+    })</code></pre>
+        <div class="cards c3 tight">
+          <div class="card"><b>tipo</b><small>quem devia ser número e está como texto</small></div>
+          <div class="card"><b>faltam</b><small>o buraco que o Pandas já reconheceu</small></div>
+          <div class="card"><b>distintos</b><small>categoria com valor demais = grafia torta</small></div>
+        </div>
+        <div class="callout key">
+          Mais <code>df.shape</code> e <code>df.duplicated().sum()</code>. São seis linhas de código antes de qualquer decisão — e elas mudam todas as decisões seguintes.
+        </div>
+      </section>
+
+      <section class="slide" data-title="27 estados" data-nb="27-estados" data-block="Diagnóstico">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">O primeiro achado</span>
+        <h2>A loja vende em dez estados</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">bruto[&quot;uf&quot;].nunique()</span>
+<span class="out">27</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">bruto[&quot;uf&quot;].value_counts().head(8)</span>
+<span class="out">pr           42
+RS           36  </span><span class="cmt"># repare: RS aparece</span>
+<span class="out">RS           31  </span><span class="cmt"># duas vezes — um deles é &quot;RS &quot;</span>
+<span class="out">pe           30
+rs           29
+São Paulo    26
+BA           25</span></code></pre>
+        <div class="callout key">
+          <code>SP</code>, <code>sp</code>, <code>" SP"</code>, <code>S.P.</code> e <code>São Paulo</code> são <b>cinco coisas diferentes</b> para o computador. Guarde o 27: no fim da aula ele vira 10.
+        </div>
+      </section>
+
+      <!-- ======================= FALTANTES ======================= -->
+      <section class="slide divider" data-title="Faltantes" data-block="Faltantes">
+        <span class="div-n">∅</span>
+        <h2>Dados faltantes</h2>
+        <p>O vazio, os seus disfarces, e a decisão de negócio por trás de cada preenchimento</p>
+      </section>
+
+      <section class="slide" data-title="As 4 caras do vazio" data-nb="caras-do-vazio" data-block="Faltantes">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Um conceito, quatro nomes</span>
+        <h2>As quatro caras do vazio</h2>
+        <table class="tbl">
+          <thead><tr><th>aparece como</th><th>em que coluna</th><th>é o quê</th></tr></thead>
+          <tbody>
+            <tr><td><code>NaN</code></td><td>número</td><td><i>Not a Number</i></td></tr>
+            <tr><td><code>None</code></td><td>texto</td><td>ausência de valor</td></tr>
+            <tr><td><code>NaT</code></td><td>data</td><td><i>Not a Time</i></td></tr>
+            <tr><td><code>&lt;NA&gt;</code></td><td>tipo anulável</td><td>o vazio oficial</td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">
+          O <code>isna()</code> enxerga <b>todos os quatro</b>. É por ele que se começa.
+        </div>
+      </section>
+
+      <section class="slide" data-title="NaN ≠ NaN" data-nb="nan-nao-e-nan" data-block="Faltantes">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">A armadilha</span>
+        <h2>NaN não é igual a NaN</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">np.nan == np.nan</span>
+<span class="out">False</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df[df[&quot;valor&quot;] == np.nan]</span><span class="cmt">  # sempre vazio, nunca dá erro</span>
+<span class="out">Empty DataFrame</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df[df[&quot;valor&quot;].isna()]</span><span class="cmt">  # o jeito certo</span>
+<span class="out">[3 rows x 18 columns]</span></code></pre>
+        <div class="callout warn">
+          O primeiro filtro <b>não dá erro</b> — devolve uma tabela vazia, e você conclui que não há faltantes. É o bug silencioso mais comum de quem está começando.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ O disfarce" data-nb="disfarce" data-block="Faltantes">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">O faltante que o isna não vê</span>
+        <h2>O disfarce</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">bruto[&quot;frete&quot;].dtype</span>
+<span class="out">str  </span><span class="cmt"># devia ser float64</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">bruto[&quot;frete&quot;].isna().sum()</span>
+<span class="out">37</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">bruto[&quot;frete&quot;].isin([&quot;-&quot;, &quot;n/d&quot;, &quot;  &quot;]).sum()</span>
+<span class="out">17  </span><span class="cmt"># dezessete faltantes escondidos atrás de um traço</span></code></pre>
+        <div class="callout key">
+          Alguém escreveu a ausência <b>como texto</b>: <code>""</code>, <code>-</code>, <code>N/A</code>, <code>n/d</code>, <code>null</code>, <code>sem data</code>. Dezessete traços bastam para derrubar a coluna inteira para texto.
+        </div>
+      </section>
+
+      <section class="slide" data-title="na_values" data-nb="na-values" data-block="Faltantes">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">na_values</span>
+        <h2>Diga o que é vazio nesta casa</h2>
+        <div class="io">
+          <div class="io-box">
+            <h4>O que o Pandas já sabe</h4>
+            <pre class="code sm"><code>"", "NA", "N/A", "n/a",
+"NULL", "null", "NaN", "nan",
+"None", "&lt;NA&gt;", "#N/A", ...</code></pre>
+          </div>
+          <div class="io-box">
+            <h4>O que é invenção da sua empresa</h4>
+            <pre class="code sm"><code data-lang="python">NULOS = ["-", "n/d", "sem data",
+         "?", "00/00/0000", "  "]
+
+pd.read_csv(arq, na_values=NULOS)</code></pre>
+          </div>
+        </div>
+        <pre class="code term"><code class="no-hl"><span class="out">sem na_values ·  624 faltantes reconhecidos
+com na_values ·  677 faltantes reconhecidos</span></code></pre>
+        <div class="callout key">
+          <b>Cinquenta e três apareceram do nada</b> — já estavam ali, atrás de um traço. E o parâmetro age <b>na leitura</b>, antes do tipo.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ A sentinela" data-nb="sentinela" data-block="Faltantes">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">De volta ao −999</span>
+        <h2>A sentinela</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df[&quot;avaliacao&quot;].value_counts().sort_index()</span>
+<span class="out">-999.0     73  </span><span class="cmt"># o &quot;não respondeu&quot; do sistema antigo</span>
+<span class="out"> 1.0       68
+ 5.0      188</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df[&quot;avaliacao&quot;].mean()</span>
+<span class="out">-120.88  </span><span class="cmt"># numa escala de 1 a 5</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df[&quot;avaliacao&quot;].replace(-999, np.nan).mean()</span>
+<span class="out">3.59</span></code></pre>
+        <div class="callout warn">
+          <b>E se a sentinela fosse <code>0</code>?</b> A média cairia de 3,59 para 3,1 e <b>nada</b> pareceria errado. Por isso o <code>min</code> do <code>describe()</code> não é opcional.
+        </div>
+        <p class="dica">Sentinelas famosas: <code>-999</code>, <code>-1</code>, <code>0</code>, <code>9999</code>, <code>1900-01-01</code>, <code>1970-01-01</code>. O <code>describe</code> do <b>slide 10</b> já tinha entregado esta.</p>
+      </section>
+
+      <section class="slide" data-title="★ Onde estão os buracos" data-nb="onde-buracos" data-block="Faltantes">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Mapa de faltantes · isna</span>
+        <h2>Onde estão os buracos?</h2>
+        <pre class="code sm"><code data-lang="python">plt.imshow(titanic.isna())      # âmbar = faltando</code></pre>
+        <figure class="fig fig-sm">
+          <img src="img/g1-mapa-faltantes.png" alt="Mapa de faltantes do Titanic: a coluna Age tem 177 buracos espalhados, a Cabin tem 687 quase contínuos, Embarked tem 2">
+        </figure>
+        <div class="callout key">
+          <b>Três padrões diferentes</b> na mesma tabela: <code>Age</code> salpicada, <code>Cabin</code> quase toda vazia, <code>Embarked</code> com duas linhas. Cada padrão pede uma decisão diferente.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Três decisões" data-block="Faltantes">
+        <span class="kicker">A proporção decide</span>
+        <h2>Três buracos, três decisões</h2>
+        <div class="cards c3">
+          <div class="card"><span class="ico">🩹</span><b>Age · 19,9%</b><small>muito para descartar, pouco para desistir → <b>imputar</b></small></div>
+          <div class="card"><span class="ico">🗑️</span><b>Cabin · 77,1%</b><small>sobra pouco → <b>descartar a coluna</b> ou virar flag</small></div>
+          <div class="card"><span class="ico">✂️</span><b>Embarked · 2 linhas</b><small>0,2% → <b>derrubar as duas linhas</b></small></div>
+        </div>
+        <div class="callout key">
+          Não há regra universal. Há a <b>proporção</b>, o <b>custo de errar</b> e o que a coluna <b>significa</b>.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ dropna" data-nb="dropna" data-block="Faltantes">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">dropna</span>
+        <h2>O comando que apaga tudo</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">titanic.shape</span>
+<span class="out">(891, 12)</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">titanic.dropna().shape</span><span class="cmt">  # sem argumento nenhum</span>
+<span class="out">(183, 12)  </span><span class="cmt"># 79% da tabela foi embora</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">titanic.dropna(subset=[&quot;Embarked&quot;]).shape</span><span class="cmt">  # só quem importa</span>
+<span class="out">(889, 12)</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">titanic.dropna(thresh=11).shape</span><span class="cmt">  # exige 11 colunas cheias</span>
+<span class="out">(733, 12)</span></code></pre>
+        <div class="callout warn">
+          Basta <b>uma</b> cabine em branco para a linha inteira sair. É o erro mais comum da limpeza: resolver o faltante destruindo o dataset.
+        </div>
+        <p class="dica">Quase sempre o certo é <code>subset=</code>: derrube a linha só quando falta o que você vai usar.</p>
+      </section>
+
+      <section class="slide" data-title="fillna" data-nb="fillna" data-block="Faltantes">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">fillna</span>
+        <h2>Cada coluna com a sua regra</h2>
+        <div class="compare">
+          <div class="cmp cmp-b">
+            <h3><span class="ico">✗</span> O atalho</h3>
+            <pre class="code sm"><code data-lang="python">titanic.fillna(0)</code></pre>
+            <p>Cabine vira <b>zero</b>. Idade vira <b>recém-nascido</b>. Porto de embarque vira <b>zero</b>.</p>
+          </div>
+          <div class="cmp cmp-a">
+            <h3><span class="ico">✓</span> O honesto</h3>
+            <pre class="code sm"><code data-lang="python">titanic.fillna({
+    "Age": titanic["Age"].median(),
+    "Embarked": "S",
+    "Cabin": "sem registro",
+})</code></pre>
+            <p>Uma decisão declarada por coluna.</p>
+          </div>
+        </div>
+        <div class="callout key">
+          O dicionário obriga você a pensar coluna por coluna — que é exatamente o trabalho.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ Média ou mediana" data-nb="media-ou-mediana" data-block="Faltantes">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Assimetria · skew</span>
+        <h2>Média ou mediana?</h2>
+        <figure class="fig fig-sm">
+          <img src="img/g2-media-mediana.png" alt="Dois histogramas: a idade no Titanic é quase simétrica e média e mediana se tocam; o salário é assimétrico e a média fica bem à direita da mediana">
+        </figure>
+        <div class="callout key">
+          Na idade, <code>skew</code> <b>0,39</b> — tanto faz. No salário, <code>skew</code> <b>7,16</b>: a média é 11.821 e a mediana 7.870. <b>A regra: com |skew| &gt; 1, use a mediana.</b>
+        </div>
+        <p class="dica">Imputar pela média inventa 34 pessoas ganhando 12 mil — e a média sobe de novo.</p>
+      </section>
+
+      <section class="slide" data-title="ffill e interpolate" data-nb="ffill" data-block="Faltantes">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Série ordenada</span>
+        <h2>Quatro respostas para o mesmo vazio</h2>
+        <table class="tbl">
+          <thead><tr><th>comando</th><th>o que ele afirma</th><th>quando serve</th></tr></thead>
+          <tbody>
+            <tr><td><code>ffill()</code></td><td>"nada mudou desde a última medida"</td><td>sensor, cotação</td></tr>
+            <tr><td><code>bfill()</code></td><td>"vale o que veio depois"</td><td>cuidado: usa o <b>futuro</b></td></tr>
+            <tr class="hi"><td><code>interpolate()</code></td><td>"variou continuamente entre as pontas"</td><td>temperatura, nível</td></tr>
+            <tr><td><code>fillna(média)</code></td><td>"vale o típico de sempre"</td><td>ignora a hora</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          Nenhum faz sentido numa lista de <b>clientes</b>: repetir o CPF de cima é inventar gente.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ O sensor caiu" data-nb="sensor-caiu" data-block="Faltantes">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Gráfico de linhas · ffill × interpolate</span>
+        <h2>O sensor caiu por três horas</h2>
+        <figure class="fig fig-sm">
+          <img src="img/g4-serie-buraco.png" alt="Temperatura da estufa com um vazio de 3h15: a linha do ffill fica congelada em 23,3 graus e sobe de repente; a do interpolate liga as duas pontas em rampa">
+        </figure>
+        <div class="callout key">
+          O <code>ffill</code> <b>congela</b> a estufa por três horas; o <code>interpolate</code> liga as pontas — o que a física manda.
+        </div>
+        <p class="dica"><code>ffill(limit=2)</code> é o freio de mão: repete duas vezes, e o resto continua buraco.</p>
+      </section>
+
+      <section class="slide" data-title="★ A linha que não existe" data-nb="linha-inexistente" data-block="Faltantes">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">asfreq</span>
+        <h2>O buraco que o isna não vê</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">a.index.to_series().diff().value_counts()</span>
+<span class="out">0 days 00:15:00    348
+0 days 00:30:00     11
+0 days 03:15:00      1  </span><span class="cmt"># o sensor ficou mudo</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">a[&quot;temperatura&quot;].isna().sum()</span>
+<span class="out">23  </span><span class="cmt"># nenhum deles é a queda de 3h</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">a[&quot;temperatura&quot;].asfreq(&quot;15min&quot;).isna().sum()</span>
+<span class="out">49  </span><span class="cmt"># agora sim: a grade regular revela o silêncio</span></code></pre>
+        <div class="callout warn">
+          Se o sensor caiu, não existe <code>NaN</code> — <b>não existe linha</b>. O <code>asfreq</code> materializa a grade e transforma o silêncio em buraco visível.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ Imputar por grupo" data-nb="imputar-grupo" data-block="Faltantes">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">groupby + transform</span>
+        <h2>A mediana de quem se parece com você</h2>
+        <pre class="code sm"><code data-lang="python">titanic.groupby(["Pclass", "Sex"])["Age"].transform("median")</code></pre>
+        <div class="io">
+          <div class="io-box">
+            <h4>A mediana de cada grupo</h4>
+            <table class="tbl mini">
+              <thead><tr><th>classe</th><th>mulher</th><th>homem</th></tr></thead>
+              <tbody>
+                <tr><td class="idx">1ª</td><td>35,0</td><td>40,0</td></tr>
+                <tr><td class="idx">2ª</td><td>28,0</td><td>30,0</td></tr>
+                <tr class="hi"><td class="idx">3ª</td><td>21,5</td><td>25,0</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="io-box">
+            <h4>A mediana geral</h4>
+            <table class="tbl mini">
+              <thead><tr><th>todos</th><th>&nbsp;</th></tr></thead>
+              <tbody><tr><td class="idx">—</td><td><b>28,0</b> para todo mundo</td></tr></tbody>
+            </table>
+            <p class="dica" style="padding:9px 12px">18,5 anos de diferença, apagados por um número só.</p>
+          </div>
+        </div>
+        <div class="callout key">
+          O <code>transform</code> devolve uma coluna <b>do tamanho da original</b>, com a mediana do grupo de cada linha.
+        </div>
+      </section>
+
+      <section class="slide" data-title="A conta da imputação" data-nb="conta-imputacao" data-block="Faltantes">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">O preço</span>
+        <h2>Toda imputação encolhe a variação</h2>
+        <figure class="fig fig-sm">
+          <img src="img/g3-imputacao.png" alt="Três histogramas de idade: o original, o imputado pela mediana geral com um pico artificial em 28 anos, e o imputado por grupo com cinco picos menores">
+        </figure>
+        <div class="callout key">
+          Desvio-padrão: <b>14,53</b> no original, <b>13,02</b> com a mediana geral, <b>13,30</b> por grupo. Você inventou valores no centro — a tabela ficou mais certinha do que a realidade.
+        </div>
+        <p class="dica">Não é errado. É uma consequência, e precisa ir para o relatório.</p>
+      </section>
+
+      <section class="slide" data-title="★ Guarde a evidência" data-nb="evidencia" data-block="Faltantes">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">A flag _faltava</span>
+        <h2>O buraco também é dado</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">titanic[&quot;idade_faltava&quot;] = titanic[&quot;Age&quot;].isna()</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">titanic.groupby(&quot;idade_faltava&quot;)[[&quot;Survived&quot;, &quot;Pclass&quot;]].mean()</span>
+<span class="out">                Survived  Pclass
+idade_faltava
+False              0.406    2.24
+True               0.294    2.60</span></code></pre>
+        <div class="callout key">
+          <b>Quem não tem idade registrada sobreviveu menos: 29,4% contra 40,6%.</b> A ausência não era aleatória — viajavam em classe mais baixa e pagaram menos pela passagem.
+        </div>
+        <p class="dica">Em estatística: dado <b>MNAR</b>. Pergunte <b>por que</b> falta antes de perguntar <b>com o quê</b> preencher.</p>
+      </section>
+
+      <section class="slide" data-title="A árvore de decisão" data-block="Faltantes">
+        <span class="kicker">Resumo da parte</span>
+        <h2>A árvore de decisão</h2>
+        <table class="tbl">
+          <thead><tr><th>situação</th><th>decisão</th></tr></thead>
+          <tbody>
+            <tr><td>falta em &lt; 5%</td><td><code>dropna(subset=[...])</code></td></tr>
+            <tr><td>5–40%, número simétrico</td><td><code>fillna(média)</code></td></tr>
+            <tr><td>5–40%, número assimétrico</td><td><code>fillna(mediana)</code></td></tr>
+            <tr class="hi"><td>5–40% e há grupo natural</td><td><code>groupby().transform("median")</code></td></tr>
+            <tr><td>série temporal ordenada</td><td><code>ffill(limit=n)</code> ou <code>interpolate</code></td></tr>
+            <tr><td>falta em &gt; 50%</td><td>descarte, ou vire flag</td></tr>
+            <tr class="hi"><td>falta porque <b>não se aplica</b></td><td>preencha com "não se aplica"</td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">
+          A última é a esquecida: <code>data_cancelamento</code> vazia num pedido entregue <b>é a resposta certa</b>.
+        </div>
+      </section>
+
+      <!-- ======================= DUPLICATAS ======================= -->
+      <section class="slide divider" data-title="Duplicatas" data-block="Duplicatas">
+        <span class="div-n">⧉</span>
+        <h2>Duplicatas</h2>
+        <p>A linha repetida, a quase repetida — e a que só parece repetida</p>
+      </section>
+
+      <section class="slide" data-title="duplicated" data-nb="duplicated" data-block="Duplicatas">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">duplicated · keep</span>
+        <h2>Achar antes de remover</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df.duplicated().sum()</span><span class="cmt">  # keep=&quot;first&quot;: marca da 2ª em diante</span>
+<span class="out">18</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df.duplicated(keep=False).sum()</span><span class="cmt">  # marca TODAS as cópias</span>
+<span class="out">36</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df.drop_duplicates().shape</span>
+<span class="out">(609, 18)</span></code></pre>
+        <div class="callout key">
+          <code>keep=False</code> é para <b>olhar</b> — mostra as duas cópias lado a lado. <code>keep="first"</code> é para <b>remover</b>.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ O grão da tabela" data-nb="grao" data-block="Duplicatas">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">subset</span>
+        <h2>Qual é o grão desta tabela?</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">sem_dup.shape</span>
+<span class="out">(609, 18)</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">sem_dup[&quot;id_pedido&quot;].nunique()</span>
+<span class="out">600  </span><span class="cmt"># 609 linhas para 600 pedidos: sobram 9</span></code></pre>
+        <div class="io">
+          <div class="io-box">
+            <h4>O mesmo pedido, duas linhas</h4>
+            <table class="tbl mini">
+              <thead><tr><th>id</th><th>cliente</th><th>cidade</th></tr></thead>
+              <tbody>
+                <tr><td class="idx">100002</td><td>GABRIELA NUNES&nbsp;&nbsp;</td><td>SÃO PAULO</td></tr>
+                <tr><td class="idx">100002</td><td>gabriela nunes</td><td>São Paulo</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="io-box">
+            <h4>Byte a byte</h4>
+            <pre class="code sm"><code>diferentes ✗
+
+para o negócio:
+o mesmo pedido, lançado duas vezes ✓</code></pre>
+          </div>
+        </div>
+        <div class="callout key">
+          A pergunta que precede o comando: <b>o que torna uma linha única aqui?</b> Um pedido. Se o <code>id_pedido</code> repete, algo está errado.
+        </div>
+      </section>
+
+      <section class="slide" data-title="A quase-duplicata" data-nb="quase-duplicata" data-block="Duplicatas">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Normalizar antes de comparar</span>
+        <h2>A quase-duplicata</h2>
+        <pre class="code sm"><code data-lang="python">def chave(s):
+    """Texto reduzido ao essencial: sem acento, sem espaço extra, minúsculo."""
+    return (s.astype("str")
+             .str.normalize("NFKD").str.encode("ascii", "ignore").str.decode("ascii")
+             .str.replace(r"\s+", " ", regex=True)
+             .str.strip().str.lower())
+
+limpo = (sem_dup.assign(_k=chave(sem_dup["cliente"]))
+                .drop_duplicates(subset=["id_pedido", "_k", "produto"]))</code></pre>
+        <div class="callout key">
+          <b>627 → 609 → 600.</b> Dezoito cópias exatas e nove quase-cópias. Agora a tabela cumpre o que prometia: uma linha por pedido.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ A que não é erro" data-nb="dup-legitima" data-block="Duplicatas">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">taxis.csv</span>
+        <h2>A duplicata que não é erro</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">taxis.duplicated([&quot;distance&quot;, &quot;fare&quot;, &quot;tip&quot;, &quot;payment&quot;]).sum()</span>
+<span class="out">935</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">taxis.duplicated().sum()</span><span class="cmt">  # a linha inteira</span>
+<span class="out">0</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">taxis[taxis.duplicated([&quot;fare&quot;, &quot;distance&quot;], keep=False)].head(3)</span>
+<span class="out">                 pickup  distance  fare payment
+3377 2019-03-27 15:18:33      0.00  2.50    cash
+120  2019-03-21 17:21:44      0.00  2.50    cash
+4663 2019-03-27 13:57:06      0.00  2.50    cash</span></code></pre>
+        <div class="callout warn">
+          <b>São corridas diferentes</b> — o horário prova. Quem rodar <code>drop_duplicates</code> nessas colunas joga fora <b>15% do dataset</b> achando que está limpando.
+        </div>
+      </section>
+
+      <!-- ======================= TIPOS ======================= -->
+      <section class="slide divider" data-title="Tipos" data-block="Tipos">
+        <span class="div-n">#</span>
+        <h2>Tipos</h2>
+        <p>Enquanto a coluna for texto, ela não soma, não ordena e não vira gráfico</p>
+      </section>
+
+      <section class="slide" data-title="Os tipos" data-nb="tipos" data-block="Tipos">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">O catálogo</span>
+        <h2>Os tipos que importam</h2>
+        <table class="tbl">
+          <thead><tr><th>tipo</th><th>para que serve</th><th>o vazio dele</th></tr></thead>
+          <tbody>
+            <tr><td><code>int64</code> · <code>float64</code></td><td>número</td><td>só o float tem <code>NaN</code></td></tr>
+            <tr class="hi"><td><code>Int64</code> · <code>Float64</code></td><td>número <b>anulável</b></td><td><code>&lt;NA&gt;</code></td></tr>
+            <tr><td><code>str</code></td><td>texto</td><td><code>NaN</code></td></tr>
+            <tr><td><code>datetime64</code></td><td>instante</td><td><code>NaT</code></td></tr>
+            <tr><td><code>timedelta64</code></td><td>duração</td><td><code>NaT</code></td></tr>
+            <tr class="hi"><td><code>category</code></td><td>texto que se repete</td><td><code>NaN</code></td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">
+          <code>int64</code> minúsculo <b>não representa ausência</b>. Um buraco e a coluna vira <code>float64</code> sozinha — o seu <code>id</code> aparece como <code>100449.0</code>.
+        </div>
+      </section>
+
+      <section class="slide" data-title="astype × to_numeric" data-nb="astype-tonumeric" data-block="Tipos">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Dois conversores</span>
+        <h2>O rígido e o tolerante</h2>
+        <div class="compare">
+          <div class="cmp cmp-b">
+            <h3><code>astype</code> — rígido</h3>
+            <pre class="code sm"><code data-lang="python">df["qtd"].astype("int")</code></pre>
+            <pre class="code sm"><code>ValueError: cannot convert
+float NaN to integer</code></pre>
+            <p>Para quando você <b>quer</b> a garantia.</p>
+          </div>
+          <div class="cmp cmp-a">
+            <h3><code>to_numeric</code> — tolerante</h3>
+            <pre class="code sm"><code data-lang="python">pd.to_numeric(df["qtd"],
+              errors="coerce")</code></pre>
+            <pre class="code sm"><code>o que não converte vira NaN</code></pre>
+            <p>Para quando você quer <b>descobrir</b>.</p>
+          </div>
+        </div>
+        <div class="callout key">
+          E o passo que ninguém faz: <b>contar quem ficou pelo caminho</b>.
+          <code>virou_nan = novo.isna() &amp; velho.notna()</code> — aqui, 6 valores: <code>"3 un"</code>, <code>"1 pç"</code>, <code>"duas"</code>.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ Dinheiro brasileiro" data-nb="dinheiro" data-block="Tipos">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">A armadilha da vírgula</span>
+        <h2>"R$ 1.234,56" vira número</h2>
+        <div class="io">
+          <div class="io-box">
+            <h4>A receita ingênua</h4>
+            <pre class="code sm"><code data-lang="python">(s.str.replace("R$", "")
+  .str.replace(".", "")   # milhar
+  .str.replace(",", "."))  # decimal</code></pre>
+          </div>
+          <div class="io-box">
+            <h4>O que ela faz</h4>
+            <table class="tbl mini">
+              <thead><tr><th>entrou</th><th>saiu</th></tr></thead>
+              <tbody>
+                <tr><td>R$ 1.234,56</td><td>1234.56 ✓</td></tr>
+                <tr><td>977,76</td><td>977.76 ✓</td></tr>
+                <tr class="hi"><td>1004.84</td><td><b>100484.00</b> ✗</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="callout warn">
+          Quem já vinha com ponto decimal foi <b>multiplicado por cem</b>. A regra: <b>só tire o ponto se houver vírgula</b>.
+        </div>
+        <pre class="code sm"><code data-lang="python">tem_virgula = t.str.contains(",")
+t = t.mask(tem_virgula, t.str.replace(".", "").str.replace(",", "."))</code></pre>
+      </section>
+
+      <section class="slide" data-title="★ category" data-nb="category" data-block="Tipos">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">category</span>
+        <h2>O tipo que ninguém usa</h2>
+        <div class="placas c2">
+          <div class="placa alt"><u>6 milhões de linhas · str</u><b>422,9 MB</b><small>a string repetida em cada linha</small></div>
+          <div class="placa good"><u>as mesmas · category</u><b>5,7 MB</b><small>o texto uma vez, e um código por linha</small></div>
+        </div>
+        <div class="callout key">
+          <b>Setenta e quatro vezes menor.</b> Em 600 linhas, irrelevante; em seis milhões, é caber ou não na memória.
+        </div>
+        <p class="dica">Para colunas de <b>poucos valores distintos</b>: UF, categoria, canal, status. Não para nome nem CPF.</p>
+      </section>
+
+      <section class="slide" data-title="category com ordem" data-nb="category-ordem" data-block="Tipos">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">O benefício maior</span>
+        <h2>E ele sabe a ordem</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">rh[&quot;cargo&quot;] = pd.Categorical(rh[&quot;cargo&quot;], NIVEIS, ordered=True)</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">(rh[&quot;cargo&quot;] &gt; &quot;Especialista&quot;).sum()</span>
+<span class="out">92</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">rh.groupby(&quot;cargo&quot;)[&quot;salario&quot;].median()</span>
+<span class="out">Analista            4.370
+Analista Sênior     4.902
+Especialista        8.289
+Coordenador         9.658
+Gerente            14.249
+Diretor           182.400</span></code></pre>
+        <div class="callout key">
+          Sem a ordem declarada, o <code>groupby</code> devolveria <b>alfabético</b> — Analista, Coordenador, Diretor, Especialista — e a tabela deixaria de contar a história da carreira.
+        </div>
+      </section>
+
+      <!-- ======================= DATAS ======================= -->
+      <section class="slide divider" data-title="Datas" data-block="Datas">
+        <span class="div-n">📅</span>
+        <h2>Datas</h2>
+        <p>Três atos sobre a mesma coluna — e o defeito que não falha</p>
+      </section>
+
+      <section class="slide" data-title="Três formatos" data-nb="tres-formatos" data-block="Datas">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">O ponto de partida</span>
+        <h2>Três formatos, uma coluna</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">limpo[&quot;data_pedido&quot;].sample(6)</span>
+<span class="out">2026-07-16   </span><span class="cmt"># ISO — ano, mês, dia</span>
+<span class="out">02/04/2026   </span><span class="cmt"># brasileiro — dia, mês, ano</span>
+<span class="out">18-06-2026   </span><span class="cmt"># brasileiro, com traço</span>
+<span class="out">2026-06-06
+30/02/2026   </span><span class="cmt"># esta data não existe</span>
+<span class="out">sem data</span></code></pre>
+        <div class="callout key">
+          Um único sistema, três exportações diferentes, dez anos de história. É o cenário normal — não a exceção.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Ato 1 — o palpite" data-nb="ato1" data-block="Datas">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Ato 1</span>
+        <h2>Deixar o Pandas adivinhar</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">pd.to_datetime(limpo[&quot;data_pedido&quot;], errors=&quot;coerce&quot;).isna().sum()</span>
+<span class="out">UserWarning: Parsing dates in %d-%m-%Y format when
+dayfirst=False (the default) was specified.</span>
+<span class="out">534  </span><span class="cmt"># de 600</span></code></pre>
+        <div class="callout warn">
+          Ele olha as primeiras linhas, decide <b>um</b> formato e aplica em todas. Acertou 66 e perdeu 534 — mas pelo menos <b>avisou</b>.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Ato 2 — mixed" data-nb="ato2" data-block="Datas">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Ato 2</span>
+        <h2>format="mixed" parece resolver</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">misto = pd.to_datetime(coluna, format=&quot;mixed&quot;,</span>
+<span class="pr">...</span> <span class="cmd">                       dayfirst=True, errors=&quot;coerce&quot;)</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">misto.isna().sum()</span>
+<span class="out">12  </span><span class="cmt"># só as datas impossíveis. resolvido?</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">misto.min().date(), misto.max().date()</span>
+<span class="out">(2026-01-02, 2026-12-07)</span></code></pre>
+        <div class="callout warn">
+          A loja abriu em janeiro e o arquivo vai até agosto. <b>De onde saiu dezembro?</b>
+        </div>
+      </section>
+
+      <section class="slide" data-title="★★ Ato 3 — o estrago" data-nb="ato3" data-block="Datas">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Ato 3 · desconfiar</span>
+        <h2>112 datas trocadas de mês</h2>
+        <div class="io">
+          <div class="io-box">
+            <h4>O que estava escrito</h4>
+            <table class="tbl mini">
+              <thead><tr><th>texto</th><th>o que é</th></tr></thead>
+              <tbody>
+                <tr><td>2026-06-09</td><td>9 de junho</td></tr>
+                <tr><td>2026-01-11</td><td>11 de janeiro</td></tr>
+                <tr><td>2026-07-08</td><td>8 de julho</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="io-box">
+            <h4>O que o <code>mixed</code> entendeu</h4>
+            <table class="tbl mini">
+              <thead><tr><th>virou</th><th>ou seja</th></tr></thead>
+              <tbody>
+                <tr class="hi"><td>2026-09-06</td><td>6 de setembro</td></tr>
+                <tr class="hi"><td>2026-11-01</td><td>1º de novembro</td></tr>
+                <tr class="hi"><td>2026-08-07</td><td>7 de agosto</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="callout warn">
+          O <code>dayfirst=True</code> valeu <b>também para as datas em ISO</b>. Sem erro, sem aviso, sem <code>NaT</code> — só o faturamento de junho aparecendo em setembro.
+        </div>
+      </section>
+
+      <section class="slide" data-title="A receita segura" data-nb="receita-datas" data-block="Datas">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">A cascata</span>
+        <h2>Um formato de cada vez</h2>
+        <pre class="code sm"><code data-lang="python">def para_data(s, formatos=("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y")):
+    """Tenta cada formato explícito, na ordem; só mexe no que ainda está vazio."""
+    saida = pd.Series(pd.NaT, index=s.index, dtype="datetime64[us]")
+    for f in formatos:
+        pendente = saida.isna() &amp; s.notna()
+        saida[pendente] = pd.to_datetime(s[pendente], format=f, errors="coerce")
+    return saida</code></pre>
+        <div class="cards c3 tight">
+          <div class="card"><b>1. Liste</b><small>os formatos que o arquivo tem</small></div>
+          <div class="card"><b>2. Converta</b><small>um por vez, <code>format=</code> explícito</small></div>
+          <div class="card"><b>3. Confira</b><small><code>min</code> e <code>max</code> contra o negócio</small></div>
+        </div>
+        <div class="callout key">
+          O passo 3 pega <b>30 das 112</b>; as outras 82 ficam ali, plausíveis e erradas. Conferir a faixa é obrigatório — confiar só nela, não.
+        </div>
+      </section>
+
+      <section class="slide" data-title="O acessador .dt" data-nb="acessador-dt" data-block="Datas">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">.dt</span>
+        <h2>Uma data vira dez colunas</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">d = limpo[&quot;data_pedido&quot;]</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">d.dt.year, d.dt.month, d.dt.day, d.dt.quarter</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">d.dt.day_name(), d.dt.dayofweek, d.dt.is_month_end</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">d.dt.isocalendar().week, d.dt.days_in_month</span>
+
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">limpo.groupby(d.dt.day_name())[&quot;valor&quot;].sum().nlargest(3)</span>
+<span class="out">Friday       395.080,59
+Wednesday    374.809,21
+Monday       270.578,64</span></code></pre>
+        <div class="callout key">
+          Nada disso existia enquanto a coluna era texto. A pergunta "vendemos mais em que dia da semana?" <b>só passa a ser possível depois da conversão</b>.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ Fuso horário" data-nb="fuso" data-block="Datas">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">tz_convert × tz_localize</span>
+        <h2>Três horas fora do lugar</h2>
+        <figure class="fig fig-sm">
+          <img src="img/g7-fuso.png" alt="Duas curvas de temperatura média por hora: lendo o carimbo UTC o pico aparece às 18h; convertido para Brasília, às 15h">
+        </figure>
+        <div class="compare tight">
+          <div class="cmp cmp-a"><h3><code>tz_convert</code></h3><p>"está em outro fuso — <b>traduza</b>". Move o relógio.</p></div>
+          <div class="cmp cmp-b"><h3><code>tz_localize</code></h3><p>"sempre foi daqui — só <b>rotule</b>". Não move nada.</p></div>
+        </div>
+        <div class="callout warn">
+          Usar um no lugar do outro erra por <b>exatamente o tamanho do fuso</b> — e 18h também é um horário plausível para uma estufa quente.
+        </div>
+      </section>
+
+      <!-- ======================= TEXTO ======================= -->
+      <section class="slide divider" data-title="Texto" data-block="Texto">
+        <span class="div-n">Aa</span>
+        <h2>Texto</h2>
+        <p>Acento, caixa e espaço invisível — três formas de o mesmo nome não ser o mesmo</p>
+      </section>
+
+      <section class="slide" data-title="O acessador .str" data-nb="acessador-str" data-block="Texto">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">.str</span>
+        <h2>Tudo o que se faz com uma string</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">s = pd.Series([&quot;  Ana Paula Souza &quot;, &quot;BRUNO CARVALHO&quot;])</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">s.str.strip()</span>       <span class="cmt"># tira o espaço das pontas</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">s.str.lower()</span>       <span class="cmt"># minúsculo</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">s.str.title()</span>       <span class="cmt"># Inicial Maiúscula</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">s.str.len()</span>         <span class="cmt"># o tamanho de cada um</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">s.str.contains(&quot;Ana&quot;)</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">s.str.replace(r&quot;\s+&quot;, &quot; &quot;, regex=True)</span></code></pre>
+        <div class="callout key">
+          A coluna inteira de uma vez, <b>pulando os <code>NaN</code> sozinho</b>. Sem laço, sem <code>for</code>.
+        </div>
+        <p class="dica">Cuidado com <code>title()</code>: ele devolve "Rio De Janeiro". Preposição precisa de conserto depois.</p>
+      </section>
+
+      <section class="slide" data-title="O espaço invisível" data-nb="espaco" data-block="Texto">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">strip não basta</span>
+        <h2>O espaço que ninguém vê</h2>
+        <div class="io">
+          <div class="io-box">
+            <h4>O que está no arquivo</h4>
+            <pre class="code sm"><code>"··São··Paulo·"
+"Rio\tde·Janeiro"
+"Porto···Alegre"</code></pre>
+          </div>
+          <div class="io-box">
+            <h4>Depois de <code>strip()</code> só</h4>
+            <pre class="code sm"><code>"São··Paulo"     ✗
+"Rio\tde·Janeiro" ✗
+"Porto···Alegre"  ✗</code></pre>
+          </div>
+        </div>
+        <pre class="code sm"><code data-lang="python">s.str.replace(r"\s+", " ", regex=True).str.strip()   # → "São Paulo" ✓</code></pre>
+        <div class="callout key">
+          <code>strip()</code> só limpa as <b>pontas</b>. O espaço duplo do meio, a tabulação e a quebra de linha exigem a expressão regular <code>\s+</code>.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ O acento" data-nb="acento" data-block="Texto">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Unicode</span>
+        <h2>Dois jeitos de escrever "ã"</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">a = &quot;São Paulo&quot;</span>                              <span class="cmt"># o ã como UM caractere</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">b = unicodedata.normalize(&quot;NFD&quot;, a)</span>          <span class="cmt"># o ã como a + til</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">a == b</span>
+<span class="out">False</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">len(a), len(b)</span>
+<span class="out">(9, 10)  </span><span class="cmt"># visualmente idênticos, um byte de diferença</span></code></pre>
+        <div class="callout warn">
+          Dois textos que <b>você lê como iguais</b> e o computador lê como diferentes. Vem de sistemas diferentes: o macOS decompõe, o Windows compõe.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ A função chave" data-nb="funcao-chave" data-block="Texto">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">A receita da casa</span>
+        <h2>Reduzir ao essencial</h2>
+        <pre class="code sm"><code data-lang="python">def chave(s):
+    return (s.astype("str")
+             .str.normalize("NFKD")                       # separa letra e acento
+             .str.encode("ascii", "ignore")               # joga o acento fora
+             .str.decode("ascii")
+             .str.replace(r"\s+", " ", regex=True)        # um espaço só
+             .str.strip().str.lower())</code></pre>
+        <div class="io">
+          <div class="io-box">
+            <h4>Entrou</h4>
+            <pre class="code sm"><code>"São Paulo"
+"SAO PAULO"
+" São  Paulo "
+"Sao Paulo"</code></pre>
+          </div>
+          <div class="io-box">
+            <h4>Saiu</h4>
+            <pre class="code sm"><code>"sao paulo"
+"sao paulo"
+"sao paulo"
+"sao paulo"</code></pre>
+          </div>
+        </div>
+        <div class="callout key">
+          <b>Quatro valores viraram um.</b> Esta função aparece em todo pipeline de limpeza que você vai escrever na vida.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ De 27 para 10" data-nb="uf-27-10" data-block="Texto">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">map com dicionário</span>
+        <h2>De 27 estados para 10</h2>
+        <pre class="code sm"><code data-lang="python">MAPA_UF = {"sao paulo": "SP", "s.p.": "SP", "rio de janeiro": "RJ",
+           "rio grande do sul": "RS", "minas gerais": "MG"}
+
+limpo["uf"] = chave(limpo["uf"]).replace(MAPA_UF).str.upper()</code></pre>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">limpo[&quot;uf&quot;].nunique()</span>
+<span class="out">10</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">limpo[&quot;uf&quot;].value_counts()</span>
+<span class="out">RS  111 · SP  93 · PR  66 · PE  51 · CE  50
+MG   49 · RJ  48 · BA  48 · SC  44 · GO  40</span></code></pre>
+        <div class="callout key">
+          Normalizar resolve a grafia; o <b>dicionário</b> resolve o significado. E o dicionário <b>tem</b> que ser escrito à mão: só quem conhece o negócio sabe que <code>S.P.</code> é São Paulo.
+        </div>
+      </section>
+
+      <section class="slide" data-title="map × replace" data-nb="map-replace" data-block="Texto">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">O detalhe que salva</span>
+        <h2>map avisa; replace não</h2>
+        <div class="compare">
+          <div class="cmp cmp-a">
+            <h3><code>.map(dicionário)</code></h3>
+            <p>O que falta vira <code>NaN</code>.</p>
+            <pre class="code sm"><code data-lang="python">rh["depto"].map(MAPA).isna().sum()
+# 0 → nenhuma grafia esquecida</code></pre>
+          </div>
+          <div class="cmp cmp-b">
+            <h3><code>.replace(dicionário)</code></h3>
+            <p>O que falta <b>fica como estava</b>.</p>
+            <pre class="code sm"><code data-lang="python"># "T.I" (sem o ponto final)
+# passaria batido para sempre</code></pre>
+          </div>
+        </div>
+        <div class="callout key">
+          A contagem de <code>NaN</code> depois do <code>map</code> é o <b>teste</b> de que o dicionário está completo.
+        </div>
+        <p class="dica">No RH: <b>22 grafias</b> para 5 departamentos.</p>
+      </section>
+
+      <section class="slide" data-title="extract" data-nb="extract" data-block="Texto">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">extract · grupos nomeados</span>
+        <h2>Puxar o pedaço que interessa</h2>
+        <div class="io">
+          <div class="io-box">
+            <h4>A observação, texto livre</h4>
+            <pre class="code sm"><code>"cupom PROMO-VERAO-6697"
+"entregar na portaria"
+"trocar por PROMO-TROCA-2800
+ se faltar estoque"</code></pre>
+          </div>
+          <div class="io-box">
+            <h4>Duas colunas novas</h4>
+            <table class="tbl mini">
+              <thead><tr><th>campanha</th><th>codigo</th></tr></thead>
+              <tbody>
+                <tr><td>VERAO</td><td>6697</td></tr>
+                <tr><td class="idx">NaN</td><td class="idx">NaN</td></tr>
+                <tr><td>TROCA</td><td>2800</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <pre class="code sm"><code data-lang="python">df["obs"].str.extract(r"PROMO-(?P&lt;campanha&gt;[A-Z]+)-(?P&lt;codigo&gt;\d{4})")</code></pre>
+        <div class="callout key">
+          Cada <b>grupo</b> da expressão regular vira uma coluna, e o nome do grupo vira o nome dela. Onde não casou, <code>NaN</code>.
+        </div>
+      </section>
+
+      <section class="slide" data-title="zfill" data-nb="zfill" data-block="Texto">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">zfill</span>
+        <h2>O CPF que o Excel comeu</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">cpf = limpo[&quot;cpf&quot;].str.replace(r&quot;\D&quot;, &quot;&quot;, regex=True)</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">cpf.str.len().value_counts()</span>
+<span class="out">11    589
+10     11  </span><span class="cmt"># passaram por uma planilha</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">cpf.str.zfill(11).str.len().value_counts()</span>
+<span class="out">11    600</span></code></pre>
+        <div class="callout key">
+          A planilha tratou o CPF como <b>número</b> e comeu o zero da frente. O mesmo acontece com CEP, código de barras, número de nota e telefone com DDD 0.
+        </div>
+        <p class="dica">A prevenção: <code>read_csv(..., dtype={"cpf": "str"})</code>. O conserto: <code>zfill</code>.</p>
+      </section>
+
+      <!-- ======================= DERIVADAS ======================= -->
+      <section class="slide divider" data-title="Derivadas" data-block="Derivadas">
+        <span class="div-n">＋</span>
+        <h2>Colunas derivadas</h2>
+        <p>Limpar é tirar o que está errado. Transformar é criar o que ainda não existe</p>
+      </section>
+
+      <section class="slide" data-title="assign" data-nb="assign" data-block="Derivadas">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">assign · lambda</span>
+        <h2>Criar sem quebrar o encadeamento</h2>
+        <pre class="code sm"><code data-lang="python">pedidos = limpo.assign(
+    subtotal = lambda d: d["valor"],
+    desconto = lambda d: d["valor"] * d["desconto_pct"] / 100,
+    liquido  = lambda d: d["subtotal"] - d["desconto"] + d["frete"],
+    ticket   = lambda d: d["liquido"] / d["qtd"],
+)</code></pre>
+        <div class="callout key">
+          Dentro do <code>lambda d:</code>, o <code>d</code> é a tabela <b>como está naquele passo</b> — por isso <code>liquido</code> pode usar o <code>desconto</code> que nasceu na linha de cima.
+        </div>
+        <p class="dica">Sem ele seriam quatro atribuições soltas, e a ordem entre elas ficaria implícita.</p>
+      </section>
+
+      <section class="slide" data-title="where e select" data-nb="where-select" data-block="Derivadas">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">np.where · np.select</span>
+        <h2>O "se" da coluna inteira</h2>
+        <pre class="code sm"><code data-lang="python">df["porte"] = np.where(df["liquido"] > 1000, "grande", "pequeno")
+
+condicoes = [df["liquido"] >= 50_000, df["liquido"] >= 5_000,
+             df["liquido"] >= 500,    df["liquido"] >= 0]
+df["faixa"] = np.select(condicoes,
+                        ["corporativo", "alto", "médio", "baixo"],
+                        default="a conferir")</code></pre>
+        <pre class="code term"><code class="no-hl"><span class="out">médio  320 · baixo  211 · alto  60 · </span><span class="cmt">a conferir  5</span><span class="out"> · corporativo  4</span></code></pre>
+        <div class="callout key">
+          <b>O <code>default</code> é a parte importante.</b> Um <code>default="baixo"</code> enterraria os cinco valores negativos numa categoria plausível; <code>"a conferir"</code> os entrega para você.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ apply é lento" data-nb="apply-lento" data-block="Derivadas">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">120 mil linhas · a mesma conta</span>
+        <h2>Três formas, duas ordens de grandeza</h2>
+        <div class="bars">
+          <div class="br"><span class="br-lbl"><code>df.apply(..., axis=1)</code><small>linha a linha, em Python</small></span><span class="br-bar"><i style="width:100%"></i></span><span class="br-val">195,8 ms</span></div>
+          <div class="br"><span class="br-lbl"><code>df["col"].apply(...)</code><small>valor a valor, na coluna</small></span><span class="br-bar"><i style="width:4.1%"></i></span><span class="br-val">8,1 ms</span></div>
+          <div class="br ok"><span class="br-lbl"><code>df["col"] * 1.1</code><small>a coluna inteira, em C</small></span><span class="br-bar"><i style="width:0.5%"></i></span><span class="br-val">0,05 ms</span></div>
+        </div>
+        <div class="callout key">
+          <b>Quatro mil vezes.</b> A ordem: vetorizado → <code>apply</code> na coluna → <code>apply(axis=1)</code>, só em último caso.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ cut × qcut" data-nb="cut-qcut" data-block="Derivadas">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">cut · qcut</span>
+        <h2>Número vira faixa — de dois jeitos</h2>
+        <figure class="fig fig-sm">
+          <img src="img/g6-cut-qcut.png" alt="O mesmo histograma de salários duas vezes: o cut em quatro fatias de valor deixa 183 pessoas na primeira e nenhuma na terceira; o qcut deixa 47 em cada">
+        </figure>
+        <div class="callout key">
+          <code>cut</code> corta em <b>valores</b> — e o salário do diretor definiu sozinho os cortes: <b>183 · 3 · 0 · 2</b>. <code>qcut</code> corta em <b>quantis</b>: <b>47 · 47 · 47 · 47</b>.
+        </div>
+        <p class="dica">Faixa etária pede <code>cut</code>; faixa salarial, <code>qcut</code>.</p>
+      </section>
+
+      <section class="slide" data-title="pipe" data-nb="pipe" data-block="Derivadas">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">pipe</span>
+        <h2>A limpeza vira uma receita</h2>
+        <pre class="code sm"><code data-lang="python">relatorio = (pedidos
+             .pipe(sem_cancelados)
+             .pipe(com_mes)
+             .pipe(so_colunas, ["mes", "regiao", "liquido"])
+             .groupby(["mes", "regiao"])["liquido"].sum()
+             .unstack())</code></pre>
+        <div class="callout key">
+          Cada <code>pipe</code> é um passo <b>com nome</b>. Quando perguntarem "por que março mudou?", a resposta está na lista — não numa célula perdida.
+        </div>
+      </section>
+
+      <!-- ======================= OUTLIERS ======================= -->
+      <section class="slide divider" data-title="Outliers" data-block="Outliers">
+        <span class="div-n">◦</span>
+        <h2>Outliers</h2>
+        <p>O valor absurdo, o valor raro e o valor impossível — três coisas diferentes</p>
+      </section>
+
+      <section class="slide" data-title="Olhe antes" data-nb="olhe-antes" data-block="Outliers">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">quantile</span>
+        <h2>O degrau do fim da tabela</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">v.quantile([.25, .50, .75, .95, .99, 1])</span>
+<span class="out">0.25        308,62
+0.50        900,98  </span><span class="cmt"># metade das vendas abaixo de 900</span>
+<span class="out">0.75      2.505,76
+0.95      7.369,91
+0.99     18.166,06
+1.00    157.051,98  </span><span class="cmt"># quase 9× o percentil 99</span></code></pre>
+        <div class="callout key">
+          Esse <b>degrau</b> entre o percentil 99 e o máximo é a assinatura de um outlier. Resta a parte difícil: descobrir <b>de que tipo</b>.
+        </div>
+      </section>
+
+      <section class="slide" data-title="IQR" data-nb="iqr" data-block="Outliers">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">O método do boxplot</span>
+        <h2>IQR</h2>
+        <pre class="code sm"><code data-lang="python">q1, q3 = s.quantile(.25), s.quantile(.75)
+iqr = q3 - q1
+baixo, alto = q1 - 1.5 * iqr, q3 + 1.5 * iqr</code></pre>
+        <div class="ruler">
+          <div class="ruler-lbl lbl-l">q1 − 1,5·IQR</div>
+          <div class="ruler-lbl lbl-r">q3 + 1,5·IQR</div>
+          <div class="ruler-line"></div>
+          <div class="ruler-mark" style="left:22%"><span>q1</span></div>
+          <div class="ruler-mark c-mark" style="left:38%"><span>mediana</span></div>
+          <div class="ruler-mark" style="left:58%"><span>q3</span></div>
+        </div>
+        <div class="callout key">
+          O corpo dos dados vai do primeiro ao terceiro quartil. A mais de <b>1,5 amplitudes</b> dele, é candidato — a regra dos pontinhos do boxplot.
+        </div>
+        <p class="dica">O 1,5 é convenção, não lei.</p>
+      </section>
+
+      <section class="slide" data-title="★ z-score e o cego" data-nb="zscore" data-block="Outliers">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">z-score · MAD</span>
+        <h2>A régua que o outlier entorta</h2>
+        <div class="compare">
+          <div class="cmp cmp-b">
+            <h3>z comum</h3>
+            <pre class="code sm"><code data-lang="python">(s - s.mean()) / s.std()</code></pre>
+            <p>Usa <b>média</b> e <b>desvio</b> — o que o outlier estraga.</p>
+            <p><b>4</b> pedidos com |z| &gt; 3</p>
+          </div>
+          <div class="cmp cmp-a">
+            <h3>z robusto (MAD)</h3>
+            <pre class="code sm"><code data-lang="python">0.6745 * (s - s.median()) /
+    (s - s.median()).abs().median()</code></pre>
+            <p>Usa <b>mediana</b> — que não se move.</p>
+            <p><b>83</b> pedidos com |z| &gt; 3</p>
+          </div>
+        </div>
+        <div class="callout warn">
+          A maior venda tem z <b>14,2</b> e z robusto <b>151</b>: o z comum foi <b>cegado pelos próprios outliers</b>, que incharam a régua dele.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★★ Os três tipos" data-nb="tres-tipos" data-block="Outliers">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">O slide da aula</span>
+        <h2>O que o IQR mandaria apagar</h2>
+        <figure class="fig fig-sm">
+          <img src="img/g5-outliers.png" alt="Os pedidos em escala logarítmica: a nuvem roxa dentro do IQR, 41 pontos âmbar acima do limite, e quatro losangos verdes muito à direita — as vendas corporativas">
+        </figure>
+        <div class="callout key">
+          Os quatro losangos verdes são <b>vendas corporativas com contrato anual</b>. São reais, estão certas, e respondem por <b>30,7% do faturamento</b> da loja.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ Três tipos, três decisões" data-block="Outliers">
+        <span class="kicker">A parte que o método não decide</span>
+        <h2>Três tipos, três decisões</h2>
+        <table class="tbl">
+          <thead><tr><th>tipo</th><th>como se reconhece</th><th>o que fazer</th></tr></thead>
+          <tbody>
+            <tr><td><b>Erro de digitação</b></td><td><code>qtd = 999</code> de um item de R$ 40</td><td>corrigir, ou virar <code>NaN</code> e imputar</td></tr>
+            <tr class="hi"><td><b>Raro e legítimo</b></td><td>a venda corporativa, com contrato na observação</td><td><b>manter</b>, e analisar à parte</td></tr>
+            <tr><td><b>Impossível</b></td><td>valor negativo, idade 200, frete −1</td><td>investigar: é bug de sistema</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          Remover outlier sem olhar não é limpeza — é <b>apagar o maior cliente da empresa</b> por ele não se parecer com os outros.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ O preço da decisão" data-nb="preco-decisao" data-block="Outliers">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">A mesma pergunta, quatro respostas</span>
+        <h2>"Quanto vendemos?"</h2>
+        <table class="tbl">
+          <thead><tr><th>regra</th><th>pedidos</th><th>média</th><th>total</th></tr></thead>
+          <tbody>
+            <tr class="hi"><td>tudo como está</td><td>600</td><td>2.784</td><td><b>1.662.243</b></td></tr>
+            <tr><td>removendo pelo IQR</td><td>549</td><td>1.288</td><td><b>703.001</b></td></tr>
+            <tr><td>aparando no limite</td><td>600</td><td>1.673</td><td>998.876</td></tr>
+            <tr><td>só os positivos</td><td>595</td><td>2.794</td><td>1.662.426</td></tr>
+          </tbody>
+        </table>
+        <div class="callout warn">
+          <b>Quase um milhão de diferença</b>, e nenhuma linha está errada. A escolha é de negócio — e só fica honesta <b>escrita no relatório</b>.
+        </div>
+        <p class="dica">O <code>clip</code> não apaga a linha: encosta o valor no limite. É a winsorização.</p>
+      </section>
+
+      <section class="slide" data-title="Quando o outlier é o assunto" data-block="Outliers">
+        <span class="kicker">Nem sempre é sujeira</span>
+        <h2>Quando o outlier é a resposta</h2>
+        <div class="cards c3">
+          <div class="card"><span class="ico">💳</span><b>Fraude</b><small>a transação anômala <b>é</b> o alvo</small></div>
+          <div class="card"><span class="ico">🌡️</span><b>Falha de equipamento</b><small>85 °C na estufa: firmware — ou incêndio</small></div>
+          <div class="card"><span class="ico">🩺</span><b>Alerta clínico</b><small>o exame fora da faixa é o motivo dele</small></div>
+        </div>
+        <div class="callout key">
+          Nos três, remover o outlier é <b>jogar fora a resposta</b>. A decisão vem do significado, nunca da fórmula.
+        </div>
+      </section>
+
+      <!-- ======================= A CÓPIA ======================= -->
+      <section class="slide" data-title="loc × iloc" data-nb="loc-iloc" data-block="Fecho">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">loc · iloc</span>
+        <h2>Rótulo ou posição</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df.loc[&quot;b&quot;]</span>       <span class="cmt"># pelo RÓTULO do índice</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df.iloc[1]</span>       <span class="cmt"># pela POSIÇÃO</span>
+
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df.loc[&quot;b&quot;:&quot;d&quot;]</span>   <span class="cmt"># ['b', 'c', 'd'] — INCLUI o fim</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df.iloc[1:3]</span>     <span class="cmt"># ['b', 'c']      — EXCLUI o fim</span></code></pre>
+        <div class="callout warn">
+          A fatia do <code>loc</code> <b>inclui</b> o último; a do <code>iloc</code> <b>exclui</b>. É o bug clássico de um item a mais ou a menos.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ A cópia" data-nb="copia" data-block="Fecho">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Copy-on-Write · pandas 3</span>
+        <h2>Escrever numa fatia não muda o original</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">caros = df[df[&quot;liquido&quot;] &gt; 1000]</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">caros[&quot;liquido&quot;] = 0</span><span class="cmt">  # sem erro, sem aviso</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">df[&quot;liquido&quot;].max()</span>
+<span class="out">157051.98  </span><span class="cmt"># o original está intacto</span></code></pre>
+        <div class="callout key">
+          Até o pandas 2 vinha o <code>SettingWithCopyWarning</code>, e o resultado era <b>imprevisível</b>. No pandas 3 o <i>Copy-on-Write</i> é o padrão: o aviso sumiu porque a regra ficou firme.
+        </div>
+        <div class="compare tight">
+          <div class="cmp cmp-a"><h3>Para alterar o original</h3><pre class="code sm"><code data-lang="python">df.loc[condição, "col"] = valor</code></pre></div>
+          <div class="cmp cmp-b"><h3>Para trabalhar à parte</h3><pre class="code sm"><code data-lang="python">novo = df[condição].copy()</code></pre></div>
+        </div>
+      </section>
+
+      <!-- ======================= FECHO ======================= -->
+      <section class="slide divider" data-title="Juntando tudo" data-block="Fecho">
+        <span class="div-n">⚙</span>
+        <h2>Juntando tudo</h2>
+        <p>Do arquivo bruto à tabela pronta, numa função que se pode rodar de novo</p>
+      </section>
+
+      <section class="slide" data-title="★ O pipeline" data-nb="pipeline" data-block="Fecho">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">limpar_vendas()</span>
+        <h2>Oito etapas, um relatório</h2>
+        <pre class="code term"><code class="no-hl"><span class="out">                            etapa  linhas  faltantes
+         1. leitura com na_values     627        677
+          2. sem linhas idênticas     609        657
+             3. sem quase-duplicatas  600        644
+             4. tipos convertidos     600        723  </span><span class="cmt"># subiu!</span>
+<span class="out">             5. texto padronizado     600        723
+            6. faltantes tratados     600        590
+        7. derivadas e categorias     600       1129  </span><span class="cmt"># subiu de novo</span>
+<span class="out">8. 7 valores impossíveis anulados    600       1143</span></code></pre>
+        <div class="callout key">
+          Os faltantes <b>sobem duas vezes</b>: converter revela texto impossível, e coluna nova nasce vazia. <b>Faltante aumentando é a tabela ficando honesta.</b>
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ A auditoria" data-nb="auditoria" data-block="Fecho">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">auditar()</span>
+        <h2>Limpeza sem verificação é fé</h2>
+        <pre class="code sm"><code data-lang="python">testes = {
+    "uma linha por pedido":     d["id_pedido"].is_unique,
+    "data é data":              pd.api.types.is_datetime64_any_dtype(d["data_pedido"]),
+    "UF com 2 letras":          d["uf"].str.fullmatch(r"[A-Z]{2}").all(),
+    "CPF com 11 dígitos":       d["cpf"].str.len().eq(11).all(),
+    "sem valor negativo":      (d["valor"].dropna() >= 0).all(),
+    "avaliação entre 1 e 5":    d["avaliacao"].dropna().between(1, 5).all(),
+    "datas dentro do período":  d["data_pedido"].dropna().between(ABRIU, HOJE).all(),
+}</code></pre>
+        <div class="callout key">
+          Doze promessas verificadas em um segundo. O valor aparece <b>no mês que vem</b>: o teste falha <b>antes</b> de o número errado ir para a apresentação.
+        </div>
+      </section>
+
+      <section class="slide" data-title="Gravar" data-nb="gravar" data-block="Fecho">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Um alerta final</span>
+        <h2>O CSV não guarda tipo</h2>
+        <pre class="code term"><code class="no-hl"><span class="pr">&gt;&gt;&gt;</span> <span class="cmd">vendas.to_csv(&quot;vendas-limpas.csv&quot;, index=False)</span>
+<span class="pr">&gt;&gt;&gt;</span> <span class="cmd">pd.read_csv(&quot;vendas-limpas.csv&quot;).dtypes</span>
+<span class="out">data_pedido      str  </span><span class="cmt"># virou texto de novo</span>
+<span class="out">categoria        str  </span><span class="cmt"># a category se perdeu</span></code></pre>
+        <div class="callout warn">
+          A tipagem <b>evapora</b> na gravação. Se o destino for Python, use <code>to_parquet</code>: preserva tipos, ocupa menos, lê mais rápido.
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ Resumo · 1 a 5" data-block="Fecho">
+        <span class="kicker">Fechando · primeira metade</span>
+        <h2>Cinco regras</h2>
+        <div class="cards c1 tight">
+          <div class="card"><b>1 · Descreva antes de mexer</b><small><code>info</code> · <code>describe</code> · <code>isna().sum()</code> · <code>duplicated().sum()</code></small></div>
+          <div class="card"><b>2 · O vazio tem disfarces</b><small><code>""</code>, <code>"-"</code>, <code>-999</code> — e a linha que nem existe</small></div>
+          <div class="card"><b>3 · Imputar é afirmar</b><small>encolhe a variância; guarde a flag <code>_faltava</code></small></div>
+          <div class="card"><b>4 · Defina o grão</b><small>antes de qualquer <code>drop_duplicates</code></small></div>
+          <div class="card"><b>5 · Converta e conte</b><small><code>errors="coerce"</code>, e o relatório do que virou <code>NaN</code></small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="★ Resumo · 6 a 10" data-block="Fecho">
+        <span class="kicker">Fechando · segunda metade</span>
+        <h2>E as outras cinco</h2>
+        <div class="cards c1 tight">
+          <div class="card"><b>6 · Data: formato explícito</b><small>e confira <code>min</code> e <code>max</code> contra o negócio</small></div>
+          <div class="card"><b>7 · Normalize antes de comparar</b><small>acento, caixa e espaço</small></div>
+          <div class="card"><b>8 · Vetorizado primeiro</b><small><code>apply(axis=1)</code> é o último recurso</small></div>
+          <div class="card"><b>9 · Outlier não sai por fórmula</b><small>digitação, evento raro e impossível são coisas diferentes</small></div>
+          <div class="card"><b>10 · Escreva como função e audite</b><small>limpeza que não se repete é conserto</small></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="A frase" data-block="Fecho">
+        <span class="kicker">A ideia que fica</span>
+        <h2>No fim</h2>
+        <div class="bigdef">
+          <span class="bd-label">Limpar dado</span>
+          <p>É <b>conhecer o assunto</b>. A sintaxe desta aula é só o meio de escrever o que você já decidiu.</p>
+        </div>
+        <div class="recap">
+          <div class="rc"><span>1</span><p>Nenhum comando sabe se <code>999</code> é erro de digitação ou o maior pedido do ano.</p></div>
+          <div class="rc"><span>2</span><p>Nenhuma fórmula sabe se a idade em branco é privacidade ou desleixo.</p></div>
+          <div class="rc"><span>3</span><p>Quem sabe é você — e escreve a decisão onde o próximo possa ler.</p></div>
+        </div>
+      </section>
+
+      <section class="slide" data-title="Para a próxima" data-block="Fecho">
+        <span class="kicker">Exercício · Lista 2</span>
+        <h2>Agora é com vocês</h2>
+        <div class="cards c2">
+          <div class="card"><span class="ico">📓</span><b>aula05.ipynb</b><small>a aula inteira, 114 células para rodar em casa</small></div>
+          <div class="card"><span class="ico">🧪</span><b>exercicio-aula05.ipynb</b><small>um dataset novo e onze perguntas para responder com código</small></div>
+        </div>
+        <div class="callout key">
+          <b>A entrega é o caderno com as decisões escritas.</b> Não basta rodar: cada imputação, remoção e corte precisa de uma frase dizendo por quê.
+        </div>
+        <p class="dica">Aula 6 — <b>Agregação e o primeiro gráfico</b>: <code>groupby</code>, <code>merge</code>, <code>pivot_table</code>, Matplotlib.</p>
+      </section>
+
+    </div><!-- /deck -->
+
+    <!-- BARRA DE CONTROLE -->
+    <footer class="bar">
+      <div class="progress"><span id="progressFill"></span></div>
+      <button class="btn ghost" id="btnMenu" title="Índice (M)" aria-label="Índice">☰</button>
+      <div class="bar-title"><span id="barBlock">Abertura</span><b id="barTitle">Capa</b></div>
+      <div class="bar-nav">
+        <button class="btn" id="btnPrev" aria-label="Slide anterior">‹ Voltar</button>
+        <span class="counter"><b id="cur">1</b> / <span id="total">1</span></span>
+        <button class="btn primary" id="btnNext" aria-label="Próximo slide">Avançar ›</button>
+      </div>
+      <button class="btn ghost" id="btnPdf" title="Exportar para PDF (P)" aria-label="Exportar para PDF">PDF</button>
+      <button class="btn ghost" id="btnTheme" title="Tema claro/escuro (T)" aria-label="Alternar tema">◐</button>
+      <button class="btn ghost" id="btnFull" title="Tela cheia (F)" aria-label="Tela cheia">⛶</button>
+    </footer>
+
+    <!-- EXPORTAR PARA PDF -->
+    <div class="modal" id="pdfModal" aria-hidden="true">
+      <div class="modal-box">
+        <h3>Exportar os slides para PDF</h3>
+        <p>Vai abrir a janela de impressão do navegador. Confira estas três opções:</p>
+        <ul class="modal-list">
+          <li><b>Destino:</b> Salvar como PDF</li>
+          <li><b>Margens:</b> Nenhuma</li>
+          <li><b>Gráficos de segundo plano:</b> ativado <small>(fica em "Mais definições")</small></li>
+        </ul>
+        <p class="modal-note">Cada slide vira uma página no formato 4:3. O PDF sai sempre no tema claro, para não gastar tinta se você imprimir em papel.</p>
+        <div class="modal-actions">
+          <button class="btn" id="pdfCancel">Cancelar</button>
+          <button class="btn primary" id="pdfGo">Abrir impressão</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÍNDICE -->
+    <aside class="menu" id="menu" aria-hidden="true">
+      <header>Índice da aula<button class="btn ghost" id="btnMenuClose" aria-label="Fechar">✕</button></header>
+      <nav id="menuList"></nav>
+    </aside>
+
+  </div><!-- /stage -->
+</div>
+
+<script src="js/highlight.js"></script>
+<script src="js/slides.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>

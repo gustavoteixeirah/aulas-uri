@@ -1,0 +1,14 @@
+artifact_uri: /Users/teixeirah/work/uri/Ciência de Dados/aula-ml-2/mlruns/672576450524177125/6842505e6d04480fbfda3b2874f31bd0/artifacts
+end_time: 1790742380493
+entry_point_name: ''
+experiment_id: '672576450524177125'
+lifecycle_stage: active
+run_id: 6842505e6d04480fbfda3b2874f31bd0
+run_name: reta-com-vazamento
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1790742380489
+status: 3
+tags: []
+user_id: teixeirah

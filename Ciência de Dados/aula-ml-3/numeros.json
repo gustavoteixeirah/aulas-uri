@@ -1,0 +1,66 @@
+{
+  "n": 7043,
+  "churn_yes": 1869,
+  "churn_no": 5174,
+  "proporcao_fica": 0.7346301292063041,
+  "nulos_total": 11,
+  "n_teste": 1761,
+  "constante": {
+    "acuracia": 0.7348097671777399,
+    "precisao_sai": 0.0,
+    "recall_sai": 0.0,
+    "f1_sai": 0.0,
+    "alertas": 0
+  },
+  "cortes": {
+    "0.3": {
+      "acuracia": 0.7649063032367973,
+      "precisao_sai": 0.5399698340874811,
+      "recall_sai": 0.7665952890792291,
+      "f1_sai": 0.6336283185840708,
+      "alertas": 663
+    },
+    "0.5": {
+      "acuracia": 0.7915956842703009,
+      "precisao_sai": 0.6282051282051282,
+      "recall_sai": 0.5246252676659529,
+      "f1_sai": 0.5717619603267211,
+      "alertas": 390
+    },
+    "0.7": {
+      "acuracia": 0.7671777399204998,
+      "precisao_sai": 0.7317073170731707,
+      "recall_sai": 0.19271948608137046,
+      "f1_sai": 0.3050847457627119,
+      "alertas": 123
+    }
+  },
+  "balanceada": {
+    "acuracia": 0.7495741056218058,
+    "precisao_sai": 0.518005540166205,
+    "recall_sai": 0.8008565310492506,
+    "f1_sai": 0.6291000841042893,
+    "alertas": 722
+  },
+  "matriz_05": [
+    [
+      1149,
+      145
+    ],
+    [
+      222,
+      245
+    ]
+  ],
+  "promovida": {
+    "run": "logistica-balanceada",
+    "corte": 0.5,
+    "metricas": {
+      "acuracia": 0.7495741056218058,
+      "precisao_sai": 0.518005540166205,
+      "recall_sai": 0.8008565310492506,
+      "f1_sai": 0.6291000841042893,
+      "alertas": 722
+    }
+  }
+}

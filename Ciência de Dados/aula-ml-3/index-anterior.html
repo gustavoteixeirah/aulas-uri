@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Aula ML 03 — Classificação</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+    <div class="deck" id="deck">
+
+      <section class="slide cover" data-title="Capa" data-block="Abertura">
+        <div class="cover-tag">Programação para Ciência de Dados · 2026.1</div>
+        <h1>Quem cancela, e <em>qual erro</em> a operadora aguenta</h1>
+        <p class="cover-sub">7.043 clientes · serviços, contrato e cobrança<br>1.869 saem — cerca de um em cada quatro</p>
+        <div class="cover-meta">
+          <span>Aula ML 03</span><i></i><span>regressão logística</span><i></i><span>limiar</span>
+        </div>
+        <div class="cover-hint"><kbd>→</kbd> <kbd>←</kbd> · <kbd>M</kbd> índice · <kbd>P</kbd> PDF</div>
+      </section>
+
+      <section class="slide" data-title="Sim ou não" data-block="Abertura">
+        <span class="kicker">O alvo mudou de novo</span>
+        <h2>Os dois erros não custam a mesma coisa</h2>
+        <div class="cards c2">
+          <div class="card"><b>Deixar passar quem sai</b><small>o cliente cancela e a operadora não agiu. É o erro que esta aula trata como o mais caro.</small></div>
+          <div class="card"><b>Alertar à toa</b><small>um contato para quem ia ficar. Custa tempo e irrita. Não é o mesmo custo do outro.</small></div>
+        </div>
+        <p class="note">Na aula 1 havia três espécies e o interesse era acertar. Aqui são duas classes, e a acurácia mistura os dois erros num número só.</p>
+      </section>
+
+      <section class="slide" data-title="O arquivo" data-nb="arquivo" data-block="Os dados">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Telco Customer Churn · 7.043 linhas · 21 colunas</span>
+        <h2>Uma linha é um cliente</h2>
+        <div class="cards c3">
+          <div class="card"><b>Serviço</b><small>telefone, internet, backup, suporte, streaming</small></div>
+          <div class="card"><b>Contrato</b><small>mensal, um ano, dois anos. A permanência em meses está em <code>tenure</code>.</small></div>
+          <div class="card"><b>Cobrança</b><small><code>MonthlyCharges</code>, <code>TotalCharges</code>, forma de pagamento</small></div>
+        </div>
+        <div class="callout key"><code>customerID</code> não entra. <code>TotalCharges</code> vem como texto e tem <b>11 células vazias</b>. A conversão é leitura de tipo. A mediana que preenche o vazio fica no <code>SimpleImputer</code>, dentro do pipeline.</div>
+      </section>
+
+      <section class="slide" data-title="A acurácia que mente" data-nb="constante" data-block="O piso">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Churn == No em 73,5% do arquivo</span>
+        <h2>Prever “fica” para todo mundo já acerta 73,5%</h2>
+        <div class="bigdef">
+          <span class="bd-label">0,735</span>
+          <p>No teste, a regra constante acerta <b>73,5%</b> e pega <b>zero</b> de quem sai. Recall 0, precisão 0, nenhum alerta.</p>
+        </div>
+        <div class="callout warn">Qualquer modelo tem de ser lido contra este piso. A acurácia sozinha não distingue a constante de um modelo que presta.</div>
+      </section>
+
+      <section class="slide" data-title="Probabilidade" data-nb="prob" data-block="A logística">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">predict_proba no teste · 1.761 clientes</span>
+        <h2>A logística devolve um número entre 0 e 1</h2>
+        <figure class="fig">
+          <img src="img/g1-prob.png" alt="Histograma das probabilidades de sair, separado entre quem ficou e quem saiu">
+        </figure>
+        <p class="note">Não é a classe. Quem ficou (roxo) se amontoa à esquerda. Quem saiu (âmbar) se espalha para a direita, com sobreposição no meio — é aí que o corte decide.</p>
+      </section>
+
+      <section class="slide" data-title="Limiar" data-nb="limiar" data-block="A logística">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">A classe nasce quando a probabilidade passa do corte</span>
+        <h2>0,5 é uma escolha, não uma lei</h2>
+        <table class="tbl">
+          <thead><tr><th>corte</th><th>alertas no teste</th><th>recall de quem sai</th><th>precisão</th></tr></thead>
+          <tbody>
+            <tr><td>0,3</td><td>663</td><td>0,767</td><td>0,540</td></tr>
+            <tr class="hi"><td>0,5</td><td>390</td><td>0,525</td><td>0,628</td></tr>
+            <tr><td>0,7</td><td>123</td><td>0,193</td><td>0,732</td></tr>
+          </tbody>
+        </table>
+        <p class="note">Baixar o corte dispara mais alertas e pega mais de quem sai. Subir o corte faz o contrário. O mesmo modelo, três decisões.</p>
+      </section>
+
+      <section class="slide" data-title="Matriz" data-nb="matriz" data-block="A métrica">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Corte 0,5 · números do teste</span>
+        <h2>As quatro casas</h2>
+        <table class="tbl">
+          <thead><tr><th></th><th>previsto: fica</th><th>previsto: sai</th></tr></thead>
+          <tbody>
+            <tr><td class="rh">real: fica</td><td>1.149 acertou quem fica</td><td>145 alertou à toa</td></tr>
+            <tr class="hi"><td class="rh">real: sai</td><td>222 deixou passar</td><td>245 acertou quem sai</td></tr>
+          </tbody>
+        </table>
+        <p class="note">467 saíram de verdade no teste. O corte 0,5 pegou 245 e deixou passar 222.</p>
+      </section>
+
+      <section class="slide" data-title="Precisão, recall, F1" data-nb="metricas" data-block="A métrica">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Sempre da classe que sai · corte 0,5</span>
+        <h2>Três frases, três números</h2>
+        <div class="cards c3">
+          <div class="card"><b>Precisão 0,628</b><small>dos 390 alertas, 245 tinham saído de fato. 145 foram contato inútil.</small></div>
+          <div class="card"><b>Recall 0,525</b><small>de quem saiu, o alerta pegou pouco mais da metade. 222 passaram sem aviso.</small></div>
+          <div class="card"><b>F1 0,572</b><small>o meio-termo, para quando ninguém declarou qual erro custa mais.</small></div>
+        </div>
+        <p class="note">A acurácia neste corte é 0,792 — mais alta que a constante, e ainda deixa passar 222. A aula não usa curva ROC: o limiar já é a decisão.</p>
+      </section>
+
+      <section class="slide" data-title="Peso da classe" data-nb="peso" data-block="A métrica">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">class_weight=balanced · o mesmo corte 0,5</span>
+        <h2>O recall sobe, a precisão cai</h2>
+        <table class="tbl">
+          <thead><tr><th>run</th><th>precisão</th><th>recall</th><th>F1</th><th>acurácia</th></tr></thead>
+          <tbody>
+            <tr><td>sem peso, corte 0,5</td><td>0,628</td><td>0,525</td><td>0,572</td><td>0,792</td></tr>
+            <tr class="hi"><td>peso balanceado</td><td>0,518</td><td>0,801</td><td>0,629</td><td>0,750</td></tr>
+          </tbody>
+        </table>
+        <div class="callout key">A acurácia da run balanceada é pior. O recall de quem sai sobe de 0,525 para 0,801. São respostas a custos diferentes.</div>
+      </section>
+
+      <section class="slide" data-title="MLflow" data-nb="mlflow" data-block="O registro">
+        <span class="nb-tag">caderno</span>
+        <span class="kicker">Experimento aula-ml-3-churn</span>
+        <h2>A acurácia alta numa run que a aula descarta</h2>
+        <table class="tbl mini">
+          <thead><tr><th>run</th><th>precisão</th><th>recall</th><th>F1</th><th>acurácia</th></tr></thead>
+          <tbody>
+            <tr><td>constante-fica</td><td>0</td><td>0</td><td>0</td><td>0,735</td></tr>
+            <tr><td>corte 0,3</td><td>0,540</td><td>0,767</td><td>0,634</td><td>0,765</td></tr>
+            <tr><td>corte 0,5</td><td>0,628</td><td>0,525</td><td>0,572</td><td>0,792</td></tr>
+            <tr><td>corte 0,7</td><td>0,732</td><td>0,193</td><td>0,305</td><td>0,767</td></tr>
+            <tr class="hi"><td>balanceada</td><td>0,518</td><td>0,801</td><td>0,629</td><td>0,750</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="slide" data-title="A escolha" data-block="Fecho">
+        <span class="kicker">A métrica se escolhe antes de comemorar o número</span>
+        <h2>Deixar passar quem sai custa mais</h2>
+        <div class="bigdef">
+          <span class="bd-label">balanceada</span>
+          <p>Com esse custo, a run que obedece é a de peso balanceado: recall <b>0,801</b>, precisão <b>0,518</b>. A acurácia dela perde para o corte 0,5 e quase empata com a constante.</p>
+        </div>
+        <div class="callout key">Alvo sim ou não, classes desbalanceadas: escolha a métrica pelo custo do erro e use regressão logística. Esta run é a que a aula 6 publica, com o corte 0,5 anotado junto.</div>
+      </section>
+
+    </div>
+    <footer class="bar">
+      <div class="progress"><span id="progressFill"></span></div>
+      <button class="btn ghost" id="btnMenu" title="Índice (M)" aria-label="Índice">☰</button>
+      <div class="bar-title"><span id="barBlock">Abertura</span><b id="barTitle">Capa</b></div>
+      <div class="bar-nav">
+        <button class="btn" id="btnPrev" aria-label="Anterior">‹ Voltar</button>
+        <span class="counter"><b id="cur">1</b> / <span id="total">1</span></span>
+        <button class="btn primary" id="btnNext" aria-label="Próximo">Avançar ›</button>
+      </div>
+      <button class="btn ghost" id="btnPdf" title="PDF" aria-label="PDF">PDF</button>
+      <button class="btn ghost" id="btnTheme" title="Tema" aria-label="Tema">◐</button>
+      <button class="btn ghost" id="btnFull" title="Tela cheia" aria-label="Tela cheia">⛶</button>
+    </footer>
+    <div class="modal" id="pdfModal" aria-hidden="true">
+      <div class="modal-box">
+        <h3>Exportar os slides para PDF</h3>
+        <p>Destino: Salvar como PDF. Margens: nenhuma. Gráficos de segundo plano: ativado.</p>
+        <div class="modal-actions">
+          <button class="btn" id="pdfCancel">Cancelar</button>
+          <button class="btn primary" id="pdfGo">Abrir impressão</button>
+        </div>
+      </div>
+    </div>
+    <aside class="menu" id="menu" aria-hidden="true">
+      <header>Índice da aula<button class="btn ghost" id="btnMenuClose" aria-label="Fechar">✕</button></header>
+      <nav id="menuList"></nav>
+    </aside>
+  </div>
+</div>
+<script src="js/highlight.js"></script>
+<script src="js/slides.js"></script>
+<script src="js/sync.js"></script>
+</body>
+</html>
